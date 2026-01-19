@@ -1,1033 +1,445 @@
 /**
- * APP TRAINER v2 - Modern JavaScript Application
- * Inspirado em: Hevy, Strong, FitBod, MyFitnessPal
+ * APP TRAINER - JavaScript Principal
+ * Gerencia interface, API calls e interações
+ * v4.0 - Consolidado e funcional
  */
 
-// =====================================================
-// CONFIGURAÇÃO & ESTADO GLOBAL
-// =====================================================
+// ==================== CONFIGURAÇÃO ====================
+const API_BASE = '';  // Usa mesmo host/porta do servidor Java
+const ML_SERVICE = 'http://localhost:8001'; // Serviço ML Python
 
-// Backend FastAPI roda em 8000; alinhar para evitar erros de "Failed to fetch" e navegação travada
-const API_BASE = 'http://localhost:8000';
-
-const AppState = {
-    user: null,
-    token: null,
-    currentTab: 'home',
-    onboardingStep: 1,
-    onboardingData: {
-        idade: null,
-        peso: null,
-        altura: null,
-        sexo: 'M',
-        objetivo: null,
-        nivel: null,
-        dias_disponiveis: [],
-        local: null
-    },
-    profile: null,
-    workouts: [],
-    messages: []
+const ENDPOINTS = {
+    alunos: `${API_BASE}/api/alunos`,
+    professores: `${API_BASE}/api/professores`,
+    profs: `${API_BASE}/api/profs`,
+    coach: `${API_BASE}/api/coach`,
+    sugestao: `${API_BASE}/api/sugestao`,
+    health: `${API_BASE}/api/health`,
+    // Auth endpoints - Java server
+    authLogin: `${API_BASE}/auth/login`,
+    authRegistro: `${API_BASE}/auth/registro`,
+    authVerificar: `${API_BASE}/auth/verificar`,
+    // ML Service endpoints
+    mlCoach: `${ML_SERVICE}/coach`,
+    mlPerfil: `${ML_SERVICE}/perfil`,
+    mlTreino: `${ML_SERVICE}/treino/gerar`,
+    mlFeedback: `${ML_SERVICE}/feedback`,
+    mlProgresso: `${ML_SERVICE}/progresso`,
+    mlAuthLogin: `${ML_SERVICE}/auth/login`,
+    mlAuthRegistro: `${ML_SERVICE}/auth/registro`,
+    mlAuthVerificar: `${ML_SERVICE}/auth/verificar`
 };
 
-// =====================================================
-// UTILIDADES
-// =====================================================
+// Estado do usuário
+let currentUserId = localStorage.getItem('userId') || null;
+let currentUserName = localStorage.getItem('userName') || null;
+let currentToken = localStorage.getItem('token') || null;
+let useMLService = true;
 
+// ==================== UTILITÁRIOS ====================
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
 
-const Utils = {
-    async fetch(endpoint, options = {}) {
-        const headers = {
-            'Content-Type': 'application/json',
-            ...options.headers
-        };
-        
-        if (AppState.token) {
-            headers['Authorization'] = `Bearer ${AppState.token}`;
-        }
-        
-        try {
-            const res = await fetch(`${API_BASE}${endpoint}`, {
-                ...options,
-                headers
-            });
-            
-            const data = await res.json();
-            
-            if (!res.ok) {
-                throw new Error(data.detail || 'Erro na requisição');
-            }
-            
-            return data;
-        } catch (error) {
-            console.error('API Error:', error);
-            throw error;
-        }
-    },
-    
-    formatDate(date) {
-        return new Intl.DateTimeFormat('pt-BR', {
-            weekday: 'long',
-            day: 'numeric',
-            month: 'long'
-        }).format(date);
-    },
-    
-    getGreeting() {
-        const hour = new Date().getHours();
-        if (hour < 12) return 'Bom dia';
-        if (hour < 18) return 'Boa tarde';
-        return 'Boa noite';
-    },
-    
-    getInitials(name) {
-        if (!name) return '?';
-        return name.split(' ')
-            .map(n => n[0])
-            .slice(0, 2)
-            .join('')
-            .toUpperCase();
-    }
-};
-
-// =====================================================
-// TOAST NOTIFICATIONS
-// =====================================================
-
-const Toast = {
-    container: null,
-    
-    init() {
-        this.container = document.createElement('div');
-        this.container.className = 'toast-container';
-        document.body.appendChild(this.container);
-    },
-    
-    show(message, type = 'success', duration = 3000) {
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        toast.innerHTML = `
-            <span>${this.getIcon(type)}</span>
-            <span>${message}</span>
-        `;
-        
-        this.container.appendChild(toast);
-        
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            setTimeout(() => toast.remove(), 200);
-        }, duration);
-    },
-    
-    getIcon(type) {
-        switch(type) {
-            case 'success': return '✓';
-            case 'error': return '✕';
-            case 'warning': return '⚠';
-            default: return 'ℹ';
-        }
-    },
-    
-    success(msg) { this.show(msg, 'success'); },
-    error(msg) { this.show(msg, 'error'); },
-    warning(msg) { this.show(msg, 'warning'); }
-};
-
-// =====================================================
-// LOADING OVERLAY
-// =====================================================
-
-const Loading = {
-    overlay: null,
-    
-    show(message = 'Carregando...') {
-        if (!this.overlay) {
-            this.overlay = document.createElement('div');
-            this.overlay.className = 'loading-overlay';
-            this.overlay.innerHTML = `
-                <div class="loading-spinner"></div>
-                <p>${message}</p>
-            `;
-            document.body.appendChild(this.overlay);
-        } else {
-            this.overlay.querySelector('p').textContent = message;
-            this.overlay.style.display = 'flex';
-        }
-    },
-    
-    hide() {
-        if (this.overlay) {
-            this.overlay.style.display = 'none';
-        }
-    }
-};
-
-// =====================================================
-// AUTENTICAÇÃO
-// =====================================================
-
-const Auth = {
-    init() {
-        this.setupTabs();
-        this.setupForms();
-        this.checkSession();
-    },
-    
-    setupTabs() {
-        $$('.auth-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                const target = tab.dataset.tab;
-                
-                $$('.auth-tab').forEach(t => t.classList.remove('active'));
-                $$('.auth-form').forEach(f => f.classList.remove('active'));
-                
-                tab.classList.add('active');
-                $(`#${target}-form`).classList.add('active');
-            });
+async function api(endpoint, options = {}) {
+    const url = endpoint.startsWith('http') ? endpoint : endpoint;
+    try {
+        const response = await fetch(url, {
+            headers: { 'Content-Type': 'application/json', ...options.headers },
+            ...options
         });
-    },
+        const text = await response.text();
+        console.log('API Response:', text);
+        const data = JSON.parse(text);
+        
+        if (!response.ok) {
+            throw new Error(data.error || data.detail || data.message || `HTTP ${response.status}`);
+        }
+        return data;
+    } catch (error) {
+        console.error('API Error:', error);
+        throw error;
+    }
+}
+
+function showLoading(show = true) {
+    let loading = $('#loading');
+    if (!loading) {
+        loading = document.createElement('div');
+        loading.id = 'loading';
+        loading.className = 'loading-overlay';
+        loading.innerHTML = '<div class="loading-spinner"></div><p>Carregando...</p>';
+        document.body.appendChild(loading);
+    }
+    loading.style.display = show ? 'flex' : 'none';
+}
+
+function showToast(message, type = 'success') {
+    let container = $('#toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
     
-    setupForms() {
-        // Login
-        $('#login-form').addEventListener('submit', async (e) => {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+        <span>${type === 'success' ? '✅' : type === 'error' ? '❌' : '⚠️'}</span>
+        <span>${message}</span>
+    `;
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'toastIn 0.3s ease reverse';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// ==================== AUTENTICAÇÃO ====================
+
+function initAuth() {
+    const authScreen = $('#auth-screen');
+    const loginForm = $('#login-form');
+    const registerForm = $('#register-form');
+    const authTabs = $$('.auth-tab');
+    
+    if (!authScreen || !loginForm) {
+        console.error('[Auth] Elementos de autenticação não encontrados');
+        return;
+    }
+    
+    console.log('[Auth] Inicializando autenticação...');
+    
+    // Tabs de login/registro
+    authTabs.forEach(tab => {
+        tab.addEventListener('click', (e) => {
             e.preventDefault();
+            const tabType = tab.dataset.tab;
+            console.log('[Auth] Tab clicada:', tabType);
             
-            const email = $('#login-email').value.trim();
-            const senha = $('#login-senha').value;
+            // Atualiza tabs
+            authTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
             
-            if (!email || !senha) {
-                $('#login-error').textContent = 'Preencha todos os campos';
-                return;
+            // Atualiza forms
+            $$('.auth-form').forEach(f => f.classList.remove('active'));
+            
+            if (tabType === 'login') {
+                loginForm.classList.add('active');
+            } else if (tabType === 'register' || tabType === 'registro') {
+                if (registerForm) registerForm.classList.add('active');
             }
             
-            Loading.show('Entrando...');
-            
-            try {
-                const data = await Utils.fetch('/auth/login', {
-                    method: 'POST',
-                    body: JSON.stringify({ email, senha })
-                });
-                
-                this.handleLoginSuccess(data);
-            } catch (error) {
-                $('#login-error').textContent = error.message;
-            } finally {
-                Loading.hide();
-            }
+            // Limpar erros
+            const loginError = $('#login-error');
+            const registerError = $('#register-error');
+            if (loginError) loginError.textContent = '';
+            if (registerError) registerError.textContent = '';
         });
-        
-        // Registro
-        $('#register-form').addEventListener('submit', async (e) => {
+    });
+    
+    // Form de login
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await fazerLogin();
+    });
+    
+    // Form de registro
+    if (registerForm) {
+        registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const nome = $('#register-nome').value.trim();
-            const email = $('#register-email').value.trim();
-            const senha = $('#register-senha').value;
-            
-            if (!nome || !email || !senha) {
-                $('#register-error').textContent = 'Preencha todos os campos';
-                return;
-            }
-            
-            if (senha.length < 6) {
-                $('#register-error').textContent = 'Senha deve ter no mínimo 6 caracteres';
-                return;
-            }
-            
-            Loading.show('Criando conta...');
-            
-            try {
-                const data = await Utils.fetch('/auth/registro', {
-                    method: 'POST',
-                    body: JSON.stringify({ nome, email, senha })
-                });
-                
-                Toast.success('Conta criada com sucesso!');
-                this.handleLoginSuccess(data);
-            } catch (error) {
-                $('#register-error').textContent = error.message;
-            } finally {
-                Loading.hide();
-            }
+            await fazerRegistro();
         });
-    },
-    
-    handleLoginSuccess(data) {
-        AppState.user = {
-            id: data.user_id || data.usuario_id,
-            nome: data.nome,
-            email: data.email
-        };
-        AppState.token = data.token;
-        AppState.profile = data.perfil || null;
-        
-        localStorage.setItem('auth', JSON.stringify({
-            user: AppState.user,
-            token: AppState.token
-        }));
-        
-        this.showApp();
-    },
-    
-    async checkSession() {
-        const stored = localStorage.getItem('auth');
-        
-        if (stored) {
-            try {
-                const { user, token } = JSON.parse(stored);
-                AppState.token = token;
-                
-                // Verificar se usuário ainda existe
-                const verifyData = await Utils.fetch(`/auth/verificar/${user.id}`);
-                
-                if (verifyData.valid) {
-                    // Buscar dados atualizados do servidor
-                    let perfilData = {};
-                    try {
-                        perfilData = await Utils.fetch(`/perfil/${user.id}`);
-                        // Atualizar nome do localStorage com dados do servidor
-                        if (perfilData.nome) {
-                            user.nome = perfilData.nome;
-                            // Atualizar localStorage com nome correto
-                            localStorage.setItem('auth', JSON.stringify({ user, token }));
-                        }
-                    } catch (e) {
-                        console.log('Perfil não encontrado, usando dados básicos');
-                    }
-                    
-                    AppState.user = user;
-                    AppState.profile = verifyData.tem_perfil_completo ? {
-                        objetivo: verifyData.objetivo,
-                        nivel: verifyData.nivel,
-                        ...perfilData
-                    } : null;
-                    
-                    console.log('Sessão válida para:', AppState.user.nome);
-                    this.showApp();
-                    return;
-                }
-            } catch (error) {
-                console.log('Sessão expirada ou inválida:', error);
-            }
-            
-            // Se chegou aqui, sessão inválida - limpar
-            localStorage.removeItem('auth');
-            AppState.user = null;
-            AppState.token = null;
-            AppState.profile = null;
-            App.initialized = false;
-        }
-        
-        this.showLogin();
-    },
-    
-    showLogin() {
-        const authScreen = $('#auth-screen');
-        const app = $('#app');
-        const onboarding = $('#onboarding');
-        
-        if (authScreen) authScreen.style.display = 'block';
-        if (app) app.style.display = 'none';
-        if (onboarding) onboarding.style.display = 'none';
-    },
-    
-    showApp() {
-        const authScreen = $('#auth-screen');
-        const app = $('#app');
-        
-        if (authScreen) authScreen.style.display = 'none';
-        if (app) app.style.display = 'block';
-        
-        // SEMPRE inicializa a navegação do app
-        App.init();
-        
-        // Verificar se precisa onboarding (mostra por cima)
-        if (!AppState.profile || !AppState.profile.objetivo) {
-            Onboarding.show();
-        }
-    },
-    
-    logout() {
-        localStorage.removeItem('auth');
-        AppState.user = null;
-        AppState.token = null;
-        AppState.profile = null;
-        App.initialized = false; // Resetar para permitir reinicialização
-        this.showLogin();
-        Toast.success('Desconectado com sucesso');
     }
-};
+    
+    // Logout
+    const btnLogout = $('#btn-logout');
+    if (btnLogout) {
+        btnLogout.addEventListener('click', fazerLogout);
+    }
+    
+    // Verificar se já está logado
+    verificarSessao();
+}
 
-// =====================================================
-// ONBOARDING
-// =====================================================
-
-const Onboarding = {
-    totalSteps: 5,
+async function fazerLogin() {
+    const email = $('#login-email')?.value?.trim();
+    const senha = $('#login-senha')?.value;
+    const errorEl = $('#login-error');
     
-    show() {
-        const onboarding = $('#onboarding');
-        if (onboarding) onboarding.style.display = 'flex';
-        this.updateUI();
-        this.setupListeners();
-    },
+    if (errorEl) errorEl.textContent = '';
     
-    hide() {
-        const onboarding = $('#onboarding');
-        if (onboarding) onboarding.style.display = 'none';
-        // App.init() já foi chamado em showApp(), não precisa chamar novamente
-    },
+    if (!email || !senha) {
+        if (errorEl) errorEl.textContent = 'Preencha todos os campos';
+        return;
+    }
     
-    updateUI() {
-        const step = AppState.onboardingStep;
+    try {
+        showLoading(true);
         
-        // Progress bar
-        const progress = (step / this.totalSteps) * 100;
-        const progressBar = $('#onboarding-progress-bar');
-        if (progressBar) progressBar.style.width = `${progress}%`;
-        
-        // Step indicator
-        const stepIndicator = $('#step-indicator');
-        if (stepIndicator) stepIndicator.textContent = `${step} de ${this.totalSteps}`;
-        
-        // Show current step
-        $$('.onboarding-step').forEach((s, i) => {
-            s.classList.toggle('active', i + 1 === step);
-        });
-        
-        // Back button visibility
-        const btnBack = $('#btn-onboarding-back');
-        if (btnBack) btnBack.style.visibility = step === 1 ? 'hidden' : 'visible';
-        
-        // Next button text
-        const nextBtn = $('#btn-onboarding-next');
-        if (nextBtn) {
-            nextBtn.innerHTML = step === this.totalSteps 
-                ? '<span>Começar</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>'
-                : '<span>Continuar</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>';
-        }
-    },
-    
-    setupListeners() {
-        // Back
-        const btnBack = $('#btn-onboarding-back');
-        if (btnBack) {
-            btnBack.addEventListener('click', () => {
-                if (AppState.onboardingStep > 1) {
-                    AppState.onboardingStep--;
-                    this.updateUI();
-                }
-            });
-        }
-        
-        // Next
-        const btnNext = $('#btn-onboarding-next');
-        if (btnNext) {
-            btnNext.addEventListener('click', () => {
-                if (this.validateStep()) {
-                    if (AppState.onboardingStep < this.totalSteps) {
-                        AppState.onboardingStep++;
-                        this.updateUI();
-                    } else {
-                        this.complete();
-                    }
-                }
-            });
-        }
-        
-        // Skip
-        const btnSkip = $('#btn-onboarding-skip');
-        if (btnSkip) {
-            btnSkip.addEventListener('click', () => {
-                if (confirm('Você pode completar seu perfil depois. Deseja pular?')) {
-                    this.hide();
-                }
-            });
-        }
-        
-        // Sex pills
-        $$('[data-step="1"] .pill').forEach(pill => {
-            pill.addEventListener('click', () => {
-                $$('[data-step="1"] .pill').forEach(p => p.classList.remove('active'));
-                pill.classList.add('active');
-                AppState.onboardingData.sexo = pill.dataset.value;
-            });
-        });
-        
-        // Goal cards
-        $$('.goal-card').forEach(card => {
-            card.addEventListener('click', () => {
-                $$('.goal-card').forEach(c => c.classList.remove('active'));
-                card.classList.add('active');
-                AppState.onboardingData.objetivo = card.dataset.goal;
-            });
-        });
-        
-        // Level cards
-        $$('.level-card').forEach(card => {
-            card.addEventListener('click', () => {
-                $$('.level-card').forEach(c => c.classList.remove('active'));
-                card.classList.add('active');
-                AppState.onboardingData.nivel = card.dataset.level;
-            });
-        });
-        
-        // Days buttons
-        $$('.day-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                btn.classList.toggle('active');
-                const day = parseInt(btn.dataset.day);
-                const days = AppState.onboardingData.dias_disponiveis;
-                
-                if (days.includes(day)) {
-                    AppState.onboardingData.dias_disponiveis = days.filter(d => d !== day);
-                } else {
-                    days.push(day);
-                    days.sort((a, b) => a - b);
-                }
-                
-                this.updateDaysLabel();
-            });
-        });
-        
-        // Location cards
-        $$('.location-card').forEach(card => {
-            card.addEventListener('click', () => {
-                $$('.location-card').forEach(c => c.classList.remove('active'));
-                card.classList.add('active');
-                AppState.onboardingData.local = card.dataset.location;
-            });
-        });
-    },
-    
-    updateDaysLabel() {
-        const count = AppState.onboardingData.dias_disponiveis.length;
-        $('#days-label').textContent = count === 0 
-            ? 'Selecione os dias' 
-            : `${count} dia${count > 1 ? 's' : ''} por semana`;
-    },
-    
-    validateStep() {
-        const step = AppState.onboardingStep;
-        const data = AppState.onboardingData;
-        
-        switch(step) {
-            case 1: // Dados básicos
-                const idadeEl = $('#onb-idade');
-                const pesoEl = $('#onb-peso');
-                const alturaEl = $('#onb-altura');
-                
-                data.idade = idadeEl ? parseInt(idadeEl.value) : null;
-                data.peso = pesoEl ? parseFloat(pesoEl.value) : null;
-                // HTML usa cm, converter para metros
-                const alturaCm = alturaEl ? parseFloat(alturaEl.value) : null;
-                data.altura = alturaCm ? alturaCm / 100 : null;
-                
-                if (!data.idade || data.idade < 14 || data.idade > 100) {
-                    Toast.error('Informe uma idade válida');
-                    return false;
-                }
-                if (!data.peso || data.peso < 30 || data.peso > 300) {
-                    Toast.error('Informe um peso válido');
-                    return false;
-                }
-                if (!data.altura || data.altura < 1.0 || data.altura > 2.5) {
-                    Toast.error('Informe altura válida (ex: 175 cm)');
-                    return false;
-                }
-                return true;
-                
-            case 2: // Objetivo
-                if (!data.objetivo) {
-                    Toast.error('Selecione seu objetivo');
-                    return false;
-                }
-                return true;
-                
-            case 3: // Experiência
-                if (!data.nivel) {
-                    Toast.error('Selecione seu nível de experiência');
-                    return false;
-                }
-                return true;
-                
-            case 4: // Disponibilidade
-                if (data.dias_disponiveis.length === 0) {
-                    Toast.error('Selecione pelo menos um dia');
-                    return false;
-                }
-                return true;
-                
-            case 5: // Local
-                if (!data.local) {
-                    Toast.error('Selecione onde você vai treinar');
-                    return false;
-                }
-                return true;
-        }
-        
-        return true;
-    },
-    
-    async complete() {
-        Loading.show('Criando seu plano personalizado...');
-        
+        // Tentar primeiro no servidor Java, depois ML
+        let response;
         try {
-            const profileData = {
-                idade: AppState.onboardingData.idade,
-                peso: AppState.onboardingData.peso,
-                altura: AppState.onboardingData.altura,
-                sexo: AppState.onboardingData.sexo,
-                objetivo: AppState.onboardingData.objetivo,
-                nivel: AppState.onboardingData.nivel,
-                dias_disponiveis: AppState.onboardingData.dias_disponiveis,
-                equipamentos: AppState.onboardingData.local === 'gym' 
-                    ? ['halteres', 'barras', 'maquinas', 'cabos'] 
-                    : AppState.onboardingData.local === 'home'
-                    ? ['halteres', 'peso_corporal']
-                    : ['peso_corporal']
-            };
-            
-            const result = await Utils.fetch(`/perfil/${AppState.user.id}/completar`, {
+            response = await api(ENDPOINTS.authLogin, {
                 method: 'POST',
-                body: JSON.stringify(profileData)
+                body: JSON.stringify({ email, senha })
             });
-            
-            AppState.profile = result.perfil;
-            
-            Toast.success('Perfil completo! Bem-vindo ao seu treino!');
-            this.hide();
-            
-        } catch (error) {
-            Toast.error('Erro ao salvar perfil. Tente novamente.');
-        } finally {
-            Loading.hide();
-        }
-    }
-};
-
-// =====================================================
-// APLICATIVO PRINCIPAL
-// =====================================================
-
-const App = {
-    initialized: false,
-    
-    init() {
-        console.log('App.init() called, initialized:', this.initialized);
-        
-        // Sempre atualizar header e dashboard, mas navegação só uma vez
-        this.updateHeader();
-        this.loadDashboard();
-        
-        if (!this.initialized) {
-            this.initialized = true;
-            this.setupNavigation();
-            Chat.init();
-        }
-        
-        console.log('App.init() complete');
-    },
-    
-    updateHeader() {
-        const greeting = Utils.getGreeting();
-        const nome = AppState.user?.nome?.split(' ')[0] || 'Atleta';
-        const initials = Utils.getInitials(AppState.user?.nome);
-        
-        const greetingTime = $('#greeting-time');
-        const greetingName = $('#greeting-name');
-        const userAvatar = $('#user-avatar');
-        
-        if (greetingTime) greetingTime.textContent = greeting;
-        if (greetingName) greetingName.textContent = nome;
-        if (userAvatar) userAvatar.textContent = initials;
-    },
-    
-    setupNavigation() {
-        // Remover listeners antigos e adicionar novos
-        $$('.nav-item').forEach(item => {
-            // Clone para remover listeners antigos
-            const newItem = item.cloneNode(true);
-            item.parentNode.replaceChild(newItem, item);
-        });
-        
-        // Adicionar listeners novos
-        $$('.nav-item').forEach(item => {
-            item.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const tab = item.dataset.tab;
-                console.log('Nav click:', tab);
-                if (tab) {
-                    this.switchTab(tab);
-                }
-            });
-        });
-        
-        // Logout - verificar se elemento existe
-        const logoutBtn = $('#btn-logout');
-        if (logoutBtn) {
-            const newLogoutBtn = logoutBtn.cloneNode(true);
-            logoutBtn.parentNode.replaceChild(newLogoutBtn, logoutBtn);
-            newLogoutBtn.addEventListener('click', () => {
-                if (confirm('Deseja sair da sua conta?')) {
-                    Auth.logout();
-                }
+        } catch (javaError) {
+            console.log('[Auth] Java falhou, tentando ML Service...');
+            response = await api(ENDPOINTS.mlAuthLogin, {
+                method: 'POST',
+                body: JSON.stringify({ email, senha })
             });
         }
         
-        console.log('Navigation setup complete. Found', $$('.nav-item').length, 'nav items');
-    },
-    
-    switchTab(tab) {
-        AppState.currentTab = tab;
-        
-        // Update nav
-        $$('.nav-item').forEach(item => {
-            item.classList.toggle('active', item.dataset.tab === tab);
-        });
-        
-        // Update content
-        $$('.tab-content').forEach(content => {
-            content.classList.toggle('active', content.id === `tab-${tab}`);
-        });
-        
-        // Special handling
-        if (tab === 'profile') {
-            this.loadProfile();
-        }
-    },
-    
-    loadDashboard() {
-        // Renderizar cards do dashboard
-        this.renderDashboardCards();
-        
-        // Treino do dia
-        this.loadTodayWorkout();
-        
-        // Week progress
-        this.updateWeekProgress();
-    },
-    
-    renderDashboardCards() {
-        const container = $('#home-dashboard');
-        if (!container) return;
-        
-        const nome = AppState.user?.nome?.split(' ')[0] || 'Atleta';
-        const objetivo = AppState.profile?.objetivo || 'treino';
-        const nivel = AppState.profile?.nivel || 'iniciante';
-        
-        container.innerHTML = `
-            <!-- Card Hero - Treino de Hoje -->
-            <div class="dashboard-grid">
-                <div class="dashboard-card card-treino">
-                    <div class="card-icon">🏋️</div>
-                    <div class="card-content">
-                        <h3>Treino de Hoje</h3>
-                        <p id="treino-hoje-titulo">Carregando...</p>
-                    </div>
-                    <button class="card-action" onclick="App.switchTab('treino')">Iniciar →</button>
-                </div>
-                
-                <div class="dashboard-card card-coach">
-                    <div class="card-icon">🤖</div>
-                    <div class="card-content">
-                        <h3>Coach IA</h3>
-                        <p>Tire suas dúvidas</p>
-                    </div>
-                    <button class="card-action" onclick="App.switchTab('coach')">Perguntar →</button>
-                </div>
-            </div>
+        // Processar resposta
+        if (response.user_id || response.success) {
+            currentUserId = response.user_id;
+            currentUserName = response.nome;
+            currentToken = response.token;
             
-            <!-- Stats Rápidas -->
-            <div class="dashboard-card card-stats full-width">
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <span class="stat-value" id="stat-streak">0</span>
-                        <span class="stat-label">🔥 Sequência</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value" id="stat-workouts">0</span>
-                        <span class="stat-label">💪 Treinos</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value" id="stat-semana">0/4</span>
-                        <span class="stat-label">📅 Semana</span>
-                    </div>
-                </div>
-            </div>
+            localStorage.setItem('userId', currentUserId);
+            localStorage.setItem('userName', currentUserName);
+            localStorage.setItem('token', currentToken);
             
-            <!-- Seu Objetivo -->
-            <div class="dashboard-grid">
-                <div class="dashboard-card card-objetivo">
-                    <div class="card-icon">🎯</div>
-                    <div class="card-content">
-                        <h3>Seu Objetivo</h3>
-                        <p>${this.formatObjetivo(objetivo)}</p>
-                    </div>
-                </div>
-                
-                <div class="dashboard-card card-nivel">
-                    <div class="card-icon">📊</div>
-                    <div class="card-content">
-                        <h3>Nível</h3>
-                        <p>${this.formatNivel(nivel)}</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Progresso Semanal -->
-            <div class="dashboard-card card-progresso full-width">
-                <h3>📈 Progresso da Semana</h3>
-                <div class="week-progress-mini">
-                    <div class="week-day" data-day="0">D</div>
-                    <div class="week-day" data-day="1">S</div>
-                    <div class="week-day" data-day="2">T</div>
-                    <div class="week-day" data-day="3">Q</div>
-                    <div class="week-day" data-day="4">Q</div>
-                    <div class="week-day" data-day="5">S</div>
-                    <div class="week-day" data-day="6">S</div>
-                </div>
-            </div>
-        `;
-        
-        // Atualizar stats (valores de exemplo por enquanto)
-        this.updateDashboardStats();
-    },
-    
-    formatObjetivo(objetivo) {
-        const map = {
-            'hipertrofia': '💪 Hipertrofia',
-            'forca': '🏋️ Força',
-            'perda_peso': '🔥 Perda de Peso',
-            'resistencia': '🏃 Resistência',
-            'treino': '🎯 Bem-estar'
-        };
-        return map[objetivo] || objetivo;
-    },
-    
-    formatNivel(nivel) {
-        const map = {
-            'iniciante': '🌱 Iniciante',
-            'intermediario': '⚡ Intermediário',
-            'avancado': '🔥 Avançado'
-        };
-        return map[nivel] || nivel;
-    },
-    
-    updateDashboardStats() {
-        // Stats de exemplo (integrar com API real depois)
-        const statStreak = $('#stat-streak');
-        const statWorkouts = $('#stat-workouts');
-        const statSemana = $('#stat-semana');
-        
-        if (statStreak) statStreak.textContent = '5';
-        if (statWorkouts) statWorkouts.textContent = '23';
-        if (statSemana) statSemana.textContent = '2/4';
-    },
-    
-    async loadTodayWorkout() {
-        const treinoTitulo = $('#treino-hoje-titulo');
-        
-        try {
-            const objetivo = AppState.profile?.objetivo || 'hipertrofia';
-            const nivel = AppState.profile?.nivel || 'iniciante';
-            
-            const response = await Utils.fetch(`/suggest?objetivo=${objetivo}&nivel=${nivel}&diasSemana=4`);
-            
-            if (response.titulo && treinoTitulo) {
-                treinoTitulo.textContent = response.treinos?.[0]?.nome || response.titulo;
-            }
-        } catch (error) {
-            console.log('Erro ao carregar treino:', error);
-            if (treinoTitulo) treinoTitulo.textContent = 'Treino disponível';
-        }
-    },
-    
-    renderWorkoutCard(treino) {
-        const container = $('#today-workout');
-        if (!container) return;
-        
-        // Atualizar título do treino
-        const title = container.querySelector('.workout-info h3');
-        if (title && treino.nome) {
-            title.textContent = treino.nome;
-        }
-    },
-    
-    updateWeekProgress() {
-        const today = new Date().getDay(); // 0 = Domingo
-        const daysMap = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
-        
-        $$('.week-day').forEach((day, i) => {
-            day.classList.toggle('today', i === today);
-            
-            // Simular dias completados (integrar com API)
-            if (i < today && Math.random() > 0.3) {
-                day.classList.add('completed');
-            }
-        });
-    },
-    
-    loadProfile() {
-        // Atualizar informações do usuário
-        const profileName = $('#profile-name');
-        const profileGoal = $('#profile-goal');
-        const profileAvatarLetter = $('#profile-avatar-letter');
-        
-        if (profileName) profileName.textContent = AppState.user?.nome || 'Atleta';
-        if (profileGoal) {
-            const objetivo = AppState.profile?.objetivo || 'Não definido';
-            profileGoal.textContent = 'Objetivo: ' + this.formatObjetivo(objetivo).replace(/[^\w\sáéíóúàâãêôç]/gi, '');
-        }
-        if (profileAvatarLetter) profileAvatarLetter.textContent = Utils.getInitials(AppState.user?.nome);
-        
-        // Atualizar stats do perfil
-        const statPeso = $('#stat-peso');
-        const statAltura = $('#stat-altura');
-        const statIdade = $('#stat-idade');
-        const statImc = $('#stat-imc');
-        
-        if (statPeso) statPeso.textContent = AppState.profile?.peso || '-';
-        if (statAltura) statAltura.textContent = AppState.profile?.altura ? Math.round(AppState.profile.altura * 100) : '-';
-        if (statIdade) statIdade.textContent = AppState.profile?.idade || '-';
-        
-        // Calcular IMC se tiver peso e altura
-        if (statImc && AppState.profile?.peso && AppState.profile?.altura) {
-            const imc = AppState.profile.peso / (AppState.profile.altura * AppState.profile.altura);
-            statImc.textContent = imc.toFixed(1);
-        }
-    }
-};
-
-// =====================================================
-// CHAT
-// =====================================================
-
-const Chat = {
-    initialized: false,
-    
-    init() {
-        if (this.initialized) return;
-        this.initialized = true;
-        
-        this.setupInput();
-        this.setupQuickQuestions();
-    },
-    
-    setupInput() {
-        const form = $('#chat-form');
-        const input = $('#chat-input');
-        
-        if (!form || !input) {
-            console.log('Chat form or input not found');
-            return;
-        }
-        
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const text = input.value.trim();
-            if (text) {
-                this.send(text);
-                input.value = '';
-            }
-        });
-    },
-    
-    setupQuickQuestions() {
-        $$('.quick-q').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const question = btn.dataset.q || btn.textContent;
-                this.send(question);
-            });
-        });
-    },
-    
-    async send(message) {
-        this.addMessage(message, 'user');
-        
-        // Mostrar typing indicator
-        this.showTyping();
-        
-        try {
-            // Usar endpoint /coach que existe
-            const params = new URLSearchParams({
-                q: message,
-                nome: AppState.user?.nome || '',
-                objetivo: AppState.profile?.objetivo || '',
-                nivel: AppState.profile?.nivel || ''
-            });
-            
-            const response = await Utils.fetch(`/coach?${params.toString()}`);
-            
-            this.hideTyping();
-            this.addMessage(response.answer || response.resposta || 'Não consegui gerar uma resposta.', 'bot');
-            
-        } catch (error) {
-            this.hideTyping();
-            this.addMessage('Desculpe, não consegui processar sua mensagem. Tente novamente.', 'bot');
-        }
-    },
-    
-    addMessage(text, type) {
-        const container = $('#chat-messages');
-        
-        const message = document.createElement('div');
-        message.className = `message ${type}`;
-        
-        if (type === 'bot') {
-            message.innerHTML = `
-                <div class="message-avatar">🤖</div>
-                <div class="message-content">
-                    <p>${text}</p>
-                </div>
-            `;
+            entrarNoApp(response.tem_perfil_completo || !!response.perfil);
+            showToast(`Bem-vindo, ${response.nome}! 🎉`);
         } else {
-            message.innerHTML = `
-                <div class="message-avatar">${Utils.getInitials(AppState.user?.nome)}</div>
-                <div class="message-content">
-                    <p>${text}</p>
-                </div>
-            `;
+            if (errorEl) errorEl.textContent = response.message || 'Erro ao fazer login';
         }
         
-        container.appendChild(message);
-        container.scrollTop = container.scrollHeight;
-    },
-    
-    showTyping() {
-        const container = $('#chat-messages');
-        const typing = document.createElement('div');
-        typing.className = 'message bot typing-indicator';
-        typing.innerHTML = `
-            <div class="message-avatar">🤖</div>
-            <div class="message-content">
-                <p>Digitando...</p>
-            </div>
-        `;
-        typing.id = 'typing-indicator';
-        container.appendChild(typing);
-        container.scrollTop = container.scrollHeight;
-    },
-    
-    hideTyping() {
-        const typing = $('#typing-indicator');
-        if (typing) typing.remove();
+    } catch (error) {
+        console.error('[Auth] Erro no login:', error);
+        if (errorEl) errorEl.textContent = error.message || 'Erro de conexão';
+    } finally {
+        showLoading(false);
     }
-};
+}
 
-// =====================================================
-// INICIALIZAÇÃO
-// =====================================================
+async function fazerRegistro() {
+    const nome = $('#register-nome')?.value?.trim();
+    const email = $('#register-email')?.value?.trim();
+    const senha = $('#register-senha')?.value;
+    const errorEl = $('#register-error');
+    
+    if (errorEl) errorEl.textContent = '';
+    
+    if (!nome || !email || !senha) {
+        if (errorEl) errorEl.textContent = 'Preencha todos os campos';
+        return;
+    }
+    
+    if (senha.length < 6) {
+        if (errorEl) errorEl.textContent = 'A senha deve ter pelo menos 6 caracteres';
+        return;
+    }
+    
+    try {
+        showLoading(true);
+        
+        // Tentar primeiro no servidor Java, depois ML
+        let response;
+        try {
+            response = await api(ENDPOINTS.authRegistro, {
+                method: 'POST',
+                body: JSON.stringify({ nome, email, senha })
+            });
+        } catch (javaError) {
+            console.log('[Auth] Java falhou, tentando ML Service...');
+            response = await api(ENDPOINTS.mlAuthRegistro, {
+                method: 'POST',
+                body: JSON.stringify({ nome, email, senha })
+            });
+        }
+        
+        if (response.user_id || response.success) {
+            currentUserId = response.user_id;
+            currentUserName = response.nome;
+            currentToken = response.token;
+            
+            localStorage.setItem('userId', currentUserId);
+            localStorage.setItem('userName', currentUserName);
+            localStorage.setItem('token', currentToken);
+            
+            showToast(`Conta criada! Bem-vindo, ${response.nome}! 🎉`);
+            entrarNoApp(false);
+        } else {
+            if (errorEl) errorEl.textContent = response.detail || response.message || 'Erro ao criar conta';
+        }
+        
+    } catch (error) {
+        console.error('[Auth] Erro no registro:', error);
+        if (error.message.includes('409') || error.message.includes('cadastrado')) {
+            if (errorEl) errorEl.textContent = 'Email já cadastrado';
+        } else {
+            if (errorEl) errorEl.textContent = error.message || 'Erro de conexão';
+        }
+    } finally {
+        showLoading(false);
+    }
+}
 
-document.addEventListener('DOMContentLoaded', () => {
-    Toast.init();
-    Auth.init();
+async function verificarSessao() {
+    if (!currentUserId || !currentToken) {
+        mostrarTelaLogin();
+        return;
+    }
+    
+    try {
+        // Tentar verificar no Java primeiro
+        let response;
+        try {
+            response = await api(`${ENDPOINTS.authVerificar}/${currentUserId}`);
+        } catch (e) {
+            response = await api(`${ENDPOINTS.mlAuthVerificar}/${currentUserId}`);
+        }
+        
+        if (response.valid || response.id || response.nome) {
+            currentUserName = response.nome || currentUserName;
+            entrarNoApp(response.tem_perfil_completo || !!response.objetivo);
+        } else {
+            mostrarTelaLogin();
+        }
+    } catch (error) {
+        console.log('[Auth] Sessão inválida');
+        mostrarTelaLogin();
+    }
+}
+
+function mostrarTelaLogin() {
+    const authScreen = $('#auth-screen');
+    const app = $('#app');
+    
+    if (authScreen) authScreen.style.display = 'flex';
+    if (app) app.style.display = 'none';
+    
+    // Limpar dados de sessão
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('token');
+    currentUserId = null;
+    currentUserName = null;
+    currentToken = null;
+}
+
+function entrarNoApp(temPerfilCompleto) {
+    const authScreen = $('#auth-screen');
+    const app = $('#app');
+    const onboarding = $('#onboarding');
+    
+    if (authScreen) authScreen.style.display = 'none';
+    if (app) app.style.display = 'flex';
+    
+    // Atualizar header
+    const greetingName = $('#greeting-name');
+    const userAvatar = $('#user-avatar');
+    
+    if (greetingName && currentUserName) {
+        greetingName.textContent = currentUserName;
+    }
+    if (userAvatar && currentUserName) {
+        userAvatar.textContent = currentUserName.charAt(0).toUpperCase();
+    }
+    
+    // Saudação por hora
+    const greetingTime = $('#greeting-time');
+    if (greetingTime) {
+        const hour = new Date().getHours();
+        if (hour < 12) greetingTime.textContent = 'Bom dia';
+        else if (hour < 18) greetingTime.textContent = 'Boa tarde';
+        else greetingTime.textContent = 'Boa noite';
+    }
+    
+    // Verificar se precisa onboarding
+    if (!temPerfilCompleto && onboarding) {
+        onboarding.style.display = 'flex';
+    }
+    
+    // Inicializar app
+    initApp();
+}
+
+function fazerLogout() {
+    if (confirm('Deseja realmente sair?')) {
+        mostrarTelaLogin();
+        showToast('Você saiu da sua conta', 'success');
+    }
+}
+
+// ==================== APP PRINCIPAL ====================
+
+function initApp() {
+    console.log('[App] Inicializando...');
+    
+    // Navegação por tabs
+    initNavigation();
+    
+    // Botão de logout
+    const btnSettings = $('#btn-settings');
+    if (btnSettings) {
+        btnSettings.addEventListener('click', () => {
+            if (confirm('Deseja sair da conta?')) {
+                fazerLogout();
+            }
+        });
+    }
+}
+
+function initNavigation() {
+    const navBtns = $$('.nav-btn');
+    const tabContents = $$('.tab-content');
+    
+    navBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tab = btn.dataset.tab;
+            
+            // Atualiza botões
+            navBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Atualiza conteúdo
+            tabContents.forEach(content => {
+                content.classList.toggle('active', content.id === `tab-${tab}`);
+            });
+        });
+    });
+}
+
+// ==================== VERIFICAR SERVIÇO ML ====================
+async function checkMLService() {
+    try {
+        const response = await fetch(`${ML_SERVICE}/health`, { 
+            method: 'GET',
+            mode: 'cors'
+        });
+        const data = await response.json();
+        useMLService = data.status === 'healthy' || data.status === 'ok';
+        console.log(`🧠 ML Service: ${useMLService ? 'Online' : 'Offline'}`);
+    } catch (error) {
+        useMLService = false;
+        console.log('🧠 ML Service: Offline');
+    }
+}
+
+// ==================== INICIALIZAÇÃO ====================
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('[App] DOM Carregado');
+    
+    // Verificar ML Service
+    await checkMLService();
+    
+    // Inicializar autenticação
+    initAuth();
+    
+    // Verificar API Java
+    fetch(`${API_BASE}/api/health`)
+        .then(r => r.json())
+        .then(() => console.log('✅ API Java conectada'))
+        .catch(() => console.warn('⚠️ API Java offline'));
 });
 
 // Export para debug
-window.AppState = AppState;
-window.Auth = Auth;
-window.App = App;
+window.fazerLogin = fazerLogin;
+window.fazerRegistro = fazerRegistro;
+window.fazerLogout = fazerLogout;

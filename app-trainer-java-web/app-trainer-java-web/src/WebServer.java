@@ -160,7 +160,7 @@ public class WebServer {
             ex.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
             
             String path = ex.getRequestURI().getPath();
-            if (path.equals("/")) path = "/index-v2.html";
+            if (path.equals("/")) path = "/index.html";
             
             // Previne path traversal
             Path file = webRoot.resolve(path.substring(1)).normalize();
