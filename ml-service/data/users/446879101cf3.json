@@ -1,0 +1,33 @@
+{
+  "id": "446879101cf3",
+  "nome": "cleyse alves de almeida",
+  "email": "cleyse.alves@gmail.com",
+  "senha_hash": "11087432086bd425443c6e7eda65fac0e9a320b350ab7a72206fdbb2b9ca7e5f",
+  "idade": 38,
+  "peso": 105.0,
+  "altura": 172.0,
+  "sexo": "F",
+  "objetivo_principal": "emagrecimento",
+  "objetivos_secundarios": [],
+  "nivel": "iniciante",
+  "tempo_treino_meses": 0,
+  "dias_disponiveis": 4,
+  "tempo_por_treino_minutos": 90,
+  "horario_preferido": "noite",
+  "limitacoes": [],
+  "condicoes_medicas": [],
+  "equipamentos": [
+    "peso_corporal"
+  ],
+  "treina_em": "hibrido",
+  "exercicios_favoritos": [],
+  "exercicios_evitar": [],
+  "prefere_compostos": true,
+  "historico_interacoes": [],
+  "historico_treinos": [],
+  "progressos": [],
+  "treino_atual": null,
+  "perfil_completo": true,
+  "criado_em": "2026-01-17T11:27:23.273037",
+  "atualizado_em": "2026-01-17T11:28:04.116976"
+}

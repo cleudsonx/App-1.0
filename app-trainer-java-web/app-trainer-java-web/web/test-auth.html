@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHAIPADOS - Coach Virtual</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+            background: #0f172a; 
+            color: white; 
+            min-height: 100vh;
+        }
+        
+        /* ===== TELAS ===== */
+        .screen { display: none; min-height: 100vh; }
+        .screen.active { display: flex; }
+        
+        /* ===== AUTH SCREEN ===== */
+        #auth-screen {
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .auth-card {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 32px;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .auth-logo h1 {
+            font-size: 28px;
+            background: linear-gradient(135deg, #FF6B35, #FFD700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .auth-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            background: #0f172a;
+            padding: 4px;
+            border-radius: 8px;
+        }
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #94a3b8;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .auth-tab:hover { color: white; }
+        .auth-tab.active {
+            background: #FF6B35;
+            color: white;
+        }
+        .auth-form {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .auth-form.active { display: flex; }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .input-group label {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+        .input-group input, .input-group select {
+            padding: 12px 16px;
+            background: #0f172a;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+        }
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #FF6B35;
+        }
+        .btn-primary {
+            padding: 14px;
+            background: linear-gradient(135deg, #FF6B35, #ff8c42);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-secondary {
+            padding: 12px;
+            background: transparent;
+            color: #94a3b8;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .error-msg { color: #ef4444; font-size: 13px; min-height: 20px; }
+        .success-msg { color: #10b981; font-size: 13px; }
+        
+        /* ===== ONBOARDING SCREEN ===== */
+        #onboarding-screen {
+            flex-direction: column;
+            padding: 20px;
+        }
+        .onboarding-header {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .onboarding-header h2 {
+            color: #FF6B35;
+            margin-bottom: 8px;
+        }
+        .onboarding-progress {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 32px;
+        }
+        .progress-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #334155;
+        }
+        .progress-dot.active { background: #FF6B35; }
+        .progress-dot.done { background: #10b981; }
+        .onboarding-step {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .onboarding-step.active { display: flex; }
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .option-card {
+            padding: 16px;
+            background: #1e293b;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-card:hover { border-color: rgba(255,107,53,0.3); }
+        .option-card.selected { border-color: #FF6B35; background: rgba(255,107,53,0.1); }
+        .option-card .icon { font-size: 32px; margin-bottom: 8px; }
+        .option-card .label { font-size: 14px; font-weight: 500; }
+        .days-grid {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .day-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #1e293b;
+            border: 2px solid transparent;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .day-btn.selected { border-color: #FF6B35; background: rgba(255,107,53,0.2); }
+        .onboarding-nav {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        .onboarding-nav button { flex: 1; }
+        
+        /* ===== DASHBOARD SCREEN ===== */
+        #dashboard-screen {
+            flex-direction: column;
+        }
+        .dashboard-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #1e293b, rgba(255,107,53,0.1));
+            border-bottom: 1px solid rgba(255,107,53,0.2);
+        }
+        .dashboard-header h1 {
+            font-size: 24px;
+            background: linear-gradient(135deg, #FF6B35, #FFD700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .dashboard-content {
+            padding: 20px;
+            flex: 1;
+        }
+        .welcome-card {
+            background: linear-gradient(135deg, #FF6B35, #ff8c42);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .welcome-card h2 { font-size: 20px; margin-bottom: 8px; }
+        .welcome-card p { opacity: 0.9; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+        .stat-card .value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #FF6B35;
+        }
+        .stat-card .label {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+        .action-card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .action-card:hover { border-color: rgba(255,107,53,0.3); }
+        .action-card .icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255,107,53,0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .action-card .info { flex: 1; }
+        .action-card .title { font-weight: 600; margin-bottom: 4px; }
+        .action-card .desc { font-size: 13px; color: #94a3b8; }
+        .btn-logout {
+            margin-top: 24px;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        .debug {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 8px 16px;
+            background: rgba(0,0,0,0.8);
+            font-size: 11px;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== TELA DE LOGIN ===== -->
+    <div class="screen active" id="auth-screen">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <h1>🔥 SHAIPADOS</h1>
+                <p style="color: #64748b; margin-top: 8px;">Seu coach virtual de musculação</p>
+            </div>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="form-login">Entrar</button>
+                <button class="auth-tab" data-tab="form-registro">Criar conta</button>
+            </div>
+            
+            <form class="auth-form active" id="form-login">
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="login-email" placeholder="seu@email.com" autocomplete="off" required>
+                </div>
+                <div class="input-group">
+                    <label>Senha</label>
+                    <input type="password" id="login-senha" placeholder="••••••••" autocomplete="off" required>
+                </div>
+                <div class="error-msg" id="login-error"></div>
+                <button type="submit" class="btn-primary">Entrar</button>
+            </form>
+            
+            <form class="auth-form" id="form-registro">
+                <div class="input-group">
+                    <label>Nome completo</label>
+                    <input type="text" id="registro-nome" placeholder="Seu nome" autocomplete="off" required>
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="registro-email" placeholder="seu@email.com" autocomplete="off" required>
+                </div>
+                <div class="input-group">
+                    <label>Senha</label>
+                    <input type="password" id="registro-senha" placeholder="Mínimo 6 caracteres" autocomplete="off" required>
+                </div>
+                <div class="error-msg" id="registro-error"></div>
+                <button type="submit" class="btn-primary">Criar conta</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== TELA DE ONBOARDING ===== -->
+    <div class="screen" id="onboarding-screen">
+        <div class="onboarding-header">
+            <h2>🎯 Vamos personalizar seu treino</h2>
+            <p style="color: #94a3b8;">Responda algumas perguntas rápidas</p>
+        </div>
+        
+        <div class="onboarding-progress">
+            <div class="progress-dot active" data-step="1"></div>
+            <div class="progress-dot" data-step="2"></div>
+            <div class="progress-dot" data-step="3"></div>
+            <div class="progress-dot" data-step="4"></div>
+        </div>
+        
+        <!-- Step 1: Objetivo -->
+        <div class="onboarding-step active" data-step="1">
+            <h3 style="text-align: center;">Qual seu objetivo principal?</h3>
+            <div class="option-grid">
+                <div class="option-card" data-value="hipertrofia">
+                    <div class="icon">💪</div>
+                    <div class="label">Ganhar Massa</div>
+                </div>
+                <div class="option-card" data-value="emagrecimento">
+                    <div class="icon">🔥</div>
+                    <div class="label">Emagrecer</div>
+                </div>
+                <div class="option-card" data-value="forca">
+                    <div class="icon">🏋️</div>
+                    <div class="label">Força</div>
+                </div>
+                <div class="option-card" data-value="resistencia">
+                    <div class="icon">⚡</div>
+                    <div class="label">Resistência</div>
+                </div>
+            </div>
+            <div class="onboarding-nav">
+                <button type="button" class="btn-primary" id="btn-next-1" disabled>Próximo</button>
+            </div>
+        </div>
+        
+        <!-- Step 2: Nível -->
+        <div class="onboarding-step" data-step="2">
+            <h3 style="text-align: center;">Qual seu nível de experiência?</h3>
+            <div class="option-grid">
+                <div class="option-card" data-value="iniciante">
+                    <div class="icon">🌱</div>
+                    <div class="label">Iniciante</div>
+                </div>
+                <div class="option-card" data-value="intermediario">
+                    <div class="icon">🌿</div>
+                    <div class="label">Intermediário</div>
+                </div>
+                <div class="option-card" data-value="avancado">
+                    <div class="icon">🌳</div>
+                    <div class="label">Avançado</div>
+                </div>
+                <div class="option-card" data-value="atleta">
+                    <div class="icon">🏆</div>
+                    <div class="label">Atleta</div>
+                </div>
+            </div>
+            <div class="onboarding-nav">
+                <button type="button" class="btn-secondary" id="btn-back-2">Voltar</button>
+                <button type="button" class="btn-primary" id="btn-next-2" disabled>Próximo</button>
+            </div>
+        </div>
+        
+        <!-- Step 3: Dias disponíveis -->
+        <div class="onboarding-step" data-step="3">
+            <h3 style="text-align: center;">Quantos dias por semana pode treinar?</h3>
+            <div class="days-grid">
+                <button type="button" class="day-btn" data-day="2">2</button>
+                <button type="button" class="day-btn" data-day="3">3</button>
+                <button type="button" class="day-btn" data-day="4">4</button>
+                <button type="button" class="day-btn" data-day="5">5</button>
+                <button type="button" class="day-btn" data-day="6">6</button>
+            </div>
+            <div class="onboarding-nav">
+                <button type="button" class="btn-secondary" id="btn-back-3">Voltar</button>
+                <button type="button" class="btn-primary" id="btn-next-3" disabled>Próximo</button>
+            </div>
+        </div>
+        
+        <!-- Step 4: Local -->
+        <div class="onboarding-step" data-step="4">
+            <h3 style="text-align: center;">Onde você treina?</h3>
+            <div class="option-grid">
+                <div class="option-card" data-value="academia">
+                    <div class="icon">🏢</div>
+                    <div class="label">Academia</div>
+                </div>
+                <div class="option-card" data-value="casa">
+                    <div class="icon">🏠</div>
+                    <div class="label">Em Casa</div>
+                </div>
+            </div>
+            <div class="onboarding-nav">
+                <button type="button" class="btn-secondary" id="btn-back-4">Voltar</button>
+                <button type="button" class="btn-primary" id="btn-finish">Começar!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TELA DASHBOARD ===== -->
+    <div class="screen" id="dashboard-screen">
+        <div class="dashboard-header">
+            <h1>🔥 SHAIPADOS</h1>
+            <p id="greeting" style="color: #94a3b8; margin-top: 4px;">Olá!</p>
+        </div>
+        
+        <div class="dashboard-content">
+            <div class="welcome-card">
+                <h2>👋 Bem-vindo de volta!</h2>
+                <p>Pronto para mais um treino intenso?</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="value">0</div>
+                    <div class="label">Treinos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value">🔥 0</div>
+                    <div class="label">Sequência</div>
+                </div>
+            </div>
+            
+            <div class="action-card">
+                <div class="icon">🏋️</div>
+                <div class="info">
+                    <div class="title">Iniciar Treino</div>
+                    <div class="desc">Comece seu treino de hoje</div>
+                </div>
+            </div>
+            
+            <div class="action-card">
+                <div class="icon">🤖</div>
+                <div class="info">
+                    <div class="title">Coach IA</div>
+                    <div class="desc">Tire dúvidas com o coach virtual</div>
+                </div>
+            </div>
+            
+            <div class="action-card">
+                <div class="icon">📊</div>
+                <div class="info">
+                    <div class="title">Meu Progresso</div>
+                    <div class="desc">Veja sua evolução</div>
+                </div>
+            </div>
+            
+            <button class="btn-logout" id="btn-logout">Sair</button>
+        </div>
+    </div>
+
+    <div class="debug" id="debug">Debug: Aguardando...</div>
+
+    <script>
+        // ===== CONFIGURAÇÃO =====
+        const API_BASE = 'http://localhost:8001';
+        
+        // Estado do app
+        const AppState = {
+            user: null,
+            token: null,
+            profile: null,
+            onboardingStep: 1,
+            onboardingData: {
+                objetivo: null,
+                nivel: null,
+                dias_disponiveis: null,
+                local: null
+            }
+        };
+        
+        // Debug helper
+        const debug = (msg) => {
+            console.log('[App]', msg);
+            document.getElementById('debug').textContent = 'Debug: ' + msg;
+        };
+        
+        // ===== NAVEGAÇÃO ENTRE TELAS =====
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            debug('Tela: ' + screenId);
+        }
+        
+        // ===== AUTH: TABS =====
+        document.querySelectorAll('.auth-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = tab.dataset.tab;
+                document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(target).classList.add('active');
+            });
+        });
+        
+        // ===== AUTH: LOGIN =====
+        document.getElementById('form-login').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const senha = document.getElementById('login-senha').value;
+            const errorEl = document.getElementById('login-error');
+            
+            if (!email || !senha) {
+                errorEl.textContent = 'Preencha todos os campos';
+                return;
+            }
+            
+            try {
+                debug('Fazendo login...');
+                const resp = await fetch(API_BASE + '/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, senha })
+                });
+                
+                const data = await resp.json();
+                if (!resp.ok) throw new Error(data.error || 'Erro no login');
+                
+                handleLoginSuccess(data);
+                
+            } catch (err) {
+                errorEl.textContent = err.message;
+                debug('Erro: ' + err.message);
+            }
+        });
+        
+        // ===== AUTH: REGISTRO =====
+        document.getElementById('form-registro').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nome = document.getElementById('registro-nome').value.trim();
+            const email = document.getElementById('registro-email').value.trim();
+            const senha = document.getElementById('registro-senha').value;
+            const errorEl = document.getElementById('registro-error');
+            
+            if (!nome || !email || !senha) {
+                errorEl.textContent = 'Preencha todos os campos';
+                return;
+            }
+            if (senha.length < 6) {
+                errorEl.textContent = 'Senha deve ter no mínimo 6 caracteres';
+                return;
+            }
+            
+            try {
+                debug('Criando conta...');
+                const resp = await fetch(API_BASE + '/auth/registro', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome, email, senha })
+                });
+                
+                const data = await resp.json();
+                if (!resp.ok) throw new Error(data.error || 'Erro no registro');
+                
+                // Registro bem-sucedido - fazer login automático
+                handleLoginSuccess(data);
+                
+            } catch (err) {
+                errorEl.textContent = err.message;
+                debug('Erro: ' + err.message);
+            }
+        });
+        
+        // ===== HANDLER DE LOGIN SUCESSO =====
+        function handleLoginSuccess(data) {
+            debug('Login OK: ' + data.nome);
+            
+            AppState.user = {
+                id: data.user_id,
+                nome: data.nome,
+                email: data.email
+            };
+            AppState.token = data.token;
+            AppState.profile = data.perfil || null;
+            
+            // Salvar no localStorage
+            localStorage.setItem('auth', JSON.stringify({
+                user: AppState.user,
+                token: AppState.token,
+                profile: AppState.profile
+            }));
+            
+            // Verificar se precisa de onboarding
+            const needsOnboarding = !AppState.profile || !AppState.profile.objetivo;
+            
+            if (needsOnboarding) {
+                debug('Iniciando onboarding...');
+                showScreen('onboarding-screen');
+            } else {
+                debug('Indo para dashboard...');
+                showDashboard();
+            }
+        }
+        
+        // ===== ONBOARDING =====
+        let currentStep = 1;
+        
+        function updateOnboardingUI() {
+            // Atualizar dots
+            document.querySelectorAll('.progress-dot').forEach(dot => {
+                const step = parseInt(dot.dataset.step);
+                dot.classList.remove('active', 'done');
+                if (step === currentStep) dot.classList.add('active');
+                if (step < currentStep) dot.classList.add('done');
+            });
+            
+            // Atualizar steps
+            document.querySelectorAll('.onboarding-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            document.querySelector(`.onboarding-step[data-step="${currentStep}"]`).classList.add('active');
+        }
+        
+        function goToStep(step) {
+            currentStep = step;
+            updateOnboardingUI();
+            debug('Onboarding step: ' + step);
+        }
+        
+        // Step 1: Objetivo
+        document.querySelectorAll('.onboarding-step[data-step="1"] .option-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.onboarding-step[data-step="1"] .option-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                AppState.onboardingData.objetivo = card.dataset.value;
+                document.getElementById('btn-next-1').disabled = false;
+            });
+        });
+        document.getElementById('btn-next-1').addEventListener('click', () => goToStep(2));
+        
+        // Step 2: Nível
+        document.querySelectorAll('.onboarding-step[data-step="2"] .option-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.onboarding-step[data-step="2"] .option-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                AppState.onboardingData.nivel = card.dataset.value;
+                document.getElementById('btn-next-2').disabled = false;
+            });
+        });
+        document.getElementById('btn-back-2').addEventListener('click', () => goToStep(1));
+        document.getElementById('btn-next-2').addEventListener('click', () => goToStep(3));
+        
+        // Step 3: Dias
+        document.querySelectorAll('.day-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                AppState.onboardingData.dias_disponiveis = parseInt(btn.dataset.day);
+                document.getElementById('btn-next-3').disabled = false;
+            });
+        });
+        document.getElementById('btn-back-3').addEventListener('click', () => goToStep(2));
+        document.getElementById('btn-next-3').addEventListener('click', () => goToStep(4));
+        
+        // Step 4: Local
+        document.querySelectorAll('.onboarding-step[data-step="4"] .option-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.onboarding-step[data-step="4"] .option-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                AppState.onboardingData.local = card.dataset.value;
+                document.getElementById('btn-finish').disabled = false;
+            });
+        });
+        document.getElementById('btn-back-4').addEventListener('click', () => goToStep(3));
+        document.getElementById('btn-finish').addEventListener('click', finishOnboarding);
+        
+        async function finishOnboarding() {
+            debug('Salvando perfil...');
+            
+            try {
+                // Salvar perfil na API
+                const resp = await fetch(API_BASE + '/users/' + AppState.user.id + '/profile', {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + AppState.token
+                    },
+                    body: JSON.stringify(AppState.onboardingData)
+                });
+                
+                if (resp.ok) {
+                    const data = await resp.json();
+                    AppState.profile = data.perfil || AppState.onboardingData;
+                }
+            } catch (err) {
+                debug('Erro ao salvar (continuando): ' + err.message);
+            }
+            
+            // Atualizar localStorage
+            AppState.profile = AppState.onboardingData;
+            const stored = JSON.parse(localStorage.getItem('auth') || '{}');
+            stored.profile = AppState.profile;
+            localStorage.setItem('auth', JSON.stringify(stored));
+            
+            showDashboard();
+        }
+        
+        // ===== DASHBOARD =====
+        function showDashboard() {
+            const greeting = getGreeting();
+            document.getElementById('greeting').textContent = greeting + ', ' + (AppState.user?.nome || 'Atleta') + '!';
+            showScreen('dashboard-screen');
+            debug('Dashboard carregado');
+        }
+        
+        function getGreeting() {
+            const hour = new Date().getHours();
+            if (hour < 12) return 'Bom dia';
+            if (hour < 18) return 'Boa tarde';
+            return 'Boa noite';
+        }
+        
+        // ===== LOGOUT =====
+        document.getElementById('btn-logout').addEventListener('click', () => {
+            localStorage.removeItem('auth');
+            AppState.user = null;
+            AppState.token = null;
+            AppState.profile = null;
+            showScreen('auth-screen');
+            debug('Logout realizado');
+        });
+        
+        // ===== VERIFICAR SESSÃO INICIAL =====
+        function checkSession() {
+            const stored = localStorage.getItem('auth');
+            
+            if (stored) {
+                try {
+                    const data = JSON.parse(stored);
+                    if (data.user && data.token) {
+                        AppState.user = data.user;
+                        AppState.token = data.token;
+                        AppState.profile = data.profile;
+                        
+                        debug('Sessão restaurada: ' + data.user.nome);
+                        
+                        if (!AppState.profile || !AppState.profile.objetivo) {
+                            showScreen('onboarding-screen');
+                        } else {
+                            showDashboard();
+                        }
+                        return;
+                    }
+                } catch (e) {
+                    debug('Erro ao restaurar sessão');
+                }
+            }
+            
+            debug('Aguardando login...');
+        }
+        
+        // Inicializar
+        checkSession();
+    </script>
+</body>
+</html>

@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1976d2">
+    <meta name="description" content="APP Trainer - Coach Virtual de Musculação e Treinamento Resistido">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="APP Trainer">
+    
+    <title>APP Trainer - Coach Virtual</title>
+    
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💪</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💪</text></svg>">
+    
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <!-- Tela de Login/Registro -->
+    <div class="auth-overlay" id="auth-overlay">
+        <div class="auth-container">
+            <div class="auth-header">
+                <span class="auth-logo">💪</span>
+                <h1>APP Trainer</h1>
+                <p>Coach Virtual de Musculação com IA</p>
+            </div>
+            
+            <!-- Tabs de Login/Registro -->
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-auth="login">Entrar</button>
+                <button class="auth-tab" data-auth="registro">Criar Conta</button>
+            </div>
+            
+            <!-- Form de Login -->
+            <form class="auth-form" id="login-form">
+                <div class="form-group">
+                    <label for="login-email">📧 Email</label>
+                    <input type="email" id="login-email" required placeholder="seu@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="login-senha">🔒 Senha</label>
+                    <input type="password" id="login-senha" required placeholder="Sua senha" minlength="6">
+                </div>
+                <div class="auth-error" id="login-error"></div>
+                <button type="submit" class="btn btn-primary btn-large btn-auth">
+                    🚀 Entrar
+                </button>
+            </form>
+            
+            <!-- Form de Registro -->
+            <form class="auth-form" id="registro-form" style="display: none;">
+                <div class="form-group">
+                    <label for="registro-nome">👤 Nome Completo</label>
+                    <input type="text" id="registro-nome" required placeholder="Seu nome">
+                </div>
+                <div class="form-group">
+                    <label for="registro-email">📧 Email</label>
+                    <input type="email" id="registro-email" required placeholder="seu@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="registro-senha">🔒 Senha</label>
+                    <input type="password" id="registro-senha" required placeholder="Mínimo 6 caracteres" minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="registro-senha2">🔒 Confirmar Senha</label>
+                    <input type="password" id="registro-senha2" required placeholder="Repita a senha" minlength="6">
+                </div>
+                <div class="auth-error" id="registro-error"></div>
+                <button type="submit" class="btn btn-primary btn-large btn-auth">
+                    ✨ Criar Conta
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Header fixo -->
+    <header class="app-header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon">💪</span>
+                <div class="logo-text">
+                    <h1>APP Trainer</h1>
+                    <span class="tagline">Coach Virtual de Musculação</span>
+                </div>
+            </div>
+            <div class="header-user" id="header-user" style="display: none;">
+                <span class="user-name" id="user-name"></span>
+                <button class="btn btn-small btn-outline" id="btn-logout">Sair</button>
+            </div>
+            <button class="menu-toggle" id="menu-toggle" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Navegação por abas -->
+    <nav class="tab-nav" id="tab-nav">
+        <button class="tab-btn" data-tab="perfil">
+            <span class="tab-icon">📋</span>
+            <span class="tab-label">Avaliação</span>
+        </button>
+        <button class="tab-btn active" data-tab="coach">
+            <span class="tab-icon">🤖</span>
+            <span class="tab-label">Coach</span>
+        </button>
+        <button class="tab-btn" data-tab="treino">
+            <span class="tab-icon">🏋️</span>
+            <span class="tab-label">Treino</span>
+        </button>
+        <button class="tab-btn" data-tab="alunos">
+            <span class="tab-icon">👥</span>
+            <span class="tab-label">Alunos</span>
+        </button>
+        <button class="tab-btn" data-tab="profs">
+            <span class="tab-icon">👨‍🏫</span>
+            <span class="tab-label">Profs</span>
+        </button>
+    </nav>
+
+    <!-- Conteúdo principal -->
+    <main class="main-content">
+        
+        <!-- TAB: Avaliação Inicial -->
+        <section class="tab-panel" id="panel-perfil">
+            <div class="card">
+                <div class="card-header">
+                    <h2>📋 Avaliação Física Inicial</h2>
+                    <p class="subtitle">Complete sua avaliação para um treino 100% personalizado com IA</p>
+                </div>
+                
+                <div id="perfil-status" class="perfil-status" style="display: none;">
+                    <div class="status-badge sucesso">
+                        <span class="status-icon">✅</span>
+                        <span class="status-text">Perfil cadastrado</span>
+                    </div>
+                    <button type="button" class="btn btn-small btn-outline" id="btn-editar-perfil">✏️ Editar</button>
+                </div>
+                
+                <form class="form-avaliacao" id="perfil-form">
+                    <!-- Seção 1: Dados Pessoais -->
+                    <div class="form-section">
+                        <h3 class="section-title">👤 Dados Pessoais</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="perfil-nome">Nome Completo *</label>
+                                <input type="text" id="perfil-nome" required placeholder="Seu nome completo">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="perfil-idade">Idade *</label>
+                                <input type="number" id="perfil-idade" min="14" max="100" required placeholder="Ex: 30">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="perfil-sexo">Sexo *</label>
+                                <select id="perfil-sexo" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="masculino">Masculino</option>
+                                    <option value="feminino">Feminino</option>
+                                    <option value="outro">Outro/Prefiro não informar</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="perfil-peso">Peso (kg) *</label>
+                                <input type="number" id="perfil-peso" min="30" max="300" step="0.1" required placeholder="Ex: 75.5">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="perfil-altura">Altura (cm) *</label>
+                                <input type="number" id="perfil-altura" min="100" max="250" required placeholder="Ex: 175">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="perfil-bf">Gordura Corporal (%) <small>opcional</small></label>
+                                <input type="number" id="perfil-bf" min="3" max="60" step="0.1" placeholder="Ex: 18">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Seção 2: Objetivo Principal -->
+                    <div class="form-section">
+                        <h3 class="section-title">🎯 Objetivo Principal</h3>
+                        <div class="objetivo-cards">
+                            <label class="objetivo-card">
+                                <input type="radio" name="objetivo" value="hipertrofia" required>
+                                <div class="card-content">
+                                    <span class="objetivo-icon">💪</span>
+                                    <span class="objetivo-titulo">Hipertrofia</span>
+                                    <span class="objetivo-desc">Ganho de massa muscular</span>
+                                </div>
+                            </label>
+                            
+                            <label class="objetivo-card">
+                                <input type="radio" name="objetivo" value="forca">
+                                <div class="card-content">
+                                    <span class="objetivo-icon">🏆</span>
+                                    <span class="objetivo-titulo">Força Máxima</span>
+                                    <span class="objetivo-desc">Aumentar carga nos exercícios</span>
+                                </div>
+                            </label>
+                            
+                            <label class="objetivo-card">
+                                <input type="radio" name="objetivo" value="perda_gordura">
+                                <div class="card-content">
+                                    <span class="objetivo-icon">🔥</span>
+                                    <span class="objetivo-titulo">Perda de Gordura</span>
+                                    <span class="objetivo-desc">Definição e emagrecimento</span>
+                                </div>
+                            </label>
+                            
+                            <label class="objetivo-card">
+                                <input type="radio" name="objetivo" value="resistencia">
+                                <div class="card-content">
+                                    <span class="objetivo-icon">❤️</span>
+                                    <span class="objetivo-titulo">Resistência</span>
+                                    <span class="objetivo-desc">Condicionamento cardiovascular</span>
+                                </div>
+                            </label>
+                            
+                            <label class="objetivo-card">
+                                <input type="radio" name="objetivo" value="saude">
+                                <div class="card-content">
+                                    <span class="objetivo-icon">🧘</span>
+                                    <span class="objetivo-titulo">Saúde Geral</span>
+                                    <span class="objetivo-desc">Qualidade de vida e bem-estar</span>
+                                </div>
+                            </label>
+                            
+                            <label class="objetivo-card">
+                                <input type="radio" name="objetivo" value="reabilitacao">
+                                <div class="card-content">
+                                    <span class="objetivo-icon">🏥</span>
+                                    <span class="objetivo-titulo">Reabilitação</span>
+                                    <span class="objetivo-desc">Recuperação de lesões</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Seção 3: Experiência e Nível -->
+                    <div class="form-section">
+                        <h3 class="section-title">📈 Experiência com Musculação</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="perfil-nivel">Nível de Treino *</label>
+                                <select id="perfil-nivel" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="sedentario">🛋️ Sedentário (nunca treinei)</option>
+                                    <option value="iniciante">🌱 Iniciante (0-6 meses)</option>
+                                    <option value="iniciante_avancado">📊 Iniciante+ (6-12 meses)</option>
+                                    <option value="intermediario">📈 Intermediário (1-3 anos)</option>
+                                    <option value="avancado">🎯 Avançado (3-5 anos)</option>
+                                    <option value="expert">🏅 Expert (5+ anos)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="perfil-tempo-treino">Tempo de Treino (meses)</label>
+                                <input type="number" id="perfil-tempo-treino" min="0" max="600" placeholder="Ex: 18">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Seção 4: Disponibilidade -->
+                    <div class="form-section">
+                        <h3 class="section-title">📅 Disponibilidade para Treinar</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="perfil-dias">Dias por Semana *</label>
+                                <select id="perfil-dias" required>
+                                    <option value="2">2 dias/semana</option>
+                                    <option value="3">3 dias/semana</option>
+                                    <option value="4" selected>4 dias/semana</option>
+                                    <option value="5">5 dias/semana</option>
+                                    <option value="6">6 dias/semana</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="perfil-duracao">Duração do Treino *</label>
+                                <select id="perfil-duracao" required>
+                                    <option value="30">30 minutos</option>
+                                    <option value="45">45 minutos</option>
+                                    <option value="60" selected>1 hora</option>
+                                    <option value="90">1h30</option>
+                                    <option value="120">2 horas</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="perfil-horario">Horário Preferido</label>
+                                <select id="perfil-horario">
+                                    <option value="manha">☀️ Manhã (6h-12h)</option>
+                                    <option value="tarde">🌤️ Tarde (12h-18h)</option>
+                                    <option value="noite" selected>🌙 Noite (18h-22h)</option>
+                                    <option value="madrugada">🌃 Madrugada</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Seção 5: Local e Equipamentos -->
+                    <div class="form-section">
+                        <h3 class="section-title">🏋️ Local e Equipamentos</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="perfil-local">Onde vai treinar? *</label>
+                                <select id="perfil-local" required>
+                                    <option value="academia">🏢 Academia completa</option>
+                                    <option value="home">🏠 Home gym</option>
+                                    <option value="ar_livre">🌳 Ar livre/parque</option>
+                                    <option value="hibrido">🔄 Híbrido (academia + casa)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label>Equipamentos Disponíveis</label>
+                            <div class="checkbox-grid">
+                                <label class="checkbox-item"><input type="checkbox" name="equip" value="barra" checked> 🏋️ Barras e anilhas</label>
+                                <label class="checkbox-item"><input type="checkbox" name="equip" value="halteres" checked> 💪 Halteres</label>
+                                <label class="checkbox-item"><input type="checkbox" name="equip" value="maquinas" checked> ⚙️ Máquinas</label>
+                                <label class="checkbox-item"><input type="checkbox" name="equip" value="cabos" checked> 🔗 Cabos/Polias</label>
+                                <label class="checkbox-item"><input type="checkbox" name="equip" value="banco" checked> 🪑 Bancos</label>
+                                <label class="checkbox-item"><input type="checkbox" name="equip" value="smith"> 📐 Smith Machine</label>
+                                <label class="checkbox-item"><input type="checkbox" name="equip" value="kettlebell"> 🔔 Kettlebells</label>
+                                <label class="checkbox-item"><input type="checkbox" name="equip" value="elastico"> 🎯 Elásticos</label>
+                                <label class="checkbox-item"><input type="checkbox" name="equip" value="trx"> 🪢 TRX/Suspensão</label>
+                                <label class="checkbox-item"><input type="checkbox" name="equip" value="cardio"> 🏃 Cardio (esteira, bike)</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Seção 6: Restrições e Limitações -->
+                    <div class="form-section">
+                        <h3 class="section-title">⚠️ Restrições e Limitações Físicas</h3>
+                        <p class="section-desc">Marque as áreas que possuem lesão, dor ou limitação. Isso é essencial para um treino seguro.</p>
+                        
+                        <div class="form-group full-width">
+                            <label>Áreas com Restrição</label>
+                            <div class="checkbox-grid restricoes">
+                                <label class="checkbox-item"><input type="checkbox" name="restricao" value="joelho"> 🦵 Joelho</label>
+                                <label class="checkbox-item"><input type="checkbox" name="restricao" value="ombro"> 🦾 Ombro</label>
+                                <label class="checkbox-item"><input type="checkbox" name="restricao" value="lombar"> 🔙 Lombar/Coluna</label>
+                                <label class="checkbox-item"><input type="checkbox" name="restricao" value="cervical"> 🦴 Cervical</label>
+                                <label class="checkbox-item"><input type="checkbox" name="restricao" value="cotovelo"> 💪 Cotovelo</label>
+                                <label class="checkbox-item"><input type="checkbox" name="restricao" value="punho"> ✋ Punho</label>
+                                <label class="checkbox-item"><input type="checkbox" name="restricao" value="quadril"> 🦴 Quadril</label>
+                                <label class="checkbox-item"><input type="checkbox" name="restricao" value="tornozelo"> 🦶 Tornozelo</label>
+                                <label class="checkbox-item"><input type="checkbox" name="restricao" value="hernia"> 🏥 Hérnia</label>
+                                <label class="checkbox-item"><input type="checkbox" name="restricao" value="cardiaco"> ❤️ Cardíaco</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="perfil-detalhes-restricao">Detalhes das Restrições <small>opcional</small></label>
+                            <textarea id="perfil-detalhes-restricao" rows="3" placeholder="Descreva suas lesões, cirurgias anteriores ou limitações específicas..."></textarea>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="perfil-medicamentos">Medicamentos que Usa <small>opcional</small></label>
+                            <input type="text" id="perfil-medicamentos" placeholder="Ex: anti-inflamatório, pressão alta, etc.">
+                        </div>
+                    </div>
+                    
+                    <!-- Seção 7: Histórico e Preferências -->
+                    <div class="form-section">
+                        <h3 class="section-title">📝 Preferências e Histórico</h3>
+                        
+                        <div class="form-group full-width">
+                            <label>Exercícios que Gosta</label>
+                            <div class="checkbox-grid">
+                                <label class="checkbox-item"><input type="checkbox" name="preferencia" value="supino"> Supino</label>
+                                <label class="checkbox-item"><input type="checkbox" name="preferencia" value="agachamento"> Agachamento</label>
+                                <label class="checkbox-item"><input type="checkbox" name="preferencia" value="levantamento_terra"> Levantamento Terra</label>
+                                <label class="checkbox-item"><input type="checkbox" name="preferencia" value="desenvolvimento"> Desenvolvimento</label>
+                                <label class="checkbox-item"><input type="checkbox" name="preferencia" value="remada"> Remada</label>
+                                <label class="checkbox-item"><input type="checkbox" name="preferencia" value="rosca"> Rosca</label>
+                                <label class="checkbox-item"><input type="checkbox" name="preferencia" value="triceps"> Tríceps</label>
+                                <label class="checkbox-item"><input type="checkbox" name="preferencia" value="leg_press"> Leg Press</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label>Exercícios que Não Gosta ou Prefere Evitar</label>
+                            <div class="checkbox-grid">
+                                <label class="checkbox-item"><input type="checkbox" name="evitar" value="agachamento_livre"> Agachamento livre</label>
+                                <label class="checkbox-item"><input type="checkbox" name="evitar" value="terra"> Levantamento terra</label>
+                                <label class="checkbox-item"><input type="checkbox" name="evitar" value="barra_fixa"> Barra fixa</label>
+                                <label class="checkbox-item"><input type="checkbox" name="evitar" value="paralela"> Paralela</label>
+                                <label class="checkbox-item"><input type="checkbox" name="evitar" value="cardio_longo"> Cardio longo</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="perfil-observacoes">Observações Adicionais <small>opcional</small></label>
+                            <textarea id="perfil-observacoes" rows="3" placeholder="Algo mais que devemos saber? Metas específicas, competições, etc..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Botão de Envio -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-large btn-submit">
+                            <span class="btn-icon">🧠</span>
+                            Criar Perfil e Gerar Treino com IA
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Resultado do Treino Gerado -->
+            <div class="card treino-ia-resultado" id="treino-ia-resultado" style="display: none;">
+                <div class="card-header">
+                    <h2>🎯 Seu Treino Personalizado</h2>
+                    <p class="subtitle">Gerado pela IA baseado na sua avaliação</p>
+                </div>
+                <div id="treino-ia-content"></div>
+                <div class="treino-actions">
+                    <button type="button" class="btn btn-success" id="btn-aceitar-treino">
+                        ✅ Aceitar Treino
+                    </button>
+                    <button type="button" class="btn btn-outline" id="btn-ajustar-treino">
+                        🔄 Pedir Ajustes
+                    </button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- TAB: Coach Virtual -->
+        <section class="tab-panel active" id="panel-coach">
+            <div class="card chat-card">
+                <div class="card-header">
+                    <h2>💬 Coach Virtual</h2>
+                    <p class="subtitle">Tire suas dúvidas sobre musculação e treinamento</p>
+                </div>
+                
+                <div class="chat-container" id="chat-container">
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="message bot">
+                            <div class="message-avatar">🤖</div>
+                            <div class="message-content">
+                                <p>Olá! Sou seu Coach Virtual de Musculação. Posso ajudar com:</p>
+                                <ul>
+                                    <li>Técnica de exercícios</li>
+                                    <li>Hipertrofia e ganho de força</li>
+                                    <li>Divisão de treino</li>
+                                    <li>Nutrição para resultados</li>
+                                    <li>Prevenção de lesões</li>
+                                </ul>
+                                <p>Como posso ajudar?</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-suggestions">
+                        <button class="suggestion-chip" data-q="Como fazer agachamento corretamente?">Técnica de agachamento</button>
+                        <button class="suggestion-chip" data-q="Qual a melhor divisão de treino para hipertrofia?">Divisão para hipertrofia</button>
+                        <button class="suggestion-chip" data-q="Quantas vezes devo treinar por semana?">Frequência ideal</button>
+                        <button class="suggestion-chip" data-q="Como progredir a carga nos exercícios?">Progressive overload</button>
+                    </div>
+                    
+                    <form class="chat-input-form" id="chat-form">
+                        <input type="text" id="chat-input" placeholder="Digite sua pergunta sobre treino..." autocomplete="off">
+                        <button type="submit" class="btn-send" aria-label="Enviar">
+                            <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M2,21L23,12L2,3V10L17,12L2,14V21Z"/></svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB: Gerador de Treino -->
+        <section class="tab-panel" id="panel-treino">
+            <div class="card">
+                <div class="card-header">
+                    <h2>🏋️ Gerador de Treino</h2>
+                    <p class="subtitle">Crie um treino personalizado para seu objetivo</p>
+                </div>
+                
+                <form class="form-grid" id="treino-form">
+                    <div class="form-group">
+                        <label for="treino-objetivo">Objetivo Principal</label>
+                        <select id="treino-objetivo" required>
+                            <option value="hipertrofia">💪 Hipertrofia (Ganho de Massa)</option>
+                            <option value="forca">🏆 Força Máxima</option>
+                            <option value="perda_peso">🔥 Perda de Peso</option>
+                            <option value="resistencia">❤️ Resistência/Condicionamento</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="treino-nivel">Seu Nível</label>
+                        <select id="treino-nivel" required>
+                            <option value="iniciante">🌱 Iniciante (0-1 ano)</option>
+                            <option value="intermediario">📈 Intermediário (1-3 anos)</option>
+                            <option value="avancado">🎯 Avançado (3+ anos)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="treino-dias">Dias por Semana</label>
+                        <select id="treino-dias">
+                            <option value="3">3 dias</option>
+                            <option value="4" selected>4 dias</option>
+                            <option value="5">5 dias</option>
+                            <option value="6">6 dias</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="treino-restricoes">Restrições/Lesões</label>
+                        <input type="text" id="treino-restricoes" placeholder="ex: joelho, ombro, lombar">
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label for="treino-equip">Equipamentos Disponíveis</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item"><input type="checkbox" name="equip" value="barra" checked> Barras</label>
+                            <label class="checkbox-item"><input type="checkbox" name="equip" value="halteres" checked> Halteres</label>
+                            <label class="checkbox-item"><input type="checkbox" name="equip" value="maquina" checked> Máquinas</label>
+                            <label class="checkbox-item"><input type="checkbox" name="equip" value="cabo" checked> Cabos/Polias</label>
+                            <label class="checkbox-item"><input type="checkbox" name="equip" value="banco" checked> Bancos</label>
+                            <label class="checkbox-item"><input type="checkbox" name="equip" value="peso_corpo"> Só peso corporal</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions full-width">
+                        <button type="submit" class="btn btn-primary btn-large">
+                            <span class="btn-icon">⚡</span>
+                            Gerar Meu Treino
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="card treino-resultado" id="treino-resultado" style="display: none;">
+                <div class="card-header">
+                    <h2 id="treino-titulo">Seu Treino Personalizado</h2>
+                    <p class="subtitle" id="treino-info"></p>
+                </div>
+                <div id="treino-content"></div>
+                <div class="treino-obs" id="treino-obs"></div>
+            </div>
+        </section>
+
+        <!-- TAB: Alunos -->
+        <section class="tab-panel" id="panel-alunos">
+            <div class="card">
+                <div class="card-header">
+                    <h2>👥 Cadastro de Alunos</h2>
+                    <p class="subtitle">Gerencie os alunos da academia</p>
+                </div>
+                
+                <form class="form-grid" id="aluno-form">
+                    <div class="form-group">
+                        <label for="aluno-nome">Nome Completo *</label>
+                        <input type="text" id="aluno-nome" required placeholder="Nome do aluno">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="aluno-idade">Idade *</label>
+                        <input type="number" id="aluno-idade" min="10" max="100" required placeholder="Idade">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="aluno-peso">Peso (kg)</label>
+                        <input type="number" id="aluno-peso" min="30" max="300" step="0.1" placeholder="Ex: 75.5">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="aluno-altura">Altura (cm)</label>
+                        <input type="number" id="aluno-altura" min="100" max="250" step="1" placeholder="Ex: 175">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="aluno-objetivo">Objetivo</label>
+                        <select id="aluno-objetivo">
+                            <option value="hipertrofia">Hipertrofia</option>
+                            <option value="forca">Força</option>
+                            <option value="perda_peso">Perda de Peso</option>
+                            <option value="resistencia">Resistência</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="aluno-nivel">Nível</label>
+                        <select id="aluno-nivel">
+                            <option value="iniciante">Iniciante</option>
+                            <option value="intermediario">Intermediário</option>
+                            <option value="avancado">Avançado</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="aluno-restricoes">Restrições/Lesões</label>
+                        <input type="text" id="aluno-restricoes" placeholder="Ex: joelho, ombro">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="aluno-rpe">RPE Recente (0-10)</label>
+                        <input type="number" id="aluno-rpe" min="0" max="10" placeholder="Nível de esforço">
+                    </div>
+                    
+                    <div class="form-actions full-width">
+                        <button type="submit" class="btn btn-primary">
+                            <span class="btn-icon">➕</span>
+                            Cadastrar Aluno
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2>📋 Alunos Cadastrados</h2>
+                    <button class="btn btn-small btn-outline" id="refresh-alunos">🔄 Atualizar</button>
+                </div>
+                <div class="data-list" id="alunos-list">
+                    <p class="empty-state">Carregando...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB: Professores -->
+        <section class="tab-panel" id="panel-profs">
+            <div class="card">
+                <div class="card-header">
+                    <h2>👨‍🏫 Cadastro de Professores</h2>
+                    <p class="subtitle">Gerencie os instrutores</p>
+                </div>
+                
+                <form class="form-grid" id="prof-form">
+                    <div class="form-group">
+                        <label for="prof-nome">Nome Completo *</label>
+                        <input type="text" id="prof-nome" required placeholder="Nome do professor">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="prof-esp">Especialidade</label>
+                        <select id="prof-esp">
+                            <option value="musculacao">Musculação</option>
+                            <option value="funcional">Funcional</option>
+                            <option value="cardio">Cardio</option>
+                            <option value="alongamento">Alongamento/Flexibilidade</option>
+                            <option value="personal">Personal Trainer</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-actions full-width">
+                        <button type="submit" class="btn btn-primary">
+                            <span class="btn-icon">➕</span>
+                            Cadastrar Professor
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2>📋 Professores Cadastrados</h2>
+                    <button class="btn btn-small btn-outline" id="refresh-profs">🔄 Atualizar</button>
+                </div>
+                <div class="data-list" id="profs-list">
+                    <p class="empty-state">Carregando...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loading" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="/app.js"></script>
+</body>
+</html>
