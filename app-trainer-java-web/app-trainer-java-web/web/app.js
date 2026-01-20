@@ -428,7 +428,6 @@ const DashboardWidgets = {
         return `
             <div class="dashboard-widget widget-motivacional" data-widget-id="motivacional">
                 ${this.renderDragHandle()}
-                <div class="motivacional-icon">💪</div>
                 <p class="motivacional-text">"${frase}"</p>
             </div>
         `;
