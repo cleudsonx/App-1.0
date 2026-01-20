@@ -371,17 +371,17 @@ const DashboardWidgets = {
         return `
             <div class="dashboard-widget widget-card card-nutrition" data-widget-id="nutricao">
                 ${this.renderDragHandle()}
-                <div class="feature-row">
+                <div class="feature-row nutrition-header-row">
                     <div class="feature-icon">🍽️</div>
                     <div class="feature-info">
                         <h3>Nutrição</h3>
                         <p>Calorias: ${sum.totalCals} / ${sum.meta.calorias} kcal</p>
                     </div>
-                    <div class="nutrition-actions">
-                        <button class="btn-mini" onclick="NutritionSystem.promptAddMeal()">+ Registrar</button>
-                        <button class="btn-mini-secondary" onclick="NutritionSystem.showDashboard()">Detalhes</button>
-                        <button class="btn-mini-secondary" onclick="NutritionSystem.showMacroCalculator()">Calcular</button>
-                    </div>
+                </div>
+                <div class="nutrition-actions">
+                    <button class="btn-mini" onclick="NutritionSystem.promptAddMeal()">+ Registrar</button>
+                    <button class="btn-mini-secondary" onclick="NutritionSystem.showDashboard()">Detalhes</button>
+                    <button class="btn-mini-secondary" onclick="NutritionSystem.showMacroCalculator()">Calcular</button>
                 </div>
                 <div class="macro-bars">
                     <div class="macro-row"><span>Proteína</span><div class="bar"><div class="fill prot" style="width:${pctProt}%"></div></div><span>${sum.totalProteina}/${sum.meta.proteina}g</span></div>

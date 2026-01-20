@@ -10005,9 +10005,10 @@ input, select, textarea {
    NUTRITION WIDGET & MODAL (MVP)
    ========================================== */
 .card-nutrition { padding: var(--space-3); }
-.card-nutrition .feature-row { display:flex; align-items:center; justify-content:space-between; gap: var(--space-3); }
-.card-nutrition .nutrition-actions { display:flex; gap:8px; }
-.card-nutrition .btn-mini, .card-nutrition .btn-mini-secondary { padding:6px 10px; border-radius: var(--radius-md); font-size:0.85rem; }
+.card-nutrition .feature-row { display:flex; align-items:center; justify-content:flex-start; gap: var(--space-3); }
+.card-nutrition .nutrition-header-row { margin-bottom: 6px; }
+.card-nutrition .nutrition-actions { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-start; margin-bottom: 6px; }
+.card-nutrition .btn-mini, .card-nutrition .btn-mini-secondary { padding:6px 10px; border-radius: var(--radius-md); font-size:0.85rem; white-space:nowrap; }
 .card-nutrition .btn-mini { background: var(--accent-blue); color:#fff; border:none; }
 .card-nutrition .btn-mini-secondary { background:#e5e7eb; color:#111827; border:none; }
 .macro-bars { display:flex; flex-direction:column; gap:6px; margin-top:8px; }
