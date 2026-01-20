@@ -78,18 +78,16 @@ const DashboardWidgets = {
     },
 
     defaultConfig: [
-        { id: 'hero-treino', visible: true, order: 0 },
-        { id: 'ficha-atual', visible: true, order: 1 },
-        { id: 'quick-stats', visible: true, order: 2 },
-        { id: 'progresso', visible: true, order: 3 },
-        { id: 'coach-ia', visible: true, order: 4 },
-        { id: 'templates', visible: true, order: 5 },
-        { id: 'conquistas', visible: true, order: 6 },
-        { id: 'fadiga', visible: true, order: 6.5 },
-        { id: 'sua-divisao', visible: true, order: 7 },
-        { id: 'planejamento-semanal', visible: true, order: 8 },
-        { id: 'nutricao', visible: true, order: 9.2 },
-        { id: 'motivacional', visible: true, order: 9 }
+        { id: 'motivacional', visible: true, order: 0 },
+        { id: 'hero-treino', visible: true, order: 1 },
+        { id: 'ficha-atual', visible: true, order: 2 },
+        { id: 'templates', visible: true, order: 3 },
+        { id: 'quick-stats', visible: true, order: 4 },
+        { id: 'coach-ia', visible: true, order: 5 },
+        { id: 'nutricao', visible: true, order: 6 },
+        { id: 'progresso', visible: true, order: 7 },
+        { id: 'conquistas', visible: true, order: 8 },
+        { id: 'sua-divisao', visible: true, order: 9 }
     ],
 
     currentConfig: [],
@@ -7362,7 +7360,185 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('/api/health').then(r => r.json()).then(() => console.log('✅ API Java OK')).catch(() => console.warn('⚠️ API Java offline'));
     Auth.init();
     NutritionSystem.load();
+    PWAInstaller.init();
 });
+
+// =====================================================
+// PWA INSTALLER
+// =====================================================
+const PWAInstaller = {
+    deferredPrompt: null,
+    isIOS: false,
+    isStandalone: false,
+
+    init() {
+        // Detectar plataforma
+        this.isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) && !window.MSStream;
+        this.isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        
+        // Registrar Service Worker
+        this.registerServiceWorker();
+        
+        // Configurar prompt de instalação (apenas se não estiver instalado)
+        if (!this.isStandalone) {
+            this.setupInstallPrompt();
+        } else {
+            console.log('[PWA] App já instalado');
+        }
+    },
+
+    async registerServiceWorker() {
+        if ('serviceWorker' in navigator) {
+            try {
+                const registration = await navigator.serviceWorker.register('/sw.js');
+                console.log('[PWA] Service Worker registrado:', registration.scope);
+                
+                // Detectar atualizações
+                registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            this.showUpdateNotification();
+                        }
+                    });
+                });
+            } catch (error) {
+                console.error('[PWA] Erro ao registrar Service Worker:', error);
+            }
+        }
+    },
+
+    setupInstallPrompt() {
+        // Android: Capturar evento beforeinstallprompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            this.deferredPrompt = e;
+            console.log('[PWA] Prompt de instalação disponível');
+            
+            // Mostrar banner após 3 segundos
+            setTimeout(() => this.showInstallBanner(), 3000);
+        });
+
+        // iOS: Mostrar instruções manuais
+        if (this.isIOS && !this.isStandalone) {
+            setTimeout(() => this.showIOSInstructions(), 5000);
+        }
+
+        // Detectar quando app foi instalado
+        window.addEventListener('appinstalled', () => {
+            console.log('[PWA] App instalado com sucesso');
+            this.hideInstallBanner();
+            Toast.success('App instalado! 🎉');
+            localStorage.setItem('pwa_installed', 'true');
+        });
+    },
+
+    showInstallBanner() {
+        // Não mostrar se usuário já recusou recentemente
+        const dismissed = localStorage.getItem('pwa_banner_dismissed');
+        if (dismissed && Date.now() - parseInt(dismissed) < 7 * 24 * 60 * 60 * 1000) {
+            return; // Esperar 7 dias
+        }
+
+        const banner = document.createElement('div');
+        banner.id = 'pwa-install-banner';
+        banner.className = 'pwa-install-banner';
+        banner.innerHTML = `
+            <div class="pwa-banner-content">
+                <div class="pwa-banner-icon">📱</div>
+                <div class="pwa-banner-text">
+                    <strong>Instalar Shaipados</strong>
+                    <p>Acesso rápido e offline</p>
+                </div>
+            </div>
+            <button class="pwa-banner-install" id="pwa-install-btn">Instalar</button>
+            <button class="pwa-banner-close" id="pwa-close-btn">✕</button>
+        `;
+        
+        document.body.appendChild(banner);
+        
+        // Eventos
+        document.getElementById('pwa-install-btn')?.addEventListener('click', () => this.installApp());
+        document.getElementById('pwa-close-btn')?.addEventListener('click', () => {
+            this.hideInstallBanner();
+            localStorage.setItem('pwa_banner_dismissed', Date.now().toString());
+        });
+        
+        // Animação de entrada
+        setTimeout(() => banner.classList.add('show'), 100);
+    },
+
+    showIOSInstructions() {
+        const dismissed = localStorage.getItem('pwa_ios_dismissed');
+        if (dismissed) return;
+
+        const banner = document.createElement('div');
+        banner.id = 'pwa-ios-banner';
+        banner.className = 'pwa-install-banner';
+        banner.innerHTML = `
+            <div class="pwa-banner-content">
+                <div class="pwa-banner-icon">📲</div>
+                <div class="pwa-banner-text">
+                    <strong>Adicionar à Tela Inicial</strong>
+                    <p>Toque em <span style="color: #007AFF;">⎙</span> e depois "Adicionar à Tela Inicial"</p>
+                </div>
+            </div>
+            <button class="pwa-banner-close" id="pwa-ios-close">✕</button>
+        `;
+        
+        document.body.appendChild(banner);
+        
+        document.getElementById('pwa-ios-close')?.addEventListener('click', () => {
+            banner.remove();
+            localStorage.setItem('pwa_ios_dismissed', 'true');
+        });
+        
+        setTimeout(() => banner.classList.add('show'), 100);
+    },
+
+    async installApp() {
+        if (!this.deferredPrompt) return;
+
+        this.deferredPrompt.prompt();
+        const { outcome } = await this.deferredPrompt.userChoice;
+        
+        console.log('[PWA] Usuário escolheu:', outcome);
+        
+        if (outcome === 'accepted') {
+            Toast.success('Instalando app...');
+        } else {
+            localStorage.setItem('pwa_banner_dismissed', Date.now().toString());
+        }
+        
+        this.deferredPrompt = null;
+        this.hideInstallBanner();
+    },
+
+    hideInstallBanner() {
+        const banner = document.getElementById('pwa-install-banner') || document.getElementById('pwa-ios-banner');
+        if (banner) {
+            banner.classList.remove('show');
+            setTimeout(() => banner.remove(), 300);
+        }
+    },
+
+    showUpdateNotification() {
+        const updateBanner = document.createElement('div');
+        updateBanner.className = 'pwa-update-banner';
+        updateBanner.innerHTML = `
+            <span>Nova versão disponível!</span>
+            <button id="pwa-update-btn">Atualizar</button>
+        `;
+        document.body.appendChild(updateBanner);
+        
+        document.getElementById('pwa-update-btn')?.addEventListener('click', () => {
+            if (navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+            }
+            window.location.reload();
+        });
+    }
+};
 
 // Exports para debug
 window.AppState = AppState;
@@ -7376,4 +7552,5 @@ window.WorkoutGenerator = WorkoutGenerator;
 window.WorkoutTemplates = WorkoutTemplates;
 window.FatigueSystem = FatigueSystem;
 window.NutritionSystem = NutritionSystem;
+window.PWAInstaller = PWAInstaller;
 

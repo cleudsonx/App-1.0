@@ -3780,17 +3780,35 @@ input, select, textarea {
     font-size: 1.5rem;
 }
 
+.reminder-text {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
 .reminder-text strong {
-    display: block;
+    display: inline;
     color: var(--text-primary);
     font-size: 0.9rem;
-    margin-bottom: 2px;
+    margin-bottom: 0;
+}
+
+.reminder-inline-action {
+    background: transparent;
+    border: none;
+    color: var(--primary);
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
 }
 
 .reminder-text p {
     color: var(--text-secondary);
     font-size: 0.75rem;
     margin: 0;
+    flex-basis: 100%;
 }
 
 .btn-reminder-action {
@@ -10315,5 +10333,140 @@ input, select, textarea {
 .btn-primary:hover { background: #0284c7; }
 .btn-secondary { flex: 1; background: #e5e7eb; color: #111827; border: none; border-radius: 10px; padding: 10px; cursor: pointer; }
 .btn-secondary:hover { background: #d1d5db; }
+
+/* ========== PWA INSTALL BANNERS ========== */
+.pwa-install-banner {
+    position: fixed;
+    bottom: calc(var(--nav-height) + var(--space-4));
+    left: var(--space-4);
+    right: var(--space-4);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    padding: var(--space-4);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    z-index: 9999;
+    transform: translateY(calc(100% + var(--space-4)));
+    opacity: 0;
+    transition: all 0.4s var(--ease-out);
+}
+
+.pwa-install-banner.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.pwa-banner-content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex: 1;
+}
+
+.pwa-banner-icon {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.pwa-banner-text strong {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.pwa-banner-text p {
+    font-size: 0.8rem;
+    margin: 0;
+    opacity: 0.9;
+}
+
+.pwa-banner-install {
+    background: white;
+    color: var(--primary);
+    border: none;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all var(--duration-fast);
+}
+
+.pwa-banner-install:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pwa-banner-install:active {
+    transform: scale(0.98);
+}
+
+.pwa-banner-close {
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: var(--radius-md);
+    transition: all var(--duration-fast);
+    flex-shrink: 0;
+}
+
+.pwa-banner-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* PWA Update Banner */
+.pwa-update-banner {
+    position: fixed;
+    top: var(--header-height);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--success);
+    color: white;
+    padding: var(--space-3) var(--space-4);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    z-index: 9999;
+    animation: slideDown 0.3s var(--ease-out);
+}
+
+.pwa-update-banner span {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.pwa-update-banner button {
+    background: white;
+    color: var(--success);
+    border: none;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+@media (min-width: 1024px) {
+    .pwa-install-banner {
+        max-width: 420px;
+        left: 50%;
+        transform: translateX(-50%) translateY(calc(100% + var(--space-4)));
+    }
+    
+    .pwa-install-banner.show {
+        transform: translateX(-50%) translateY(0);
+    }
+}
 
 

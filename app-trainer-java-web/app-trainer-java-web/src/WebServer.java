@@ -67,7 +67,8 @@ public class WebServer {
         DataStorage storage = new DataStorage(dataDir);
         
         // Cria servidor com thread pool para melhor performance
-        HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
+        // Bind em 0.0.0.0 para aceitar conexões de qualquer interface de rede
+        HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0", port), 0);
         server.setExecutor(Executors.newFixedThreadPool(10));
         
         // ==================== ENDPOINTS ESTÁTICOS ====================
@@ -109,13 +110,17 @@ public class WebServer {
         server.createContext("/api/sugestao-ml", ex -> Proxy.forward(ex, "http://localhost:8001/suggest"));
         server.createContext("/api/coach-ml", ex -> Proxy.forward(ex, "http://localhost:8001/coach"));
 
+        // Obtém IP local para exibição
+        String localIP = getLocalIPAddress();
+        
         System.out.println("╔════════════════════════════════════════════════════╗");
         System.out.println("║         APP TRAINER - Servidor Web v" + VERSION + "        ║");
         System.out.println("╠════════════════════════════════════════════════════╣");
-        System.out.println("║  🌐 Web:    http://localhost:" + port + "                  ║");
-        System.out.println("║  📱 API:    http://localhost:" + port + "/api              ║");
-        System.out.println("║  🤖 Coach:  http://localhost:" + port + "/api/coach        ║");
-        System.out.println("║  💪 Treino: http://localhost:" + port + "/api/sugestao     ║");
+        System.out.println("║  🌐 Web (Local):    http://localhost:" + port + "          ║");
+        System.out.println("║  📱 Web (Rede):     http://" + localIP + ":" + port + "      ║");
+        System.out.println("║  📱 API:            http://" + localIP + ":" + port + "/api  ║");
+        System.out.println("║  🤖 Coach:          http://localhost:" + port + "/api/coach        ║");
+        System.out.println("║  💪 Treino:         http://localhost:" + port + "/api/sugestao     ║");
         System.out.println("╠════════════════════════════════════════════════════╣");
         System.out.println("║  Endpoints disponíveis:                            ║");
         System.out.println("║  • POST       /auth/login                          ║");
@@ -224,6 +229,18 @@ public class WebServer {
         ex.sendResponseHeaders(status, bytes.length);
         try (OutputStream os = ex.getResponseBody()) {
             os.write(bytes);
+        }
+    }
+    
+    /**
+     * Obtém o endereço IP local da máquina para acesso via rede
+     */
+    private static String getLocalIPAddress() {
+        try {
+            java.net.InetAddress localHost = java.net.InetAddress.getLocalHost();
+            return localHost.getHostAddress();
+        } catch (Exception e) {
+            return "0.0.0.0";
         }
     }
 }
