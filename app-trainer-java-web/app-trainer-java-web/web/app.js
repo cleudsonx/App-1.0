@@ -2529,7 +2529,65 @@ const WorkoutTemplates = {
             category: 'golden_era',
             objetivos: ['maromba', 'hipertrofia'],
             benefits: ['Volume extremo', 'Pump lendário', 'Clássico'],
-            featured: true
+            featured: true,
+            workout: {
+                dias: [
+                    { nome: 'Dia 1 - Peito/Costas', grupos: 'Peito, Costas', exercicios: [
+                        { nome: 'Supino Reto com Barra', series: 5, repeticoes: '6-10', descanso: '90s' },
+                        { nome: 'Supino Inclinado com Barra', series: 5, repeticoes: '6-10', descanso: '90s' },
+                        { nome: 'Crucifixo com Halteres', series: 5, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Mergulho', series: 5, repeticoes: '10-15', descanso: '60s' },
+                        { nome: 'Barra Fixa', series: 5, repeticoes: '8-12', descanso: '90s' },
+                        { nome: 'Remada Curvada com Barra', series: 5, repeticoes: '6-10', descanso: '90s' },
+                        { nome: 'Remada T-Bar', series: 5, repeticoes: '6-10', descanso: '90s' },
+                        { nome: 'Puxada Frontal', series: 4, repeticoes: '10-12', descanso: '60s' }
+                    ]},
+                    { nome: 'Dia 2 - Ombros/Braços', grupos: 'Ombros, Bíceps, Tríceps', exercicios: [
+                        { nome: 'Desenvolvimento com Barra (Atrás)', series: 5, repeticoes: '6-10', descanso: '90s' },
+                        { nome: 'Elevação Lateral', series: 5, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Elevação Frontal com Barra', series: 4, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Rosca Direta com Barra', series: 5, repeticoes: '6-10', descanso: '60s' },
+                        { nome: 'Rosca Alternada', series: 5, repeticoes: '6-10', descanso: '60s' },
+                        { nome: 'Rosca Concentrada', series: 5, repeticoes: '8-10', descanso: '45s' },
+                        { nome: 'Tríceps Mergulho', series: 5, repeticoes: '8-12', descanso: '60s' },
+                        { nome: 'Tríceps Testa (Barra EZ)', series: 5, repeticoes: '8-10', descanso: '60s' }
+                    ]},
+                    { nome: 'Dia 3 - Pernas', grupos: 'Quadríceps, Posterior, Panturrilha', exercicios: [
+                        { nome: 'Agachamento Livre', series: 5, repeticoes: '6-10', descanso: '120s' },
+                        { nome: 'Leg Press', series: 5, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Cadeira Extensora', series: 5, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Mesa Flexora', series: 5, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Stiff', series: 5, repeticoes: '8-10', descanso: '90s' },
+                        { nome: 'Panturrilha em Pé', series: 5, repeticoes: '15-20', descanso: '45s' },
+                        { nome: 'Panturrilha Sentado', series: 5, repeticoes: '15-20', descanso: '45s' }
+                    ]},
+                    { nome: 'Dia 4 - Peito/Costas', grupos: 'Peito, Costas', exercicios: [
+                        { nome: 'Supino Inclinado com Halteres', series: 5, repeticoes: '8-10', descanso: '90s' },
+                        { nome: 'Crossover (Cabo)', series: 5, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Pullover com Halter', series: 5, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Puxada Frontal Pegada Aberta', series: 5, repeticoes: '8-10', descanso: '90s' },
+                        { nome: 'Remada Baixa (Cabo)', series: 5, repeticoes: '8-10', descanso: '90s' },
+                        { nome: 'Remada Unilateral', series: 4, repeticoes: '10-12', descanso: '60s' }
+                    ]},
+                    { nome: 'Dia 5 - Ombros/Braços', grupos: 'Ombros, Bíceps, Tríceps', exercicios: [
+                        { nome: 'Desenvolvimento com Halteres', series: 5, repeticoes: '8-10', descanso: '90s' },
+                        { nome: 'Elevação Lateral Inclinado', series: 5, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Crucifixo Inverso', series: 4, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Rosca Scott', series: 5, repeticoes: '8-10', descanso: '60s' },
+                        { nome: 'Rosca Martelo', series: 4, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Tríceps Pulley', series: 5, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Tríceps Francês (Halter)', series: 4, repeticoes: '10-12', descanso: '60s' }
+                    ]},
+                    { nome: 'Dia 6 - Pernas', grupos: 'Quadríceps, Posterior, Panturrilha', exercicios: [
+                        { nome: 'Agachamento Frontal', series: 5, repeticoes: '8-10', descanso: '120s' },
+                        { nome: 'Agachamento Hack', series: 5, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Passada (Lunges)', series: 4, repeticoes: '12 cada', descanso: '60s' },
+                        { nome: 'Cadeira Flexora', series: 5, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Panturrilha Burro', series: 5, repeticoes: '15-20', descanso: '45s' },
+                        { nome: 'Abdominal', series: 5, repeticoes: '25', descanso: '30s' }
+                    ]}
+                ]
+            }
         },
         {
             id: 'reg_park_5x5',
@@ -2542,7 +2600,30 @@ const WorkoutTemplates = {
             icon: '👑',
             category: 'golden_era',
             objetivos: ['maromba', 'forca'],
-            benefits: ['Força bruta', 'Compostos', 'Old School']
+            benefits: ['Força bruta', 'Compostos', 'Old School'],
+            workout: {
+                dias: [
+                    { nome: 'Treino A - Força Superior', grupos: 'Peito, Ombros, Tríceps', exercicios: [
+                        { nome: 'Supino Reto com Barra', series: 5, repeticoes: '5', descanso: '180s', nota: '5x5 - Aumentar peso a cada semana' },
+                        { nome: 'Desenvolvimento com Barra', series: 5, repeticoes: '5', descanso: '180s' },
+                        { nome: 'Mergulho', series: 3, repeticoes: '8-10', descanso: '90s' },
+                        { nome: 'Rosca Direta com Barra', series: 3, repeticoes: '8', descanso: '90s' }
+                    ]},
+                    { nome: 'Treino B - Força Inferior', grupos: 'Pernas, Costas', exercicios: [
+                        { nome: 'Agachamento Livre', series: 5, repeticoes: '5', descanso: '180s', nota: '5x5 - Aumentar peso a cada semana' },
+                        { nome: 'Levantamento Terra', series: 5, repeticoes: '5', descanso: '180s' },
+                        { nome: 'Remada Curvada com Barra', series: 5, repeticoes: '5', descanso: '120s' },
+                        { nome: 'Panturrilha em Pé', series: 3, repeticoes: '15', descanso: '60s' }
+                    ]},
+                    { nome: 'Treino C - Full Body', grupos: 'Corpo Completo', exercicios: [
+                        { nome: 'Agachamento Livre', series: 5, repeticoes: '5', descanso: '180s' },
+                        { nome: 'Supino Reto com Barra', series: 5, repeticoes: '5', descanso: '180s' },
+                        { nome: 'Remada Curvada com Barra', series: 5, repeticoes: '5', descanso: '120s' },
+                        { nome: 'Desenvolvimento com Barra', series: 3, repeticoes: '8', descanso: '90s' },
+                        { nome: 'Rosca Direta', series: 3, repeticoes: '8', descanso: '60s' }
+                    ]}
+                ]
+            }
         },
         {
             id: 'franco_columbu_6x',
@@ -2555,33 +2636,96 @@ const WorkoutTemplates = {
             icon: '🦁',
             category: 'golden_era',
             objetivos: ['maromba', 'forca'],
-            benefits: ['Força + Massa', 'Powerbuilding raiz', 'Intenso']
+            benefits: ['Força + Massa', 'Powerbuilding raiz', 'Intenso'],
+            workout: {
+                dias: [
+                    { nome: 'Dia 1 - Peito/Tríceps (Força)', grupos: 'Peito, Tríceps', exercicios: [
+                        { nome: 'Supino Reto com Barra', series: 6, repeticoes: '4-6', descanso: '180s', nota: 'Franco: 500lbs!' },
+                        { nome: 'Supino Inclinado com Barra', series: 4, repeticoes: '6-8', descanso: '120s' },
+                        { nome: 'Crucifixo com Halteres', series: 4, repeticoes: '8-10', descanso: '90s' },
+                        { nome: 'Mergulho', series: 4, repeticoes: '8-10', descanso: '90s' },
+                        { nome: 'Tríceps Pulley', series: 4, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Tríceps Testa', series: 3, repeticoes: '10-12', descanso: '60s' }
+                    ]},
+                    { nome: 'Dia 2 - Costas/Bíceps (Força)', grupos: 'Costas, Bíceps', exercicios: [
+                        { nome: 'Levantamento Terra', series: 5, repeticoes: '3-5', descanso: '180s', nota: 'Franco: 700lbs!' },
+                        { nome: 'Remada Curvada com Barra', series: 5, repeticoes: '5-6', descanso: '120s' },
+                        { nome: 'Barra Fixa', series: 4, repeticoes: '8-10', descanso: '90s' },
+                        { nome: 'Puxada Frontal', series: 4, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Rosca Direta com Barra', series: 4, repeticoes: '6-8', descanso: '90s' },
+                        { nome: 'Rosca Concentrada', series: 3, repeticoes: '10-12', descanso: '60s' }
+                    ]},
+                    { nome: 'Dia 3 - Pernas (Força)', grupos: 'Quadríceps, Posterior', exercicios: [
+                        { nome: 'Agachamento Livre', series: 6, repeticoes: '4-6', descanso: '180s', nota: 'Franco: 600lbs!' },
+                        { nome: 'Agachamento Frontal', series: 4, repeticoes: '6-8', descanso: '120s' },
+                        { nome: 'Leg Press', series: 4, repeticoes: '8-10', descanso: '90s' },
+                        { nome: 'Mesa Flexora', series: 4, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Stiff', series: 4, repeticoes: '8-10', descanso: '90s' },
+                        { nome: 'Panturrilha em Pé', series: 5, repeticoes: '15-20', descanso: '45s' }
+                    ]},
+                    { nome: 'Dia 4 - Ombros (Volume)', grupos: 'Ombros, Trapézio', exercicios: [
+                        { nome: 'Desenvolvimento com Barra (Atrás)', series: 5, repeticoes: '6-8', descanso: '120s' },
+                        { nome: 'Desenvolvimento com Halteres', series: 4, repeticoes: '8-10', descanso: '90s' },
+                        { nome: 'Elevação Lateral', series: 4, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Elevação Frontal', series: 3, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Crucifixo Inverso', series: 4, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Encolhimento com Barra', series: 4, repeticoes: '10-12', descanso: '60s' }
+                    ]},
+                    { nome: 'Dia 5 - Peito/Costas (Volume)', grupos: 'Peito, Costas', exercicios: [
+                        { nome: 'Supino Inclinado com Halteres', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Crossover (Cabo)', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Pullover', series: 4, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Puxada Frontal', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Remada Baixa', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Remada Unilateral', series: 3, repeticoes: '12', descanso: '60s' }
+                    ]},
+                    { nome: 'Dia 6 - Braços (Volume)', grupos: 'Bíceps, Tríceps', exercicios: [
+                        { nome: 'Rosca Direta (Barra Reta)', series: 4, repeticoes: '8-10', descanso: '60s' },
+                        { nome: 'Tríceps Francês', series: 4, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Rosca Alternada', series: 4, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Tríceps Pulley (Corda)', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Rosca Scott', series: 3, repeticoes: '12', descanso: '45s' },
+                        { nome: 'Tríceps Coice', series: 3, repeticoes: '12', descanso: '45s' }
+                    ]}
+                ]
+            }
         },
         {
-            id: 'frank_zane_aesthetic',
-            name: 'Frank Zane Aesthetic',
-            subtitle: 'Avançado • 6x/semana',
-            description: 'O treino do "The Chemist"! Frank Zane tinha o físico mais estético da história. Foco em proporções perfeitas, cintura fina e detalhamento muscular. 3x Mr. Olympia.',
+            id: 'mike_mentzer_hit',
+            name: 'Mike Mentzer HIT',
+            subtitle: 'Avançado • 3x/semana',
+            description: 'Heavy Duty - o oposto do volume! Mike Mentzer revolucionou com treinos curtos e intensos. 1-2 séries até a falha absoluta. Mr. Olympia 1979 (Heavy Weight).',
             level: 'avancado',
-            days: 6,
-            duration: '60-75',
-            icon: '🎭',
+            days: 3,
+            duration: '30-45',
+            icon: '⚡',
             category: 'golden_era',
             objetivos: ['maromba', 'hipertrofia'],
-            benefits: ['Estética', 'Proporções', 'Detalhamento']
-        },
-        {
-            id: 'serge_nubret_pump',
-            name: 'Serge Nubret Pump',
-            subtitle: 'Avançado • 6x/semana',
-            description: 'O "Black Panther" do bodybuilding! Famoso por fazer 20-30 séries por músculo com descanso mínimo. Pump insano e definição extrema. Rival de Arnold no palco.',
-            level: 'avancado',
-            days: 6,
-            duration: '90-120',
-            icon: '🐆',
-            category: 'golden_era',
-            objetivos: ['maromba', 'hipertrofia'],
-            benefits: ['Alto volume', 'Pump máximo', 'Resistência']
+            benefits: ['Alta intensidade', 'Baixo volume', 'Eficiente'],
+            workout: {
+                dias: [
+                    { nome: 'Treino A - Peito/Costas/Ombros', grupos: 'Peito, Costas, Ombros', exercicios: [
+                        { nome: 'Peck Deck ou Crucifixo Máquina', series: 1, repeticoes: '6-10', descanso: '120s', nota: 'ATÉ A FALHA - Pré-exaustão' },
+                        { nome: 'Supino Inclinado', series: 1, repeticoes: '6-10', descanso: '120s', nota: 'ATÉ A FALHA' },
+                        { nome: 'Pullover na Máquina', series: 1, repeticoes: '6-10', descanso: '120s', nota: 'ATÉ A FALHA - Pré-exaustão' },
+                        { nome: 'Puxada Frontal', series: 1, repeticoes: '6-10', descanso: '120s', nota: 'ATÉ A FALHA' },
+                        { nome: 'Elevação Lateral na Máquina', series: 1, repeticoes: '6-10', descanso: '120s', nota: 'ATÉ A FALHA - Pré-exaustão' },
+                        { nome: 'Desenvolvimento na Máquina', series: 1, repeticoes: '6-10', descanso: '120s', nota: 'ATÉ A FALHA' }
+                    ]},
+                    { nome: 'Treino B - Pernas', grupos: 'Quadríceps, Posterior, Panturrilha', exercicios: [
+                        { nome: 'Cadeira Extensora', series: 1, repeticoes: '10-15', descanso: '120s', nota: 'ATÉ A FALHA - Pré-exaustão' },
+                        { nome: 'Leg Press ou Agachamento', series: 1, repeticoes: '10-15', descanso: '120s', nota: 'ATÉ A FALHA' },
+                        { nome: 'Mesa Flexora', series: 2, repeticoes: '10-12', descanso: '90s', nota: 'ATÉ A FALHA' },
+                        { nome: 'Panturrilha em Pé', series: 2, repeticoes: '12-15', descanso: '60s', nota: 'ATÉ A FALHA' }
+                    ]},
+                    { nome: 'Treino C - Braços', grupos: 'Bíceps, Tríceps', exercicios: [
+                        { nome: 'Tríceps Pulley', series: 1, repeticoes: '6-10', descanso: '90s', nota: 'ATÉ A FALHA' },
+                        { nome: 'Mergulho na Máquina', series: 1, repeticoes: '6-10', descanso: '90s', nota: 'ATÉ A FALHA' },
+                        { nome: 'Rosca Scott na Máquina', series: 1, repeticoes: '6-10', descanso: '90s', nota: 'ATÉ A FALHA' },
+                        { nome: 'Rosca Concentrada', series: 1, repeticoes: '6-10', descanso: '90s', nota: 'ATÉ A FALHA' }
+                    ]}
+                ]
+            }
         },
         {
             id: 'tom_platz_legs',
@@ -2594,7 +2738,26 @@ const WorkoutTemplates = {
             icon: '🦵',
             category: 'golden_era',
             objetivos: ['maromba', 'hipertrofia'],
-            benefits: ['Pernas brutais', 'Alto volume', 'Lendário']
+            benefits: ['Pernas brutais', 'Alto volume', 'Lendário'],
+            workout: {
+                dias: [
+                    { nome: 'Tom Platz Leg Day - Quadríceps', grupos: 'Quadríceps (Foco Total)', exercicios: [
+                        { nome: 'Agachamento Livre', series: 8, repeticoes: '8-20', descanso: '120s', nota: 'Tom fazia 23 reps com 500lbs!' },
+                        { nome: 'Agachamento Hack', series: 5, repeticoes: '10-15', descanso: '90s' },
+                        { nome: 'Leg Press', series: 5, repeticoes: '15-20', descanso: '90s' },
+                        { nome: 'Cadeira Extensora', series: 5, repeticoes: '15-20', descanso: '60s', nota: 'Contraia no topo!' },
+                        { nome: 'Passada (Walking Lunges)', series: 4, repeticoes: '20 passos', descanso: '60s' },
+                        { nome: 'Sissy Squat', series: 3, repeticoes: '15-20', descanso: '45s' }
+                    ]},
+                    { nome: 'Tom Platz Leg Day - Posterior', grupos: 'Posterior, Panturrilha', exercicios: [
+                        { nome: 'Stiff (Romeno)', series: 5, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Mesa Flexora', series: 5, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Cadeira Flexora', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Panturrilha em Pé', series: 6, repeticoes: '15-20', descanso: '45s', nota: 'Tom: panturrilhas todos os dias!' },
+                        { nome: 'Panturrilha Sentado', series: 5, repeticoes: '20-25', descanso: '45s' }
+                    ]}
+                ]
+            }
         },
         {
             id: 'lou_ferrigno_mass',
@@ -2608,19 +2771,6 @@ const WorkoutTemplates = {
             category: 'golden_era',
             objetivos: ['maromba', 'hipertrofia'],
             benefits: ['Massa máxima', 'Gigantismo', 'Heavy duty']
-        },
-        {
-            id: 'mike_mentzer_hit',
-            name: 'Mike Mentzer HIT',
-            subtitle: 'Avançado • 3x/semana',
-            description: 'Heavy Duty - o oposto do volume! Mike Mentzer revolucionou com treinos curtos e intensos. 1-2 séries até a falha absoluta. Mr. Olympia 1979 (Heavy Weight).',
-            level: 'avancado',
-            days: 3,
-            duration: '30-45',
-            icon: '⚡',
-            category: 'golden_era',
-            objetivos: ['maromba', 'hipertrofia'],
-            benefits: ['Alta intensidade', 'Baixo volume', 'Eficiente']
         },
         {
             id: 'double_split_classic',
@@ -2648,6 +2798,428 @@ const WorkoutTemplates = {
             objetivos: ['maromba', 'hipertrofia'],
             benefits: ['Meca do BB', 'Clássico', 'Completo'],
             featured: true
+        },
+        // === LENDAS DO MR. OLYMPIA - ERA MODERNA ===
+        {
+            id: 'mentzer_heavy_duty_revised',
+            name: 'Mike Mentzer Heavy Duty Revisado',
+            subtitle: 'Avançado • 3-4x/semana',
+            description: 'A filosofia revolucionária de Mike Mentzer atualizada! High Intensity Training (HIT) no seu máximo: cada série até a falha muscular absoluta, com técnicas como rest-pause, negativas forçadas e static holds. Menos é mais - resultados máximos com volume mínimo.',
+            level: 'avancado',
+            days: 4,
+            duration: '35-50',
+            icon: '🧠',
+            category: 'legends_olympia',
+            objetivos: ['lendas', 'maromba', 'hipertrofia', 'forca'],
+            benefits: ['Intensidade máxima', 'Recuperação otimizada', 'Treinos curtos'],
+            featured: true,
+            workout: {
+                dias: [
+                    { nome: 'Dia 1 - Peito/Costas', grupos: 'Peito, Costas (Antagonistas)', exercicios: [
+                        { nome: 'Supino Inclinado com Halteres', series: 1, repeticoes: '6-10', descanso: '120s', nota: 'ATÉ A FALHA + Rest-Pause' },
+                        { nome: 'Peck Deck (Crucifixo Máquina)', series: 1, repeticoes: '6-10', descanso: '120s', nota: 'ATÉ A FALHA' },
+                        { nome: 'Puxada Frontal Pegada Supinada', series: 1, repeticoes: '6-10', descanso: '120s', nota: 'ATÉ A FALHA + Negativas' },
+                        { nome: 'Remada na Máquina', series: 1, repeticoes: '6-10', descanso: '120s', nota: 'ATÉ A FALHA' },
+                        { nome: 'Pullover na Máquina', series: 1, repeticoes: '8-12', descanso: '90s', nota: 'ATÉ A FALHA' },
+                        { nome: 'Levantamento Terra', series: 1, repeticoes: '5-8', descanso: '180s', nota: 'ATÉ A FALHA' }
+                    ]},
+                    { nome: 'Dia 2 - Pernas', grupos: 'Quadríceps, Posterior, Panturrilha', exercicios: [
+                        { nome: 'Leg Press', series: 1, repeticoes: '8-15', descanso: '180s', nota: 'ATÉ A FALHA + Rest-Pause' },
+                        { nome: 'Cadeira Extensora', series: 1, repeticoes: '10-15', descanso: '120s', nota: 'ATÉ A FALHA + Negativas' },
+                        { nome: 'Agachamento Hack', series: 1, repeticoes: '8-12', descanso: '120s', nota: 'ATÉ A FALHA' },
+                        { nome: 'Stiff (Romeno)', series: 1, repeticoes: '8-12', descanso: '120s', nota: 'ATÉ A FALHA' },
+                        { nome: 'Mesa Flexora', series: 1, repeticoes: '10-12', descanso: '90s', nota: 'ATÉ A FALHA' },
+                        { nome: 'Panturrilha em Pé', series: 2, repeticoes: '12-15', descanso: '60s', nota: 'ATÉ A FALHA cada série' }
+                    ]},
+                    { nome: 'Dia 3 - Ombros/Braços', grupos: 'Ombros, Tríceps, Bíceps', exercicios: [
+                        { nome: 'Desenvolvimento na Máquina', series: 1, repeticoes: '6-10', descanso: '120s', nota: 'ATÉ A FALHA + Rest-Pause' },
+                        { nome: 'Elevação Lateral na Máquina', series: 1, repeticoes: '10-12', descanso: '90s', nota: 'ATÉ A FALHA' },
+                        { nome: 'Crucifixo Inverso', series: 1, repeticoes: '10-12', descanso: '90s', nota: 'ATÉ A FALHA' },
+                        { nome: 'Tríceps Mergulho (Graviton)', series: 1, repeticoes: '6-10', descanso: '90s', nota: 'ATÉ A FALHA + Negativas' },
+                        { nome: 'Tríceps Pulley', series: 1, repeticoes: '8-12', descanso: '60s', nota: 'ATÉ A FALHA' },
+                        { nome: 'Rosca Scott na Máquina', series: 1, repeticoes: '6-10', descanso: '90s', nota: 'ATÉ A FALHA + Negativas' },
+                        { nome: 'Rosca Direta com Barra', series: 1, repeticoes: '8-10', descanso: '60s', nota: 'ATÉ A FALHA' }
+                    ]},
+                    { nome: 'Dia 4 - Descanso Ativo/Abdômen', grupos: 'Core, Recuperação', exercicios: [
+                        { nome: 'Crunch na Máquina', series: 2, repeticoes: '15-20', descanso: '60s', nota: 'ATÉ A FALHA' },
+                        { nome: 'Prancha', series: 2, repeticoes: '60s', descanso: '60s' },
+                        { nome: 'Elevação de Pernas', series: 2, repeticoes: '15-20', descanso: '60s' }
+                    ]}
+                ]
+            }
+        },
+        {
+            id: 'mentzer_consolidation',
+            name: 'Mentzer Consolidation Routine',
+            subtitle: 'Avançado • 2x/semana',
+            description: 'O programa mais extremo de Mentzer para atletas avançados que pararam de progredir. Apenas 2 treinos por semana, máximo 3-4 exercícios por sessão. Cada série é uma batalha contra seus limites.',
+            level: 'avancado',
+            days: 2,
+            duration: '25-35',
+            icon: '💎',
+            category: 'legends_olympia',
+            objetivos: ['lendas', 'maromba', 'forca'],
+            benefits: ['Recuperação total', 'Supercompensação', 'Plateau breaker'],
+            workout: {
+                dias: [
+                    { nome: 'Treino A - Upper + Legs', grupos: 'Peito, Costas, Pernas', exercicios: [
+                        { nome: 'Supino na Máquina', series: 1, repeticoes: '6-10', descanso: '180s', nota: 'ATÉ FALHA ABSOLUTA' },
+                        { nome: 'Puxada Frontal', series: 1, repeticoes: '6-10', descanso: '180s', nota: 'ATÉ FALHA ABSOLUTA' },
+                        { nome: 'Agachamento ou Leg Press', series: 1, repeticoes: '10-15', descanso: '180s', nota: 'ATÉ FALHA ABSOLUTA' },
+                        { nome: 'Stiff', series: 1, repeticoes: '8-12', descanso: '120s', nota: 'ATÉ FALHA ABSOLUTA' }
+                    ]},
+                    { nome: 'Treino B - Push/Pull/Arms', grupos: 'Ombros, Braços', exercicios: [
+                        { nome: 'Desenvolvimento na Máquina', series: 1, repeticoes: '6-10', descanso: '180s', nota: 'ATÉ FALHA ABSOLUTA' },
+                        { nome: 'Tríceps Mergulho', series: 1, repeticoes: '6-10', descanso: '120s', nota: 'ATÉ FALHA ABSOLUTA' },
+                        { nome: 'Rosca Scott', series: 1, repeticoes: '6-10', descanso: '120s', nota: 'ATÉ FALHA ABSOLUTA' },
+                        { nome: 'Panturrilha em Pé', series: 1, repeticoes: '12-15', descanso: '90s', nota: 'ATÉ FALHA ABSOLUTA' }
+                    ]}
+                ]
+            }
+        },
+        {
+            id: 'jay_cutler_classic',
+            name: 'Jay Cutler 4x Mr. Olympia',
+            subtitle: 'Avançado • 5x/semana',
+            description: 'O treino do único homem a reconquistar o Mr. Olympia! Jay "The Comeback Kid" Cutler usava volume alto com periodização inteligente. Foco em construir massa densa e qualidade muscular incomparável.',
+            level: 'avancado',
+            days: 5,
+            duration: '75-90',
+            icon: '🏅',
+            category: 'legends_olympia',
+            objetivos: ['lendas', 'maromba', 'hipertrofia'],
+            benefits: ['Massa densa', 'Simetria', 'Volume controlado'],
+            featured: true,
+            workout: {
+                dias: [
+                    { nome: 'Dia 1 - Peito', grupos: 'Peito (Completo)', exercicios: [
+                        { nome: 'Supino Inclinado com Halteres', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Supino Reto na Máquina (Hammer)', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Crossover Alto (Cabo)', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Supino Declinado com Halteres', series: 3, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Peck Deck', series: 3, repeticoes: '12-15', descanso: '60s' }
+                    ]},
+                    { nome: 'Dia 2 - Costas', grupos: 'Costas (Largura + Espessura)', exercicios: [
+                        { nome: 'Puxada Frontal Pegada Aberta', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Remada Curvada com Barra', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Remada na Máquina (Hammer)', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Puxada Triângulo', series: 3, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Pullover com Halter', series: 3, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Hiperextensão', series: 3, repeticoes: '15', descanso: '45s' }
+                    ]},
+                    { nome: 'Dia 3 - Ombros/Trapézio', grupos: 'Ombros, Trapézio', exercicios: [
+                        { nome: 'Desenvolvimento com Halteres Sentado', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Elevação Lateral com Halteres', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Elevação Frontal (Cabo)', series: 3, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Crucifixo Inverso na Máquina', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Encolhimento com Halteres', series: 4, repeticoes: '12-15', descanso: '60s' }
+                    ]},
+                    { nome: 'Dia 4 - Braços', grupos: 'Bíceps, Tríceps', exercicios: [
+                        { nome: 'Rosca Direta com Barra EZ', series: 4, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Tríceps Pulley (Barra Reta)', series: 4, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Rosca Alternada com Halteres', series: 3, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Tríceps Testa com Barra EZ', series: 3, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Rosca Scott na Máquina', series: 3, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Tríceps Mergulho', series: 3, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Rosca Martelo', series: 3, repeticoes: '12', descanso: '45s' }
+                    ]},
+                    { nome: 'Dia 5 - Pernas', grupos: 'Quadríceps, Posterior, Panturrilha', exercicios: [
+                        { nome: 'Cadeira Extensora', series: 4, repeticoes: '15', descanso: '60s', nota: 'Aquecimento' },
+                        { nome: 'Leg Press', series: 4, repeticoes: '12-15', descanso: '120s' },
+                        { nome: 'Agachamento Hack', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Passada (Lunges)', series: 3, repeticoes: '12 cada', descanso: '60s' },
+                        { nome: 'Stiff (Romeno)', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Mesa Flexora', series: 4, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Panturrilha no Leg Press', series: 5, repeticoes: '15-20', descanso: '45s' }
+                    ]}
+                ]
+            }
+        },
+        {
+            id: 'jay_cutler_offseason',
+            name: 'Jay Cutler Offseason Mass',
+            subtitle: 'Avançado • 6x/semana',
+            description: 'O programa de offseason que levou Cutler a 290lbs! Foco em movimentos compostos pesados com volume progressivo. Cutler era famoso por seu ético de trabalho incansável.',
+            level: 'avancado',
+            days: 6,
+            duration: '80-100',
+            icon: '🦬',
+            category: 'legends_olympia',
+            objetivos: ['lendas', 'maromba', 'hipertrofia'],
+            benefits: ['Ganho de massa', 'Compostos pesados', 'Volume alto'],
+            workout: {
+                dias: [
+                    { nome: 'Dia 1 - Peito Pesado', grupos: 'Peito', exercicios: [
+                        { nome: 'Supino Reto com Barra', series: 5, repeticoes: '8-12', descanso: '120s' },
+                        { nome: 'Supino Inclinado com Halteres', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Supino Declinado na Máquina', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Crossover (Cabo)', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Mergulho', series: 3, repeticoes: '10-12', descanso: '60s' }
+                    ]},
+                    { nome: 'Dia 2 - Costas Pesada', grupos: 'Costas', exercicios: [
+                        { nome: 'Levantamento Terra', series: 4, repeticoes: '6-10', descanso: '180s' },
+                        { nome: 'Remada Curvada com Barra', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Puxada Frontal', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Remada T-Bar', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Remada Baixa (Cabo)', series: 3, repeticoes: '12', descanso: '60s' }
+                    ]},
+                    { nome: 'Dia 3 - Pernas Quadríceps', grupos: 'Quadríceps, Panturrilha', exercicios: [
+                        { nome: 'Agachamento Livre', series: 5, repeticoes: '8-12', descanso: '180s' },
+                        { nome: 'Leg Press', series: 4, repeticoes: '12-15', descanso: '120s' },
+                        { nome: 'Agachamento Hack', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Cadeira Extensora', series: 4, repeticoes: '15', descanso: '60s' },
+                        { nome: 'Panturrilha em Pé', series: 5, repeticoes: '15-20', descanso: '45s' }
+                    ]},
+                    { nome: 'Dia 4 - Ombros/Trapézio', grupos: 'Ombros, Trapézio', exercicios: [
+                        { nome: 'Desenvolvimento com Barra', series: 4, repeticoes: '8-12', descanso: '120s' },
+                        { nome: 'Desenvolvimento com Halteres', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Elevação Lateral', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Elevação Frontal', series: 3, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Crucifixo Inverso', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Encolhimento com Barra', series: 4, repeticoes: '12-15', descanso: '60s' }
+                    ]},
+                    { nome: 'Dia 5 - Braços', grupos: 'Bíceps, Tríceps', exercicios: [
+                        { nome: 'Rosca Direta com Barra', series: 4, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Tríceps Francês com Barra EZ', series: 4, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Rosca Alternada', series: 3, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Tríceps Pulley (Corda)', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Rosca Concentrada', series: 3, repeticoes: '12', descanso: '45s' },
+                        { nome: 'Tríceps Coice', series: 3, repeticoes: '12', descanso: '45s' }
+                    ]},
+                    { nome: 'Dia 6 - Pernas Posterior', grupos: 'Posterior, Glúteos', exercicios: [
+                        { nome: 'Stiff (Romeno)', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Mesa Flexora', series: 4, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Cadeira Flexora', series: 4, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Hip Thrust', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Abdução na Máquina', series: 3, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Panturrilha Sentado', series: 4, repeticoes: '15-20', descanso: '45s' }
+                    ]}
+                ]
+            }
+        },
+        {
+            id: 'jay_cutler_precontest',
+            name: 'Jay Cutler Pre-Contest',
+            subtitle: 'Avançado • 6x/semana',
+            description: 'O programa de preparação de palco de Jay Cutler. Aumenta a intensidade, adiciona cardio estratégico e foca em separação e detalhamento muscular. O segredo dos 4 títulos Olympia.',
+            level: 'avancado',
+            days: 6,
+            duration: '90-110',
+            icon: '🎯',
+            category: 'legends_olympia',
+            objetivos: ['lendas', 'maromba', 'emagrecimento'],
+            benefits: ['Definição extrema', 'Detalhamento', 'Stage ready'],
+            workout: {
+                dias: [
+                    { nome: 'Dia 1 - Peito (Alto Volume)', grupos: 'Peito', exercicios: [
+                        { nome: 'Supino Inclinado com Halteres', series: 5, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Supino Reto na Máquina', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Crucifixo Inclinado', series: 4, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Crossover Baixo', series: 4, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Peck Deck', series: 4, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Cardio LISS', series: 1, repeticoes: '30 min', descanso: '0s' }
+                    ]},
+                    { nome: 'Dia 2 - Costas (Detalhamento)', grupos: 'Costas', exercicios: [
+                        { nome: 'Puxada Frontal Pegada Aberta', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Puxada Triângulo', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Remada na Máquina Unilateral', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Remada Baixa (Cabo)', series: 4, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Pullover na Máquina', series: 3, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Cardio LISS', series: 1, repeticoes: '30 min', descanso: '0s' }
+                    ]},
+                    { nome: 'Dia 3 - Pernas (Separação)', grupos: 'Quadríceps, Posterior', exercicios: [
+                        { nome: 'Cadeira Extensora', series: 5, repeticoes: '15-20', descanso: '45s' },
+                        { nome: 'Leg Press (Pés Juntos)', series: 4, repeticoes: '15', descanso: '60s' },
+                        { nome: 'Agachamento Hack', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Passada', series: 4, repeticoes: '15 cada', descanso: '45s' },
+                        { nome: 'Mesa Flexora', series: 4, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Stiff com Halteres', series: 4, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Panturrilha', series: 5, repeticoes: '20', descanso: '30s' }
+                    ]},
+                    { nome: 'Dia 4 - Ombros (Definição)', grupos: 'Ombros', exercicios: [
+                        { nome: 'Desenvolvimento na Máquina', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Elevação Lateral (Drop Set)', series: 4, repeticoes: '15+10+10', descanso: '60s' },
+                        { nome: 'Elevação Frontal Alternada', series: 4, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Crucifixo Inverso', series: 4, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Encolhimento com Halteres', series: 4, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Cardio LISS', series: 1, repeticoes: '30 min', descanso: '0s' }
+                    ]},
+                    { nome: 'Dia 5 - Braços (Pump)', grupos: 'Bíceps, Tríceps', exercicios: [
+                        { nome: 'Rosca Direta (Superset)', series: 4, repeticoes: '15', descanso: '0s' },
+                        { nome: 'Tríceps Pulley (Superset)', series: 4, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Rosca Scott', series: 4, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Tríceps Testa', series: 4, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Rosca Concentrada', series: 3, repeticoes: '15', descanso: '30s' },
+                        { nome: 'Tríceps Corda', series: 3, repeticoes: '15', descanso: '30s' },
+                        { nome: 'Cardio LISS', series: 1, repeticoes: '30 min', descanso: '0s' }
+                    ]},
+                    { nome: 'Dia 6 - Pernas + Glúteos', grupos: 'Glúteos, Posterior', exercicios: [
+                        { nome: 'Hip Thrust', series: 5, repeticoes: '15', descanso: '60s' },
+                        { nome: 'Stiff', series: 4, repeticoes: '15', descanso: '60s' },
+                        { nome: 'Abdução na Máquina', series: 4, repeticoes: '20', descanso: '45s' },
+                        { nome: 'Agachamento Sumô', series: 4, repeticoes: '15', descanso: '60s' },
+                        { nome: 'Elevação Pélvica', series: 4, repeticoes: '20', descanso: '45s' },
+                        { nome: 'Cardio LISS', series: 1, repeticoes: '45 min', descanso: '0s' }
+                    ]}
+                ]
+            }
+        },
+        {
+            id: 'ronnie_coleman_8x',
+            name: 'Ronnie Coleman 8x Mr. Olympia',
+            subtitle: 'Avançado • 6x/semana',
+            description: '"Yeah Buddy! Light Weight Baby!" O treino do maior Mr. Olympia de todos os tempos! Ronnie levantava pesos que ninguém acreditava. 800lbs agachamento, 800lbs leg press. Força bruta absoluta.',
+            level: 'avancado',
+            days: 6,
+            duration: '90-120',
+            icon: '👑',
+            category: 'legends_olympia',
+            objetivos: ['lendas', 'maromba', 'forca', 'hipertrofia'],
+            benefits: ['Força máxima', 'Massa monstruosa', 'GOAT'],
+            featured: true,
+            workout: {
+                dias: [
+                    { nome: 'Dia 1 - Costas/Bíceps', grupos: 'Costas, Bíceps', exercicios: [
+                        { nome: 'Barra Fixa', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Remada Curvada com Barra', series: 4, repeticoes: '10-12', descanso: '120s' },
+                        { nome: 'Remada T-Bar', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Puxada Frontal', series: 3, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Remada Baixa (Cabo)', series: 3, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Levantamento Terra', series: 4, repeticoes: '6-8', descanso: '180s' },
+                        { nome: 'Rosca Direta com Barra', series: 4, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Rosca Alternada', series: 3, repeticoes: '10-12', descanso: '60s' }
+                    ]},
+                    { nome: 'Dia 2 - Peito/Tríceps', grupos: 'Peito, Tríceps', exercicios: [
+                        { nome: 'Supino Reto com Barra', series: 5, repeticoes: '6-12', descanso: '120s' },
+                        { nome: 'Supino Inclinado com Barra', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Supino Declinado', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Crucifixo Inclinado', series: 3, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Crossover (Cabo)', series: 3, repeticoes: '15', descanso: '60s' },
+                        { nome: 'Tríceps Pulley (Corda)', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Tríceps Testa', series: 3, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Mergulho', series: 3, repeticoes: '10-12', descanso: '60s' }
+                    ]},
+                    { nome: 'Dia 3 - Pernas (Quadríceps)', grupos: 'Quadríceps, Panturrilha', exercicios: [
+                        { nome: 'Agachamento Livre', series: 5, repeticoes: '6-12', descanso: '180s' },
+                        { nome: 'Leg Press 45°', series: 4, repeticoes: '12-15', descanso: '120s' },
+                        { nome: 'Agachamento Hack', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Cadeira Extensora', series: 4, repeticoes: '15', descanso: '60s' },
+                        { nome: 'Passada (Lunges)', series: 3, repeticoes: '12 cada', descanso: '60s' },
+                        { nome: 'Panturrilha em Pé', series: 5, repeticoes: '15-20', descanso: '45s' },
+                        { nome: 'Panturrilha Sentado', series: 4, repeticoes: '15-20', descanso: '45s' }
+                    ]},
+                    { nome: 'Dia 4 - Ombros/Trapézio', grupos: 'Ombros, Trapézio', exercicios: [
+                        { nome: 'Desenvolvimento com Barra', series: 4, repeticoes: '8-12', descanso: '120s' },
+                        { nome: 'Desenvolvimento com Halteres', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Elevação Lateral', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Elevação Frontal', series: 3, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Crucifixo Inverso', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Encolhimento com Barra', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Encolhimento com Halteres', series: 3, repeticoes: '12', descanso: '60s' }
+                    ]},
+                    { nome: 'Dia 5 - Pernas (Posterior)', grupos: 'Posterior, Glúteos', exercicios: [
+                        { nome: 'Stiff (Romeno)', series: 4, repeticoes: '10-12', descanso: '120s' },
+                        { nome: 'Mesa Flexora', series: 4, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Cadeira Flexora', series: 4, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Agachamento Sumô', series: 3, repeticoes: '12', descanso: '90s' },
+                        { nome: 'Hip Thrust', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Abdução na Máquina', series: 3, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Panturrilha em Pé', series: 4, repeticoes: '15-20', descanso: '45s' }
+                    ]},
+                    { nome: 'Dia 6 - Braços', grupos: 'Bíceps, Tríceps, Antebraço', exercicios: [
+                        { nome: 'Rosca Direta com Barra', series: 4, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Rosca Scott', series: 3, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Rosca Concentrada', series: 3, repeticoes: '12', descanso: '45s' },
+                        { nome: 'Tríceps Pulley (Barra Reta)', series: 4, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Tríceps Francês', series: 3, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Tríceps Coice', series: 3, repeticoes: '12', descanso: '45s' },
+                        { nome: 'Rosca Punho', series: 3, repeticoes: '15', descanso: '30s' }
+                    ]}
+                ]
+            }
+        },
+        {
+            id: 'ronnie_coleman_back',
+            name: 'Ronnie Coleman Back Day',
+            subtitle: 'Avançado • Especializado',
+            description: 'O treino de costas mais brutal já documentado! Ronnie tinha as costas mais largas e grossas do bodybuilding. Remada com 500lbs, Terra com 800lbs. "Ain\'t nothin\' but a peanut!"',
+            level: 'avancado',
+            days: 1,
+            duration: '75-90',
+            icon: '🦍',
+            category: 'legends_olympia',
+            objetivos: ['lendas', 'maromba', 'forca'],
+            benefits: ['Costas brutais', 'Força extrema', 'Lendário'],
+            workout: {
+                dias: [
+                    { nome: 'Ronnie Coleman Back Day', grupos: 'Costas (Largura + Espessura)', exercicios: [
+                        { nome: 'Levantamento Terra', series: 4, repeticoes: '6-10', descanso: '180s', nota: 'Ronnie: 800lbs!' },
+                        { nome: 'Remada Curvada com Barra', series: 4, repeticoes: '10-12', descanso: '120s', nota: '500lbs de remada' },
+                        { nome: 'Remada T-Bar', series: 4, repeticoes: '10-12', descanso: '120s' },
+                        { nome: 'Puxada Frontal', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Puxada Triângulo', series: 3, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Remada Baixa (Cabo)', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Remada Unilateral com Halter', series: 3, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Pullover na Máquina', series: 3, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Hiperextensão', series: 3, repeticoes: '15', descanso: '45s' }
+                    ]}
+                ]
+            }
+        },
+        {
+            id: 'ronnie_coleman_legs',
+            name: 'Ronnie Coleman Leg Day',
+            subtitle: 'Avançado • Especializado',
+            description: '"Everybody wanna be a bodybuilder, but nobody wanna lift no heavy ass weight!" Agachamento frontal com 600lbs, Leg Press com 2300lbs. O treino de pernas mais pesado da história.',
+            level: 'avancado',
+            days: 1,
+            duration: '90-120',
+            icon: '🦏',
+            category: 'legends_olympia',
+            objetivos: ['lendas', 'maromba', 'forca'],
+            benefits: ['Pernas monstruosas', 'Força lendária', 'Hardcore'],
+            workout: {
+                dias: [
+                    { nome: 'Ronnie Coleman Leg Day', grupos: 'Quadríceps, Posterior, Glúteos', exercicios: [
+                        { nome: 'Agachamento Livre', series: 5, repeticoes: '4-12', descanso: '180s', nota: 'Ronnie: 800lbs!' },
+                        { nome: 'Agachamento Frontal', series: 4, repeticoes: '10-12', descanso: '120s' },
+                        { nome: 'Leg Press 45°', series: 4, repeticoes: '12-15', descanso: '120s', nota: '2300lbs no leg press!' },
+                        { nome: 'Agachamento Hack', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Cadeira Extensora', series: 4, repeticoes: '15', descanso: '60s' },
+                        { nome: 'Stiff (Romeno)', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Mesa Flexora', series: 4, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Passada (Walking Lunges)', series: 3, repeticoes: '20 passos', descanso: '60s' },
+                        { nome: 'Panturrilha em Pé', series: 5, repeticoes: '15-20', descanso: '45s' }
+                    ]}
+                ]
+            }
+        },
+        {
+            id: 'ronnie_coleman_chest',
+            name: 'Ronnie Coleman Chest Day',
+            subtitle: 'Avançado • Especializado',
+            description: 'Supino com 500lbs como aquecimento! Ronnie fazia inclinado com 200lbs em cada mão. Este é o treino que construiu um peito digno de 8x Mr. Olympia.',
+            level: 'avancado',
+            days: 1,
+            duration: '60-75',
+            icon: '💪',
+            category: 'legends_olympia',
+            objetivos: ['lendas', 'maromba', 'hipertrofia'],
+            benefits: ['Peito massivo', 'Força explosiva', 'Intenso'],
+            workout: {
+                dias: [
+                    { nome: 'Ronnie Coleman Chest Day', grupos: 'Peito (Superior, Médio, Inferior)', exercicios: [
+                        { nome: 'Supino Reto com Barra', series: 5, repeticoes: '6-12', descanso: '120s', nota: 'Ronnie: 500lbs!' },
+                        { nome: 'Supino Inclinado com Halteres', series: 4, repeticoes: '10-12', descanso: '90s', nota: '200lbs cada mão!' },
+                        { nome: 'Supino Inclinado com Barra', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Supino Declinado com Barra', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Crucifixo com Halteres (Reto)', series: 3, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Crucifixo Inclinado', series: 3, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Crossover (Cabo)', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Mergulho', series: 3, repeticoes: '10-12', descanso: '60s' }
+                    ]}
+                ]
+            }
         }
     ],
 
@@ -2668,6 +3240,44 @@ const WorkoutTemplates = {
         return this.templates.find(t => t.id === id);
     },
 
+    // Gera o treino baseado no template - usa workout específico se disponível
+    generateWorkoutFromTemplate(template) {
+        // Se o template tem um workout específico definido, usa ele
+        if (template.workout && template.workout.dias) {
+            return {
+                nome: template.name,
+                descricao: template.description,
+                divisao: template.category,
+                duracao: template.duration,
+                template_id: template.id,
+                dias: template.workout.dias.map(d => ({
+                    nome: d.nome,
+                    grupos: d.grupos,
+                    exercicios: d.exercicios.map(ex => ({
+                        nome: ex.nome,
+                        series: ex.series,
+                        repeticoes: ex.repeticoes,
+                        descanso: ex.descanso,
+                        nota: ex.nota || null
+                    }))
+                }))
+            };
+        }
+        
+        // Caso contrário, gera um treino genérico baseado nos parâmetros
+        const treino = WorkoutGenerator.generatePlan({
+            objetivo: template.objetivos?.[0] || 'hipertrofia',
+            dias: template.days,
+            nivel: template.level
+        });
+        
+        treino.nome = template.name;
+        treino.descricao = template.description;
+        treino.template_id = template.id;
+        
+        return treino;
+    },
+
     async applyTemplate(templateId) {
         const template = this.getById(templateId);
         if (!template) {
@@ -2677,17 +3287,8 @@ const WorkoutTemplates = {
 
         Toast.info('Gerando treino...');
 
-        // Gerar treino baseado no template
-        const treino = WorkoutGenerator.generatePlan({
-            objetivo: template.objetivos?.[0] || 'hipertrofia',
-            dias: template.days,
-            nivel: template.level
-        });
-
-        // Personalizar com info do template
-        treino.nome = template.name;
-        treino.descricao = template.description;
-        treino.template_id = template.id;
+        // Gerar treino baseado no template (específico ou genérico)
+        const treino = this.generateWorkoutFromTemplate(template);
 
         // Salvar
         localStorage.setItem('treino_atual', JSON.stringify(treino));
@@ -2738,7 +3339,8 @@ const WorkoutTemplates = {
                     <button class="filter-btn" data-filter="forca">🏋️ Força</button>
                     <button class="filter-btn" data-filter="emagrecimento">🔥 Queima</button>
                     <button class="filter-btn" data-filter="condicionamento">⚡ Cardio</button>
-                    <button class="filter-btn" data-filter="maromba">🏛️ Maromba</button>
+                    <button class="filter-btn" data-filter="maromba">🏛️ Golden Era</button>
+                    <button class="filter-btn" data-filter="lendas">👑 Lendas</button>
                 </div>
                 
                 <div class="templates-list" id="templates-list">
@@ -2763,12 +3365,8 @@ const WorkoutTemplates = {
         const t = this.getById(templateId);
         if (!t) return;
 
-        // Gerar preview do treino
-        const preview = WorkoutGenerator.generatePlan({
-            objetivo: t.objetivos?.[0] || 'hipertrofia',
-            dias: t.days,
-            nivel: t.level
-        });
+        // Gerar preview do treino usando o método correto
+        const preview = this.generateWorkoutFromTemplate(t);
 
         const modal = document.createElement('div');
         modal.className = 'modal-overlay active';
