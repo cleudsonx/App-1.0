@@ -2825,6 +2825,22 @@ const NutritionSystem = {
         'janta-lean': { label: 'Janta Lean', itens: ['tilapia-100g','batata-doce-100g','brocolis-100g'], note: 'Leve e proteína alta' }
     },
 
+    getAllRecipes() {
+        this.load();
+        const base = Object.entries(this.recipes || {});
+        const user = (this.data?.receitas || []).map((r,i) => [
+            `user-${i}`,
+            {
+                label: r.label || r.nome || `Receita ${i+1}`,
+                itens: r.itens || [],
+                macros: r.macros,
+                note: r.note || 'Salvo',
+                user: true
+            }
+        ]);
+        return [...base, ...user];
+    },
+
     load() {
         try {
             const saved = localStorage.getItem(this.key);
@@ -2930,7 +2946,7 @@ const NutritionSystem = {
                         <div class="recipe-quick">
                             <select id="recipe-select">
                                 <option value="">Selecionar receita</option>
-                                ${Object.entries(this.recipes).map(([k,v]) => `<option value="${k}">${v.label}</option>`).join('')}
+                                ${this.getAllRecipes().map(([k,v]) => `<option value="${k}">${v.label}${v.user ? ' (sua)' : ''}</option>`).join('')}
                             </select>
                             <button class="btn-mini" onclick="NutritionSystem.applyRecipe()">Aplicar</button>
                         </div>
@@ -3044,13 +3060,16 @@ const NutritionSystem = {
 
     applyRecipe() {
         const key = document.getElementById('recipe-select')?.value;
-        if (!key || !this.recipes[key]) return;
-        const r = this.recipes[key];
-        const agg = r.itens.reduce((acc, id) => {
-            const f = this.foods[id];
-            if (!f) return acc;
-            acc.cals += f.cals; acc.p += f.proteina; acc.c += f.carbs; acc.g += f.gordura; return acc;
-        }, {cals:0,p:0,c:0,g:0});
+        if (!key) return;
+        const r = this.getAllRecipes().find(([k]) => k === key)?.[1];
+        if (!r) return;
+        const agg = r.macros ?
+            { cals: r.macros.cals||0, p: r.macros.proteina||0, c: r.macros.carbs||0, g: r.macros.gordura||0 } :
+            (r.itens||[]).reduce((acc, id) => {
+                const f = this.foods[id];
+                if (!f) return acc;
+                acc.cals += f.cals; acc.p += f.proteina; acc.c += f.carbs; acc.g += f.gordura; return acc;
+            }, {cals:0,p:0,c:0,g:0});
         const nm = document.getElementById('nm-refeicao');
         const c = document.getElementById('cal-refeicao');
         const p = document.getElementById('prot-refeicao');
