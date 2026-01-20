@@ -670,19 +670,12 @@ const Auth = {
             return;
         }
         
+        const dismissed = sessionStorage.getItem('reminder_dismissed') === 'true';
+        if (dismissed) return;
+        
         const reminder = $('#onboarding-reminder');
         if (reminder) {
             reminder.style.display = 'flex';
-            // Evitar adicionar múltiplos listeners
-            if (!reminder.dataset.listenersAdded) {
-                reminder.dataset.listenersAdded = 'true';
-                $('#btn-complete-onboarding')?.addEventListener('click', () => { reminder.style.display = 'none'; Onboarding.show(); });
-                $('#btn-dismiss-reminder')?.addEventListener('click', () => { 
-                    reminder.style.display = 'none'; 
-                    // Marcar como dispensado nesta sessão
-                    sessionStorage.setItem('reminder_dismissed', 'true');
-                });
-            }
         }
     },
 
@@ -813,6 +806,7 @@ const App = {
         this.setupNavigation();
         this.setupHeader();
         this.setupModals();
+        this.setupOnboardingReminder();
         this.loadDashboard();
         this.loadTreinoTab();
         this.setupProfileTab();
@@ -821,6 +815,22 @@ const App = {
         $('#btn-restart-onboarding')?.addEventListener('click', () => Onboarding.show());
         
         this.switchTab('home');
+    },
+
+    setupOnboardingReminder() {
+        // Setup listeners do reminder uma única vez
+        const reminder = $('#onboarding-reminder');
+        if (reminder && !reminder.dataset.listenersAdded) {
+            reminder.dataset.listenersAdded = 'true';
+            $('#btn-complete-onboarding')?.addEventListener('click', () => { 
+                reminder.style.display = 'none'; 
+                Onboarding.show(); 
+            });
+            $('#btn-dismiss-reminder')?.addEventListener('click', () => { 
+                reminder.style.display = 'none'; 
+                sessionStorage.setItem('reminder_dismissed', 'true');
+            });
+        }
     },
 
     setupNavigation() {
@@ -1212,16 +1222,50 @@ const App = {
     // === PERFIL ===
     loadProfile() {
         const p = AppState.profile || {};
+        const complete = isProfileComplete();
+        
+        // Atualizar stats
         $('#stat-peso') && ($('#stat-peso').textContent = p.peso || '--');
         $('#stat-altura') && ($('#stat-altura').textContent = p.altura || '--');
         $('#stat-idade') && ($('#stat-idade').textContent = p.idade || '--');
-        $('#profile-name') && ($('#profile-name').textContent = AppState.user?.nome || 'Usuário');
         
+        // Atualizar info do usuário
+        const nome = AppState.user?.nome || 'Usuário';
+        $('#profile-name') && ($('#profile-name').textContent = nome);
+        $('#profile-avatar-letter') && ($('#profile-avatar-letter').textContent = nome.charAt(0).toUpperCase());
+        
+        // Objetivo
         const objetivos = { hipertrofia: 'Hipertrofia', forca: 'Força', emagrecimento: 'Emagrecimento', condicionamento: 'Condicionamento' };
         $('#profile-goal') && ($('#profile-goal').textContent = `Objetivo: ${objetivos[p.objetivo] || 'Não definido'}`);
+        
+        // Status do perfil
+        const statusEl = $('#profile-status');
+        if (statusEl) {
+            if (complete) {
+                statusEl.innerHTML = '<span class="status-complete">✓ Perfil completo</span>';
+                statusEl.className = 'profile-status complete';
+            } else {
+                statusEl.innerHTML = '<span class="status-incomplete">⚠ Perfil incompleto</span>';
+                statusEl.className = 'profile-status incomplete';
+            }
+        }
+        
+        // Alerta de perfil incompleto
+        const alertEl = $('#profile-incomplete-alert');
+        if (alertEl) {
+            alertEl.style.display = complete ? 'none' : 'flex';
+        }
+        
+        // Calcular IMC se tiver dados
+        if (p.peso && p.altura) {
+            const alturaM = p.altura / 100;
+            const imc = (p.peso / (alturaM * alturaM)).toFixed(1);
+            $('#stat-imc') && ($('#stat-imc').textContent = imc);
+        }
     },
 
     setupProfileTab() {
+        // Menu items
         $$('.menu-item[data-action]').forEach(item => {
             item.addEventListener('click', () => {
                 const action = item.dataset.action;
@@ -1230,6 +1274,12 @@ const App = {
                 else Toast.info('Em breve!');
             });
         });
+        
+        // Botão editar perfil
+        $('#btn-edit-profile')?.addEventListener('click', () => Onboarding.show());
+        
+        // Botão completar perfil (no alerta)
+        $('#btn-complete-profile')?.addEventListener('click', () => Onboarding.show());
     }
 };
 

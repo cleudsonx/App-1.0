@@ -238,6 +238,18 @@
                     </button>
                 </div>
 
+                <!-- Alerta de Perfil Incompleto -->
+                <div class="profile-incomplete-alert" id="profile-incomplete-alert" style="display: none;">
+                    <div class="alert-content">
+                        <div class="alert-icon">⚠️</div>
+                        <div class="alert-text">
+                            <strong>Perfil incompleto</strong>
+                            <p>Complete seu perfil para desbloquear treinos personalizados</p>
+                        </div>
+                        <button class="btn-alert-action" id="btn-complete-profile">Completar</button>
+                    </div>
+                </div>
+
                 <!-- Profile Summary -->
                 <div class="profile-card" id="profile-summary">
                     <div class="profile-avatar-large">
@@ -246,6 +258,7 @@
                     <div class="profile-info">
                         <h2 id="profile-name">João Silva</h2>
                         <p id="profile-goal">Objetivo: Hipertrofia</p>
+                        <span class="profile-status" id="profile-status"></span>
                     </div>
                     <button class="btn-edit" id="btn-edit-profile">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -258,12 +271,12 @@
                 <!-- Profile Stats -->
                 <div class="profile-stats">
                     <div class="profile-stat">
-                        <span class="stat-number" id="stat-peso">75</span>
+                        <span class="stat-number" id="stat-peso">--</span>
                         <span class="stat-unit">kg</span>
                         <span class="stat-name">Peso</span>
                     </div>
                     <div class="profile-stat">
-                        <span class="stat-number" id="stat-altura">175</span>
+                        <span class="stat-number" id="stat-altura">--</span>
                         <span class="stat-unit">cm</span>
                         <span class="stat-name">Altura</span>
                     </div>

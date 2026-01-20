@@ -8745,3 +8745,95 @@ input, select, textarea {
 .preview-footer .btn-primary:active {
     transform: scale(0.98);
 }
+
+/* =====================================================
+   PROFILE STATUS INDICATORS
+   ===================================================== */
+.profile-incomplete-alert {
+    display: flex;
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.15), rgba(255, 193, 7, 0.1));
+    border: 1px solid rgba(255, 152, 0, 0.3);
+    border-radius: var(--radius-lg);
+    padding: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+
+.profile-incomplete-alert .alert-content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    width: 100%;
+}
+
+.profile-incomplete-alert .alert-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.profile-incomplete-alert .alert-text {
+    flex: 1;
+}
+
+.profile-incomplete-alert .alert-text strong {
+    display: block;
+    font-size: 0.9rem;
+    color: #FF9800;
+    margin-bottom: 2px;
+}
+
+.profile-incomplete-alert .alert-text p {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.btn-alert-action {
+    padding: 8px 16px;
+    background: #FF9800;
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.15s;
+}
+
+.btn-alert-action:hover {
+    background: #F57C00;
+}
+
+.btn-alert-action:active {
+    transform: scale(0.98);
+}
+
+/* Profile Status Badge */
+.profile-status {
+    display: inline-block;
+    margin-top: var(--space-2);
+}
+
+.profile-status .status-complete {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: rgba(76, 175, 80, 0.15);
+    color: #4CAF50;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border-radius: var(--radius-pill);
+}
+
+.profile-status .status-incomplete {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: rgba(255, 152, 0, 0.15);
+    color: #FF9800;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border-radius: var(--radius-pill);
+}
