@@ -242,12 +242,14 @@ const DashboardWidgets = {
                         <div class="ficha-text">
                             <h3>${treino.nome || 'Treino Personalizado'}</h3>
                             <span class="ficha-subtitle">${treino.subtitle || `${treino.dias?.length || 0}x/semana`}</span>
-                            ${(() => {
-                                const nivel = treino.level || treino.nivel || 'personalizado';
-                                const labels = { iniciante: 'Iniciante', intermediario: 'Intermediário', avancado: 'Avançado', avançado: 'Avançado', personalizado: 'Personalizado' };
-                                const label = labels[nivel] || 'Personalizado';
-                                return `<span class="template-level ${nivel}">${label}</span>`;
-                            })()}
+                            <div class="ficha-level">
+                                ${(() => {
+                                    const nivel = treino.level || treino.nivel || 'personalizado';
+                                    const labels = { iniciante: 'Iniciante', intermediario: 'Intermediário', avancado: 'Avançado', avançado: 'Avançado', personalizado: 'Personalizado' };
+                                    const label = labels[nivel] || 'Personalizado';
+                                    return `<span class="template-level ${nivel}">${label}</span>`;
+                                })()}
+                            </div>
                         </div>
                     </div>
                 </div>
