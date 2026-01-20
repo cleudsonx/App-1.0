@@ -10039,3 +10039,11 @@ input, select, textarea {
 .mi-line { font-size:0.9rem; color:#374151; }
 
 @keyframes slideUp { from { transform: translateY(20px); opacity:0 } to { transform: translateY(0); opacity:1 } }
+
+/* Nutrition food search */
+.food-search { margin-bottom: 10px; }
+.food-results { display:flex; flex-direction:column; gap:6px; max-height: 160px; overflow:auto; margin-top:6px; }
+.food-item { display:flex; align-items:center; justify-content:space-between; padding:8px 10px; border:1px solid #e5e7eb; border-radius:10px; background:#fff; cursor:pointer; }
+.food-item:hover { background:#f3f4f6; }
+.food-item span { font-size:0.8rem; color:#6b7280; }
+.food-empty { font-size:0.85rem; color:#6b7280; }

@@ -380,6 +380,7 @@ const DashboardWidgets = {
                     <div class="nutrition-actions">
                         <button class="btn-mini" onclick="NutritionSystem.promptAddMeal()">+ Registrar</button>
                         <button class="btn-mini-secondary" onclick="NutritionSystem.showDashboard()">Detalhes</button>
+                        <button class="btn-mini-secondary" onclick="NutritionSystem.showMacroCalculator()">Calcular</button>
                     </div>
                 </div>
                 <div class="macro-bars">
@@ -2801,6 +2802,20 @@ const FatigueSystem = {
 const NutritionSystem = {
     key: 'nutrition_data',
     data: null,
+    foods: {
+        'frango-peito-100g': { label: 'Peito de frango (100g)', cals: 165, proteina: 31, carbs: 0, gordura: 3.6 },
+        'ovo-1un': { label: 'Ovo (1 unidade)', cals: 155, proteina: 13, carbs: 1.1, gordura: 11 },
+        'arroz-integral-100g': { label: 'Arroz integral (100g cozido)', cals: 111, proteina: 2.6, carbs: 23, gordura: 0.9 },
+        'batata-doce-100g': { label: 'Batata doce (100g)', cals: 86, proteina: 1.6, carbs: 20, gordura: 0.1 },
+        'brocolis-100g': { label: 'Brócolis (100g)', cals: 34, proteina: 2.8, carbs: 7, gordura: 0.4 },
+        'aveia-50g': { label: 'Aveia (50g)', cals: 195, proteina: 8, carbs: 33, gordura: 3.5 },
+        'banana-1un': { label: 'Banana (1 unidade)', cals: 89, proteina: 1.1, carbs: 23, gordura: 0.3 },
+        'pasta-amendoim-1cs': { label: 'Pasta de amendoim (1 colher sopa)', cals: 95, proteina: 4, carbs: 3.5, gordura: 8 },
+        'iogurte-natural-170g': { label: 'Iogurte natural (170g)', cals: 100, proteina: 10, carbs: 7, gordura: 3 },
+        'tilapia-100g': { label: 'Tilápia (100g)', cals: 129, proteina: 26, carbs: 0, gordura: 2.7 },
+        'patinho-100g': { label: 'Carne patinho (100g)', cals: 250, proteina: 26, carbs: 0, gordura: 16 },
+        'whey-1scoop': { label: 'Whey (1 scoop)', cals: 120, proteina: 24, carbs: 3, gordura: 2 }
+    },
 
     load() {
         try {
@@ -2825,23 +2840,26 @@ const NutritionSystem = {
         localStorage.setItem(this.key, JSON.stringify(this.data));
     },
 
-    calculateMacros() {
+    calculateMacros() { // Advanced (Mifflin-St Jeor)
         const p = AppState.profile || {};
         const peso = Number(p.peso) || 75; // kg
+        const altura = Number(p.altura) || 175; // cm
+        const idade = Number(p.idade) || 30; // anos
+        const genero = (p.genero || 'M').toUpperCase();
         const atividade = p.atividade || 'moderado';
-        const objetivo = p.objetivo || 'Hipertrofia';
-        // Proteína: 2.0 g/kg (MVP)
-        const proteina = Math.round(peso * 2.0);
-        // Gordura: 0.9 g/kg
-        const gordura = Math.round(peso * 0.9);
-        // Carbo: dependendo da atividade
-        const fatorAtv = { sedentario: 2.0, leve: 2.5, moderado: 3.0, intenso: 3.5, extremo: 4.0 }[atividade] || 3.0;
-        let carboidrato = Math.round(peso * fatorAtv);
-        // Ajuste por objetivo
-        if (/perda/i.test(objetivo)) carboidrato = Math.round(carboidrato * 0.85);
-        if (/ganho|hipertrofia/i.test(objetivo)) carboidrato = Math.round(carboidrato * 1.05);
-        const calorias = proteina * 4 + carboidrato * 4 + gordura * 9;
-        return { proteina, carboidrato, gordura, calorias, sincronizadoEm: Date.now() };
+        const objetivo = p.objetivo || 'Manutenção';
+        const bmr = (genero === 'M') ? (10*peso + 6.25*altura - 5*idade + 5) : (10*peso + 6.25*altura - 5*idade - 161);
+        const atvFactor = { sedentario: 1.2, leve: 1.375, moderado: 1.55, intenso: 1.725, extremo: 1.9 }[atividade] || 1.55;
+        let tdee = bmr * atvFactor;
+        if (/perda/i.test(objetivo)) tdee *= 0.85; // -15%
+        else if (/ganho|hipertrofia/i.test(objetivo)) tdee *= 1.10; // +10%
+        const proteina = Math.round(peso * 1.8); // 1.8 g/kg
+        const gordura = Math.round(peso * 0.9);  // 0.9 g/kg
+        const kcalProteina = proteina * 4;
+        const kcalGordura = gordura * 9;
+        const kcalRestante = Math.max(0, Math.round(tdee) - (kcalProteina + kcalGordura));
+        const carboidrato = Math.max(0, Math.round(kcalRestante / 4));
+        return { proteina, carboidrato, gordura, calorias: Math.round(tdee), sincronizadoEm: Date.now() };
     },
 
     getTodayEntry() {
@@ -2894,6 +2912,11 @@ const NutritionSystem = {
             <div class="nutrition-card">
                 <div class="nutrition-header"><h3>Registrar refeição</h3><button class="nutrition-close" onclick="NutritionSystem.removePrompt()">✕</button></div>
                 <div class="nutrition-body">
+                    <div class="food-search">
+                        <label>Buscar alimento</label>
+                        <input id="food-search" type="text" placeholder="Ex: frango, arroz" oninput="NutritionSystem.onSearchFoodInput(this.value)">
+                        <div id="food-results" class="food-results"></div>
+                    </div>
                     <label>Nome</label>
                     <input id="nm-refeicao" type="text" placeholder="Ex: Frango com arroz">
                     <div class="grid-2">
@@ -2910,6 +2933,92 @@ const NutritionSystem = {
             </div>
         `;
         document.body.appendChild(el);
+    },
+
+    onSearchFoodInput(q) {
+        const list = Object.entries(this.foods).filter(([key, v]) => v.label.toLowerCase().includes((q||'').toLowerCase())).slice(0,8);
+        const el = document.getElementById('food-results');
+        if (!el) return;
+        el.innerHTML = list.length ? list.map(([key, v]) => `
+            <div class="food-item" onclick="NutritionSystem.selectFood('${key}')">${v.label}<span>${v.cals} kcal • P ${v.proteina}g • C ${v.carbs}g • G ${v.gordura}g</span></div>
+        `).join('') : '<div class="food-empty">Nenhum item encontrado</div>';
+    },
+
+    selectFood(key) {
+        const v = this.foods[key];
+        if (!v) return;
+        const nm = document.getElementById('nm-refeicao');
+        const c = document.getElementById('cal-refeicao');
+        const p = document.getElementById('prot-refeicao');
+        const cb = document.getElementById('carb-refeicao');
+        const g = document.getElementById('fat-refeicao');
+        if (nm) nm.value = v.label;
+        if (c) c.value = v.cals;
+        if (p) p.value = v.proteina;
+        if (cb) cb.value = v.carbs;
+        if (g) g.value = v.gordura;
+        Toast.show('Alimento selecionado ✅');
+    },
+
+    showMacroCalculator() {
+        const p = AppState.profile || {};
+        const macros = this.calculateMacros();
+        const existing = document.querySelector('.nutrition-overlay');
+        if (existing) existing.remove();
+        const el = document.createElement('div');
+        el.className = 'nutrition-overlay';
+        el.innerHTML = `
+            <div class="nutrition-card">
+                <div class="nutrition-header"><h3>Calcular Macros (Pro)</h3><button class="nutrition-close" onclick="NutritionSystem.removePrompt()">✕</button></div>
+                <div class="nutrition-body">
+                    <div class="grid-2">
+                        <div><label>Peso (kg)</label><input id="calc-peso" type="number" value="${p.peso||75}"></div>
+                        <div><label>Altura (cm)</label><input id="calc-altura" type="number" value="${p.altura||175}"></div>
+                        <div><label>Idade</label><input id="calc-idade" type="number" value="${p.idade||30}"></div>
+                        <div><label>Gênero</label><input id="calc-genero" type="text" value="${p.genero||'M'}"></div>
+                        <div><label>Atividade</label><input id="calc-atv" type="text" value="${p.atividade||'moderado'}"></div>
+                        <div><label>Objetivo</label><input id="calc-obj" type="text" value="${p.objetivo||'Manutenção'}"></div>
+                    </div>
+                    <div class="macro-bars big" style="margin-top:12px;">
+                        <div class="macro-row"><span>Proteína</span><div class="bar"><div class="fill prot" style="width:100%"></div></div><span>${macros.proteina} g</span></div>
+                        <div class="macro-row"><span>Carbo</span><div class="bar"><div class="fill carb" style="width:100%"></div></div><span>${macros.carboidrato} g</span></div>
+                        <div class="macro-row"><span>Gordura</span><div class="bar"><div class="fill fat" style="width:100%"></div></div><span>${macros.gordura} g</span></div>
+                    </div>
+                    <div class="cal-progress"><div class="bar"><div class="fill cal" style="width:100%"></div></div><span>${macros.calorias} kcal/dia</span></div>
+                </div>
+                <div class="nutrition-actions-bottom">
+                    <button class="btn-primary" onclick="NutritionSystem.applyCalculatedMacros()">Adotar</button>
+                    <button class="btn-secondary" onclick="NutritionSystem.removePrompt()">Cancelar</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(el);
+    },
+
+    applyCalculatedMacros() {
+        // Read possible edits
+        const peso = Number(document.getElementById('calc-peso')?.value)||NaN;
+        const altura = Number(document.getElementById('calc-altura')?.value)||NaN;
+        const idade = Number(document.getElementById('calc-idade')?.value)||NaN;
+        const genero = (document.getElementById('calc-genero')?.value||'').toUpperCase();
+        const atv = document.getElementById('calc-atv')?.value||'';
+        const obj = document.getElementById('calc-obj')?.value||'';
+        // Update profile minimal
+        AppState.profile = {
+            ...(AppState.profile||{}),
+            ...(isNaN(peso)?{}:{peso}),
+            ...(isNaN(altura)?{}:{altura}),
+            ...(isNaN(idade)?{}:{idade}),
+            ...(genero?{genero}:{ }),
+            ...(atv?{atividade: atv}:{ }),
+            ...(obj?{objetivo: obj}:{ })
+        };
+        // Recalculate and save
+        this.data.macros = this.calculateMacros();
+        this.save();
+        this.removePrompt();
+        DashboardWidgets.render();
+        Toast.show('Macros atualizadas ✅');
     },
 
     handleAddMeal() {
