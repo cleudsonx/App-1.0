@@ -2817,6 +2817,14 @@ const NutritionSystem = {
         'whey-1scoop': { label: 'Whey (1 scoop)', cals: 120, proteina: 24, carbs: 3, gordura: 2 }
     },
 
+    recipes: {
+        'cafe-ganho': { label: 'Café do Ganho', itens: ['ovo-1un','aveia-50g','banana-1un'], note: 'Desjejum proteico' },
+        'pre-rapido': { label: 'Pré-treino Rápido', itens: ['banana-1un','pasta-amendoim-1cs'], note: 'Carbo rápido + gordura' },
+        'pos-massa': { label: 'Pós-treino Massa', itens: ['frango-peito-100g','arroz-integral-100g','brocolis-100g'], note: 'Clássico recuperação' },
+        'lanche-magro': { label: 'Lanche Magro', itens: ['iogurte-natural-170g','aveia-50g'], note: 'Proteico e saciedade' },
+        'janta-lean': { label: 'Janta Lean', itens: ['tilapia-100g','batata-doce-100g','brocolis-100g'], note: 'Leve e proteína alta' }
+    },
+
     load() {
         try {
             const saved = localStorage.getItem(this.key);
@@ -2853,7 +2861,7 @@ const NutritionSystem = {
         let tdee = bmr * atvFactor;
         if (/perda/i.test(objetivo)) tdee *= 0.85; // -15%
         else if (/ganho|hipertrofia/i.test(objetivo)) tdee *= 1.10; // +10%
-        const proteina = Math.round(peso * 1.8); // 1.8 g/kg
+        const proteina = Math.round(peso * (p.proteinaPorKg || 1.8)); // custom g/kg
         const gordura = Math.round(peso * 0.9);  // 0.9 g/kg
         const kcalProteina = proteina * 4;
         const kcalGordura = gordura * 9;
@@ -2894,10 +2902,10 @@ const NutritionSystem = {
         };
     },
 
-    recordMeal({ nome, cals, proteina=0, carbs=0, gordura=0, hora }) {
+    recordMeal({ nome, cals, proteina=0, carbs=0, gordura=0, hora, porcao }) {
         this.load();
         const entry = this.getTodayEntry();
-        const refeicao = { nome: nome||'Refeição', hora: hora||new Date().toTimeString().slice(0,5), alimentos: [{ item: nome||'Item', porcao: '', cals, proteina, carbs, gordura }] };
+        const refeicao = { nome: nome||'Refeição', hora: hora||new Date().toTimeString().slice(0,5), alimentos: [{ item: nome||'Item', porcao: porcao||'', cals, proteina, carbs, gordura }] };
         entry.refeicoes.push(refeicao);
         this.save();
         Toast.show('Refeição registrada ✅');
@@ -2917,13 +2925,26 @@ const NutritionSystem = {
                         <input id="food-search" type="text" placeholder="Ex: frango, arroz" oninput="NutritionSystem.onSearchFoodInput(this.value)">
                         <div id="food-results" class="food-results"></div>
                     </div>
+                    <div class="food-search">
+                        <label>Receitas rápidas</label>
+                        <div class="recipe-quick">
+                            <select id="recipe-select">
+                                <option value="">Selecionar receita</option>
+                                ${Object.entries(this.recipes).map(([k,v]) => `<option value="${k}">${v.label}</option>`).join('')}
+                            </select>
+                            <button class="btn-mini" onclick="NutritionSystem.applyRecipe()">Aplicar</button>
+                        </div>
+                    </div>
                     <label>Nome</label>
                     <input id="nm-refeicao" type="text" placeholder="Ex: Frango com arroz">
+                    <label>Horário</label>
+                    <input id="hora-refeicao" type="time" value="${new Date().toTimeString().slice(0,5)}">
                     <div class="grid-2">
                         <div><label>Calorias</label><input id="cal-refeicao" type="number" placeholder="kcal"></div>
                         <div><label>Proteína</label><input id="prot-refeicao" type="number" placeholder="g"></div>
                         <div><label>Carbo</label><input id="carb-refeicao" type="number" placeholder="g"></div>
                         <div><label>Gordura</label><input id="fat-refeicao" type="number" placeholder="g"></div>
+                        <div><label>Porção</label><input id="porcao-refeicao" type="text" placeholder="Ex: 150g"></div>
                     </div>
                 </div>
                 <div class="nutrition-actions-bottom">
@@ -3021,16 +3042,196 @@ const NutritionSystem = {
         Toast.show('Macros atualizadas ✅');
     },
 
+    applyRecipe() {
+        const key = document.getElementById('recipe-select')?.value;
+        if (!key || !this.recipes[key]) return;
+        const r = this.recipes[key];
+        const agg = r.itens.reduce((acc, id) => {
+            const f = this.foods[id];
+            if (!f) return acc;
+            acc.cals += f.cals; acc.p += f.proteina; acc.c += f.carbs; acc.g += f.gordura; return acc;
+        }, {cals:0,p:0,c:0,g:0});
+        const nm = document.getElementById('nm-refeicao');
+        const c = document.getElementById('cal-refeicao');
+        const p = document.getElementById('prot-refeicao');
+        const cb = document.getElementById('carb-refeicao');
+        const g = document.getElementById('fat-refeicao');
+        if (nm) nm.value = r.label;
+        if (c) c.value = Math.round(agg.cals);
+        if (p) p.value = Math.round(agg.p);
+        if (cb) cb.value = Math.round(agg.c);
+        if (g) g.value = Math.round(agg.g);
+        Toast.show('Receita aplicada ✅');
+    },
+
     handleAddMeal() {
         const nome = document.getElementById('nm-refeicao')?.value || 'Refeição';
         const cals = Number(document.getElementById('cal-refeicao')?.value)||0;
         const proteina = Number(document.getElementById('prot-refeicao')?.value)||0;
         const carbs = Number(document.getElementById('carb-refeicao')?.value)||0;
         const gordura = Number(document.getElementById('fat-refeicao')?.value)||0;
-        this.recordMeal({ nome, cals, proteina, carbs, gordura });
+        const porcao = document.getElementById('porcao-refeicao')?.value || '';
+        const hora = document.getElementById('hora-refeicao')?.value || new Date().toTimeString().slice(0,5);
+        this.recordMeal({ nome, cals, proteina, carbs, gordura, porcao, hora });
         this.removePrompt();
         // Refresh widget
         DashboardWidgets.render();
+    },
+
+    promptEditMeal(idx) {
+        this.load();
+        const entry = this.getTodayEntry();
+        const r = entry.refeicoes[idx];
+        if (!r) return;
+        const a = r.alimentos?.[0] || {};
+        const existing = document.querySelector('.nutrition-overlay');
+        if (existing) existing.remove();
+        const el = document.createElement('div');
+        el.className = 'nutrition-overlay';
+        el.innerHTML = `
+            <div class="nutrition-card">
+                <div class="nutrition-header"><h3>Editar refeição</h3><button class="nutrition-close" onclick="NutritionSystem.removePrompt()">✕</button></div>
+                <div class="nutrition-body">
+                    <label>Nome</label>
+                    <input id="nm-refeicao" type="text" value="${r.nome}">
+                    <label>Horário</label>
+                    <input id="hora-refeicao" type="time" value="${r.hora}">
+                    <div class="grid-2">
+                        <div><label>Calorias</label><input id="cal-refeicao" type="number" value="${a.cals||0}"></div>
+                        <div><label>Proteína</label><input id="prot-refeicao" type="number" value="${a.proteina||0}"></div>
+                        <div><label>Carbo</label><input id="carb-refeicao" type="number" value="${a.carbs||0}"></div>
+                        <div><label>Gordura</label><input id="fat-refeicao" type="number" value="${a.gordura||0}"></div>
+                        <div><label>Porção</label><input id="porcao-refeicao" type="text" value="${a.porcao||''}"></div>
+                    </div>
+                </div>
+                <div class="nutrition-actions-bottom">
+                    <button class="btn-primary" onclick="NutritionSystem.handleSaveMeal(${idx})">Salvar</button>
+                    <button class="btn-secondary" onclick="NutritionSystem.removePrompt()">Cancelar</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(el);
+    },
+
+    handleSaveMeal(idx) {
+        this.load();
+        const entry = this.getTodayEntry();
+        const r = entry.refeicoes[idx];
+        if (!r) return;
+        const nome = document.getElementById('nm-refeicao')?.value || r.nome;
+        const hora = document.getElementById('hora-refeicao')?.value || r.hora;
+        const cals = Number(document.getElementById('cal-refeicao')?.value)||0;
+        const proteina = Number(document.getElementById('prot-refeicao')?.value)||0;
+        const carbs = Number(document.getElementById('carb-refeicao')?.value)||0;
+        const gordura = Number(document.getElementById('fat-refeicao')?.value)||0;
+        const porcao = document.getElementById('porcao-refeicao')?.value || '';
+        r.nome = nome;
+        r.hora = hora;
+        r.alimentos = [{ item:nome, porcao, cals, proteina, carbs, gordura }];
+        this.save();
+        this.removePrompt();
+        DashboardWidgets.render();
+        Toast.show('Refeição atualizada ✅');
+    },
+
+    deleteMeal(idx) {
+        this.load();
+        const entry = this.getTodayEntry();
+        entry.refeicoes.splice(idx,1);
+        this.save();
+        DashboardWidgets.render();
+        Toast.show('Refeição removida ✅');
+    },
+
+    saveRecipeFromMeal(idx) {
+        this.load();
+        const entry = this.getTodayEntry();
+        const r = entry.refeicoes[idx];
+        if (!r) return;
+        const a = r.alimentos?.[0] || {};
+        const recipe = { label: r.nome, itens: [], note: 'Salvo do diário', macros: { cals:a.cals||0, proteina:a.proteina||0, carbs:a.carbs||0, gordura:a.gordura||0 } };
+        this.data.receitas = this.data.receitas || [];
+        this.data.receitas.push(recipe);
+        this.save();
+        Toast.show('Receita salva ✅');
+    },
+
+    getHistory(days = 7) {
+        this.load();
+        const cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - (days - 1));
+        return (this.data.diario||[])
+            .filter(d => new Date(d.data) >= cutoff)
+            .map(d => ({
+                date: d.data,
+                cals: d.totalCals || 0,
+                protein: d.totalProteina || 0,
+                proteinPct: d.meta?.proteina ? Math.round((d.totalProteina / d.meta.proteina) * 100) : 0
+            }))
+            .sort((a,b)=> new Date(a.date) - new Date(b.date));
+    },
+
+    getRecommendations(sum) {
+        const recs = [];
+        if (sum.totalProteina < sum.meta.proteina) recs.push(`Faltam ${Math.max(0, sum.meta.proteina - sum.totalProteina)}g de proteína hoje.`);
+        if (sum.totalCals < sum.meta.calorias * 0.9) recs.push('Calorias abaixo de 90% — adicione um lanche proteico.');
+        const fadiga = (window.FatigueSystem && FatigueSystem.getDashboardStatus) ? FatigueSystem.getDashboardStatus() : { level: 'neutral' };
+        if (fadiga.level === 'alta') recs.push('Fadiga alta: considere -200 a -300 kcal e priorize proteína.');
+        if (fadiga.level === 'baixa') recs.push('Fadiga baixa: pode subir carbo em +10% hoje.');
+        return recs.length ? recs : ['Tudo alinhado, mantenha a consistência.'];
+    },
+
+    getHeatmapProtein(days = 7) {
+        const hist = this.getHistory(days);
+        return hist.map(h => ({ date: h.date, pct: Math.min(150, h.proteinPct || 0) }));
+    },
+
+    showPreferences() {
+        const p = AppState.profile || {};
+        const existing = document.querySelector('.nutrition-overlay');
+        if (existing) existing.remove();
+        const el = document.createElement('div');
+        el.className = 'nutrition-overlay';
+        el.innerHTML = `
+            <div class="nutrition-card">
+                <div class="nutrition-header"><h3>Preferências de Metas</h3><button class="nutrition-close" onclick="NutritionSystem.removePrompt()">✕</button></div>
+                <div class="nutrition-body">
+                    <label>Objetivo</label>
+                    <select id="pref-obj">
+                        ${['Manutenção','Hipertrofia','Perda de gordura'].map(opt => `<option value="${opt}" ${opt=== (p.objetivo||'Manutenção')?'selected':''}>${opt}</option>`).join('')}
+                    </select>
+                    <label>Nível de atividade</label>
+                    <select id="pref-atv">
+                        ${['sedentario','leve','moderado','intenso','extremo'].map(opt => `<option value="${opt}" ${opt===(p.atividade||'moderado')?'selected':''}>${opt}</option>`).join('')}
+                    </select>
+                    <label>Proteína alvo (g/kg)</label>
+                    <input id="pref-prot-kg" type="number" step="0.1" value="${p.proteinaPorKg||1.8}">
+                </div>
+                <div class="nutrition-actions-bottom">
+                    <button class="btn-primary" onclick="NutritionSystem.applyPreferences()">Salvar</button>
+                    <button class="btn-secondary" onclick="NutritionSystem.removePrompt()">Cancelar</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(el);
+    },
+
+    applyPreferences() {
+        const obj = document.getElementById('pref-obj')?.value || 'Manutenção';
+        const atv = document.getElementById('pref-atv')?.value || 'moderado';
+        const protKg = Number(document.getElementById('pref-prot-kg')?.value)||1.8;
+        AppState.profile = { ...(AppState.profile||{}), objetivo: obj, atividade: atv, proteinaPorKg: protKg };
+        // Recalculate macros with custom protein
+        const p = AppState.profile;
+        const peso = Number(p.peso)||75;
+        const base = this.calculateMacros();
+        base.proteina = Math.round(peso * protKg);
+        base.calorias = base.proteina*4 + base.gordura*9 + base.carboidrato*4;
+        this.data.macros = base;
+        this.save();
+        this.removePrompt();
+        DashboardWidgets.render();
+        Toast.show('Preferências salvas ✅');
     },
 
     removePrompt() {
@@ -3039,13 +3240,17 @@ const NutritionSystem = {
 
     showDashboard() {
         const sum = this.getTodaySummary();
+        const hist7 = this.getHistory(7);
+        const hist30 = this.getHistory(30);
+        const heat = this.getHeatmapProtein(7);
+        const recs = this.getRecommendations(sum);
         const existing = document.querySelector('.nutrition-overlay');
         if (existing) existing.remove();
         const el = document.createElement('div');
         el.className = 'nutrition-overlay';
         el.innerHTML = `
             <div class="nutrition-card">
-                <div class="nutrition-header"><h3>Nutrição de hoje</h3><button class="nutrition-close" onclick="NutritionSystem.removePrompt()">✕</button></div>
+                <div class="nutrition-header"><h3>Nutrição de hoje</h3><div class="header-actions"><button class="btn-mini-secondary" onclick="NutritionSystem.showPreferences()">Preferências</button><button class="nutrition-close" onclick="NutritionSystem.removePrompt()">✕</button></div></div>
                 <div class="nutrition-body">
                     <div class="macro-bars big">
                         <div class="macro-row"><span>Proteína</span><div class="bar"><div class="fill prot" style="width:${Math.min(100, Math.round((sum.totalProteina/sum.meta.proteina)*100))}%"></div></div><span>${sum.totalProteina}/${sum.meta.proteina}g</span></div>
@@ -3056,11 +3261,46 @@ const NutritionSystem = {
                         <div class="bar"><div class="fill cal" style="width:${Math.min(100, Math.round((sum.totalCals/sum.meta.calorias)*100))}%"></div></div>
                         <span>${sum.totalCals}/${sum.meta.calorias} kcal</span>
                     </div>
+
+                    <div class="charts-wrap">
+                        <div class="chart-block">
+                            <div class="chart-title">Calorias (7d)</div>
+                            <div class="bar-chart">
+                                ${hist7.map(h => `<div class="bar-col" title="${h.date}" style="height:${Math.min(100, Math.round((h.cals/(sum.meta.calorias||1))*100))}%"></div>`).join('')}
+                            </div>
+                        </div>
+                        <div class="chart-block">
+                            <div class="chart-title">Protein Heatmap (7d)</div>
+                            <div class="heatmap">
+                                ${heat.map(h => `<div class="heat-cell" title="${h.date} - ${h.pct}%" style="background: rgba(16,185,129,${Math.min(1, h.pct/120)})"></div>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-block">
+                        <div class="chart-title">Calorias (30d)</div>
+                        <div class="bar-chart long">
+                            ${hist30.map(h => `<div class="bar-col" title="${h.date}" style="height:${Math.min(100, Math.round((h.cals/(sum.meta.calorias||1))*100))}%"></div>`).join('')}
+                        </div>
+                    </div>
+
+                    <div class="recommendations">
+                        <div class="chart-title">Recomendações</div>
+                        <ul>
+                            ${recs.map(r => `<li>${r}</li>`).join('')}
+                        </ul>
+                    </div>
+
                     <div class="nutrition-list">
-                        ${this.data.diario[0]?.refeicoes?.length ? this.data.diario[0].refeicoes.map(r => `
+                        ${this.data.diario[0]?.refeicoes?.length ? this.data.diario[0].refeicoes.map((r,i) => `
                             <div class="meal-item">
                                 <div class="mi-title">${r.nome} <span class="mi-time">${r.hora}</span></div>
-                                ${(r.alimentos||[]).map(a => `<div class="mi-line">${a.item} — ${a.cals} kcal, P ${a.proteina}g, C ${a.carbs}g, G ${a.gordura}g</div>`).join('')}
+                                ${(r.alimentos||[]).map(a => `<div class="mi-line">${a.item} — ${a.cals} kcal, P ${a.proteina}g, C ${a.carbs}g, G ${a.gordura}g ${a.porcao ? '• '+a.porcao : ''}</div>`).join('')}
+                                <div class="meal-actions">
+                                    <button class="btn-mini-secondary" onclick="NutritionSystem.promptEditMeal(${i})">Editar</button>
+                                    <button class="btn-mini-secondary" onclick="NutritionSystem.deleteMeal(${i})">Excluir</button>
+                                    <button class="btn-mini" onclick="NutritionSystem.saveRecipeFromMeal(${i})">Salvar receita</button>
+                                </div>
                             </div>
                         `).join('') : '<p>Sem refeições registradas hoje.</p>'}
                     </div>
