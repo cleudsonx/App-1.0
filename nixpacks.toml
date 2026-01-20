@@ -1,0 +1,15 @@
+# Railway/Nixpacks Configuration for Java Backend
+[phases.setup]
+nixPkgs = ["jdk17"]
+
+[phases.build]
+cmds = [
+  "cd app-trainer-java-web/app-trainer-java-web",
+  "javac -d bin -encoding UTF-8 -sourcepath src $(find src -name '*.java')"
+]
+
+[phases.start]
+cmd = "cd app-trainer-java-web/app-trainer-java-web && java -cp bin WebServer"
+
+[variables]
+PORT = "8081"
