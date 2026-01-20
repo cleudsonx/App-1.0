@@ -506,11 +506,48 @@ const DashboardWidgets = {
     },
 
     renderSono() {
+        const today = SleepSystem.getTodayRecord();
+        const score = today ? SleepSystem.getScore(today) : 0;
+        const status = SleepSystem.getStatus(score);
+        const trend = SleepSystem.getTrendStatus(7);
+        const duration = today ? today.durationHours : '--';
+
         return `
-            <div class="dashboard-widget widget-card card-sono" data-widget-id="sono-recuperacao">
+            <div class="dashboard-widget widget-card card-sono" data-widget-id="sono-recuperacao" onclick="SleepSystem.showDashboard()">
                 ${this.renderDragHandle()}
-                <div class="sono-header"><span>😴 Sono</span><small>OK</small></div>
-                <div class="sono-body"><div class="sono-hours">7.0 h</div><div class="sono-score">Score 78</div></div>
+                <div class="sono-header">
+                    <div class="sono-title-section">
+                        <span>😴 Sono</span>
+                        <small class="sono-status-badge ${status.level}">${status.text}</small>
+                    </div>
+                    <div class="sono-trend">${trend.trend} ${trend.pct}%</div>
+                </div>
+                <div class="sono-body">
+                    <div class="sono-score-display">
+                        <div class="sono-score">${score}</div>
+                        <div class="sono-score-label">/100</div>
+                    </div>
+                    <div class="sono-details">
+                        <div class="sono-detail-row">
+                            <span class="sono-icon">⏰</span>
+                            <span class="sono-text">${duration !== '--' ? duration + 'h' : '--'}</span>
+                        </div>
+                        ${today ? `
+                        <div class="sono-detail-row">
+                            <span class="sono-icon">⭐</span>
+                            <span class="sono-text">${today.quality}/10</span>
+                        </div>
+                        <div class="sono-detail-row">
+                            <span class="sono-icon">📅</span>
+                            <span class="sono-text">${today.date.slice(5)}</span>
+                        </div>
+                        ` : `
+                        <div class="sono-detail-row">
+                            <span class="sono-text">Clique para registrar</span>
+                        </div>
+                        `}
+                    </div>
+                </div>
             </div>
         `;
     }
@@ -2515,6 +2552,597 @@ const Achievements = {
 };
 
 // =====================================================
+// SLEEP SYSTEM - Sono, Qualidade, Correlações com Fadiga
+// Fases: 1=Log+Modal | 2=Gráficos 7/30d | 3=Integração Fadiga
+// UX: Automático (device) + Manual (fallback reflexivo)
+// =====================================================
+const SleepSystem = {
+    storageKey: 'sleep_data',
+    autoSyncAttempts: 3,
+    lastDeviceSync: null,
+
+    load() {
+        try {
+            return JSON.parse(localStorage.getItem(this.storageKey) || '{"records":[]}');
+        } catch (e) {
+            return { records: [] };
+        }
+    },
+
+    save(data) {
+        localStorage.setItem(this.storageKey, JSON.stringify(data));
+    },
+
+    // ============= LOG: Registra noite de sono
+    recordSleep({ sleepStart, sleepEnd, quality, awakenings = 0, factors = [], manual = true }) {
+        const data = this.load();
+        data.records = data.records || [];
+
+        const durationMs = new Date(sleepEnd) - new Date(sleepStart);
+        const durationMinutes = Math.max(0, Math.round(durationMs / 60000));
+        const durationHours = (durationMinutes / 60).toFixed(2);
+
+        const record = {
+            date: new Date(sleepStart).toISOString().split('T')[0],
+            sleepStart,
+            sleepEnd,
+            durationMinutes,
+            durationHours: parseFloat(durationHours),
+            quality: Math.min(10, Math.max(1, quality || 5)),
+            awakenings: Math.max(0, awakenings || 0),
+            factors: factors || [],
+            manual,
+            syncedAt: manual ? null : Date.now()
+        };
+
+        // Remove registro anterior do mesmo dia (evita duplicatas)
+        data.records = data.records.filter(r => r.date !== record.date);
+        data.records.push(record);
+
+        // Manter últimos 90 registros
+        if (data.records.length > 90) {
+            data.records = data.records.slice(-90);
+        }
+
+        this.save(data);
+        return record;
+    },
+
+    // ============= SCORE: Calcula score 0-100
+    getScore(record) {
+        if (!record) return 0;
+
+        // Duração ideal: 7-8h (420-480 min)
+        const durationScore = record.durationMinutes >= 420 && record.durationMinutes <= 480 
+            ? 100 
+            : Math.max(0, 100 - Math.abs(record.durationMinutes - 450) / 4.5);
+
+        // Qualidade: peso igual
+        const qualityScore = (record.quality / 10) * 100;
+
+        // Penalidade por despertares: -10 pts por despertar
+        const awakeningsScore = Math.max(0, 100 - (record.awakenings * 10));
+
+        // Média ponderada
+        return Math.round((durationScore * 0.4 + qualityScore * 0.4 + awakeningsScore * 0.2));
+    },
+
+    // ============= STATUS: Categoria visual
+    getStatus(score) {
+        if (score >= 85) return { text: 'Excelente ✅', level: 'excelente', emoji: '😴🟢', color: '#10b981' };
+        if (score >= 70) return { text: 'Bom 👍', level: 'bom', emoji: '😴', color: '#22d3ee' };
+        if (score >= 50) return { text: 'Alerta ⚠️', level: 'alerta', emoji: '😴🟡', color: '#f59e0b' };
+        return { text: 'Crítico 🚨', level: 'critico', emoji: '😴🔴', color: '#ef4444' };
+    },
+
+    // ============= TREND: Tendência 7 dias
+    getTrendStatus(days = 7) {
+        const data = this.load();
+        const records = data.records || [];
+        if (records.length < 2) return { trend: '→', pct: 0 };
+
+        const recent = records.slice(-days);
+        if (recent.length < 2) return { trend: '→', pct: 0 };
+
+        const avgRecent = recent.reduce((s, r) => s + this.getScore(r), 0) / recent.length;
+        const avgBefore = recent.slice(0, Math.floor(recent.length / 2))
+            .reduce((s, r) => s + this.getScore(r), 0) / Math.ceil(recent.length / 2);
+
+        const pct = Math.round(((avgRecent - avgBefore) / avgBefore) * 100);
+        const trend = pct > 5 ? '↑' : pct < -5 ? '↓' : '→';
+
+        return { trend, pct: Math.abs(pct) };
+    },
+
+    // ============= TODAY: Noite anterior (hoje de manhã)
+    getTodayRecord() {
+        const data = this.load();
+        if (!data.records || !data.records.length) return null;
+
+        const today = new Date().toISOString().split('T')[0];
+        const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+
+        // Procura registro de ontem ou hoje (se ainda não dormiu)
+        return data.records.find(r => r.date === today || r.date === yesterday) || null;
+    },
+
+    // ============= HISTORY: Últimos N dias
+    getHistory(days = 7) {
+        const data = this.load();
+        const records = (data.records || []).slice(-days);
+        return records.map(r => ({
+            date: r.date,
+            duration: r.durationHours,
+            quality: r.quality,
+            score: this.getScore(r),
+            manual: r.manual,
+            awakenings: r.awakenings
+        }));
+    },
+
+    // ============= DEVICE SYNC: Simula sincronização com wearable
+    async tryDeviceSync() {
+        // Placeholder para integração futura (Apple Health, Wear OS)
+        // Por enquanto, retorna null para ativar modal manual
+        try {
+            // Aqui futuramente: const data = await AppleHealthAPI.getSleepData();
+            // ou: const data = await WearOSAPI.getSleepData();
+            return null;
+        } catch (e) {
+            return null;
+        }
+    },
+
+    // ============= MODAL: Log da noite (reflexivo + automático)
+    promptSleep() {
+        const existing = document.querySelector('.sleep-overlay');
+        if (existing) existing.remove();
+
+        const today = new SleepSystem.getTodayRecord();
+        const defaultStart = today?.sleepStart || new Date(Date.now() - 28800000).toISOString().slice(11, 16); // 8h atrás
+        const defaultEnd = today?.sleepEnd || new Date().toISOString().slice(11, 16); // agora
+        const defaultQuality = today?.quality || 7;
+        const defaultAwakenings = today?.awakenings || 0;
+
+        const el = document.createElement('div');
+        el.className = 'sleep-overlay';
+        el.innerHTML = `
+            <div class="sleep-card">
+                <div class="sleep-header">
+                    <div>
+                        <h3>😴 Registrar Sono</h3>
+                        <p>Noite anterior</p>
+                    </div>
+                    <button class="sleep-close" onclick="SleepSystem.removePrompt()">✕</button>
+                </div>
+
+                <div class="sleep-body">
+                    <!-- Duração -->
+                    <div class="sleep-section">
+                        <label class="sleep-label">⏰ Que horas dormiu?</label>
+                        <div class="time-inputs">
+                            <div class="time-group">
+                                <label>Deitou</label>
+                                <input type="time" id="sleep-start" value="${defaultStart}">
+                            </div>
+                            <div class="time-group">
+                                <label>Acordou</label>
+                                <input type="time" id="sleep-end" value="${defaultEnd}">
+                            </div>
+                        </div>
+                        <div class="sleep-duration" id="sleep-duration-display">
+                            Duração: <strong>--</strong>
+                        </div>
+                    </div>
+
+                    <!-- Qualidade -->
+                    <div class="sleep-section">
+                        <label class="sleep-label">⭐ Qualidade do sono (1-10)</label>
+                        <div class="quality-slider-container">
+                            <input type="range" min="1" max="10" step="0.5" value="${defaultQuality}" 
+                                   class="sleep-slider" id="sleep-quality" 
+                                   oninput="SleepSystem.updateQualityLabel(this.value)">
+                            <div class="quality-labels">
+                                <span>Péssimo</span>
+                                <span id="quality-value" class="quality-value">${defaultQuality}</span>
+                                <span>Perfeito</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Despertares -->
+                    <div class="sleep-section">
+                        <label class="sleep-label">😑 Quantas vezes acordou?</label>
+                        <div class="awakening-control">
+                            <button class="btn-count" onclick="SleepSystem.decrementAwakenings()">−</button>
+                            <input type="number" id="sleep-awakenings" min="0" max="10" value="${defaultAwakenings}" 
+                                   class="awakening-input" readonly>
+                            <button class="btn-count" onclick="SleepSystem.incrementAwakenings()">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Fatores -->
+                    <div class="sleep-section">
+                        <label class="sleep-label">🔍 Fatores que afetaram (marque):</label>
+                        <div class="factors-grid">
+                            <label class="factor-checkbox">
+                                <input type="checkbox" name="factor" value="estresse"> Estresse
+                            </label>
+                            <label class="factor-checkbox">
+                                <input type="checkbox" name="factor" value="cafeina"> Cafeína
+                            </label>
+                            <label class="factor-checkbox">
+                                <input type="checkbox" name="factor" value="treino-tarde"> Treino tard
+                            </label>
+                            <label class="factor-checkbox">
+                                <input type="checkbox" name="factor" value="barulho"> Barulho
+                            </label>
+                            <label class="factor-checkbox">
+                                <input type="checkbox" name="factor" value="tela"> Tela antes dormir
+                            </label>
+                            <label class="factor-checkbox">
+                                <input type="checkbox" name="factor" value="temperatura"> Temperatura
+                            </label>
+                            <label class="factor-checkbox">
+                                <input type="checkbox" name="factor" value="alcool"> Álcool
+                            </label>
+                            <label class="factor-checkbox">
+                                <input type="checkbox" name="factor" value="medicamento"> Medicamento
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Info -->
+                    <div class="sleep-info">
+                        <p>💡 Dica: Sono consistente (7-8h) melhora recuperação, força e performance em +15%</p>
+                    </div>
+                </div>
+
+                <div class="sleep-actions">
+                    <button class="btn-primary" onclick="SleepSystem.handleSaveSleep()">Salvar 😴</button>
+                    <button class="btn-secondary" onclick="SleepSystem.removePrompt()">Cancelar</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(el);
+        SleepSystem.updateDurationDisplay();
+
+        // Event listeners para duração
+        document.getElementById('sleep-start')?.addEventListener('change', () => SleepSystem.updateDurationDisplay());
+        document.getElementById('sleep-end')?.addEventListener('change', () => SleepSystem.updateDurationDisplay());
+    },
+
+    updateDurationDisplay() {
+        const start = document.getElementById('sleep-start')?.value;
+        const end = document.getElementById('sleep-end')?.value;
+
+        if (!start || !end) {
+            document.getElementById('sleep-duration-display').innerHTML = 'Duração: <strong>--</strong>';
+            return;
+        }
+
+        const [sh, sm] = start.split(':').map(Number);
+        const [eh, em] = end.split(':').map(Number);
+
+        let durationMin = (eh * 60 + em) - (sh * 60 + sm);
+        if (durationMin < 0) durationMin += 24 * 60; // próximo dia
+
+        const hours = Math.floor(durationMin / 60);
+        const mins = durationMin % 60;
+
+        document.getElementById('sleep-duration-display').innerHTML = 
+            `Duração: <strong>${hours}h ${mins}m</strong>`;
+    },
+
+    updateQualityLabel(value) {
+        document.getElementById('quality-value').textContent = value;
+    },
+
+    incrementAwakenings() {
+        const input = document.getElementById('sleep-awakenings');
+        input.value = Math.min(10, parseInt(input.value) + 1);
+    },
+
+    decrementAwakenings() {
+        const input = document.getElementById('sleep-awakenings');
+        input.value = Math.max(0, parseInt(input.value) - 1);
+    },
+
+    handleSaveSleep() {
+        const startTime = document.getElementById('sleep-start')?.value;
+        const endTime = document.getElementById('sleep-end')?.value;
+        const quality = parseFloat(document.getElementById('sleep-quality')?.value || 5);
+        const awakenings = parseInt(document.getElementById('sleep-awakenings')?.value || 0);
+
+        if (!startTime || !endTime) {
+            Toast.error('Preencha horários de sono');
+            return;
+        }
+
+        // Monta horários completos
+        const now = new Date();
+        const today = now.toISOString().split('T')[0];
+        const sleepStart = `${today}T${startTime}:00`;
+        const sleepEnd = `${today}T${endTime}:00`;
+
+        // Coleta fatores
+        const factors = Array.from(document.querySelectorAll('input[name="factor"]:checked'))
+            .map(el => el.value);
+
+        // Salva
+        this.recordSleep({
+            sleepStart,
+            sleepEnd,
+            quality,
+            awakenings,
+            factors,
+            manual: true // Reflexivo
+        });
+
+        this.removePrompt();
+        DashboardWidgets.render();
+        Toast.show('Sono registrado ✅');
+    },
+
+    removePrompt() {
+        document.querySelector('.sleep-overlay')?.remove();
+    },
+
+    // ============= DASHBOARD: Detalhado com gráficos
+    showDashboard() {
+        const today = this.getTodayRecord();
+        const score = today ? this.getScore(today) : 0;
+        const status = this.getStatus(score);
+        const trend = this.getTrendStatus(7);
+        const hist7 = this.getHistory(7);
+        const hist30 = this.getHistory(30);
+        const avg7 = hist7.length ? (hist7.reduce((s, h) => s + h.duration, 0) / hist7.length).toFixed(1) : '--';
+        const avg30 = hist30.length ? (hist30.reduce((s, h) => s + h.duration, 0) / hist30.length).toFixed(1) : '--';
+        const avgQual7 = hist7.length ? (hist7.reduce((s, h) => s + h.quality, 0) / hist7.length).toFixed(1) : '--';
+
+        const existing = document.querySelector('.sleep-overlay');
+        if (existing) existing.remove();
+
+        const el = document.createElement('div');
+        el.className = 'sleep-overlay';
+        el.innerHTML = `
+            <div class="sleep-card sleep-card-large">
+                <div class="sleep-header">
+                    <div>
+                        <h3>😴 Sono - Dashboard</h3>
+                        <p>Análise da qualidade de recuperação</p>
+                    </div>
+                    <button class="sleep-close" onclick="SleepSystem.removePrompt()">✕</button>
+                </div>
+
+                <div class="sleep-body">
+                    <!-- Score Card -->
+                    <div class="score-card ${status.level}">
+                        <div class="score-left">
+                            <div class="score-emoji">${status.emoji}</div>
+                            <div class="score-text">
+                                <div class="score-label">Score Sono</div>
+                                <div class="score-value">${score}/100</div>
+                            </div>
+                        </div>
+                        <div class="score-right">
+                            <div class="status-badge ${status.level}">${status.text}</div>
+                            <div class="trend-badge">
+                                ${trend.trend} ${trend.pct > 0 ? '+' : ''}${trend.pct}%
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ontem -->
+                    ${today ? `
+                    <div class="sleep-section">
+                        <label class="sleep-label">📊 Noite Anterior</label>
+                        <div class="yesterday-stats">
+                            <div class="stat-box">
+                                <div class="stat-icon">⏰</div>
+                                <div class="stat-content">
+                                    <div class="stat-title">Duração</div>
+                                    <div class="stat-value">${today.durationHours}h (${today.durationMinutes} min)</div>
+                                    <div class="stat-hint">${today.durationMinutes >= 420 && today.durationMinutes <= 480 ? '✅ Ideal' : '⚠️ Fora do ideal (7-8h)'}</div>
+                                </div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-icon">⭐</div>
+                                <div class="stat-content">
+                                    <div class="stat-title">Qualidade</div>
+                                    <div class="stat-value">${today.quality}/10</div>
+                                    <div class="stat-hint">${today.manual ? 'Manual' : 'Automático (device)'}</div>
+                                </div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-icon">😑</div>
+                                <div class="stat-content">
+                                    <div class="stat-title">Despertares</div>
+                                    <div class="stat-value">${today.awakenings}x</div>
+                                    <div class="stat-hint">${today.awakenings <= 1 ? '✅ Ótimo' : today.awakenings <= 3 ? '👍 Normal' : '⚠️ Muitos'}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    ` : '<p style="color:#6b7280; font-size:0.9rem;">Nenhum registro para ontem</p>'}
+
+                    <!-- Gráfico 7 dias -->
+                    <div class="sleep-section">
+                        <label class="sleep-label">📈 Duração (7 dias)</label>
+                        <div class="sleep-chart">
+                            <div class="chart-bars">
+                                ${hist7.map((h, i) => `
+                                    <div class="chart-bar-container" title="${h.date}: ${h.duration}h">
+                                        <div class="chart-bar" style="height: ${Math.max(20, Math.min(100, (h.duration / 10) * 100))}%; background: ${h.quality >= 7 ? '#10b981' : h.quality >= 5 ? '#f59e0b' : '#ef4444'}"></div>
+                                        <div class="chart-label">${new Date(h.date).toLocaleDateString('pt-BR', {weekday: 'short'}).slice(0,1)}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="chart-stats">Média 7d: ${avg7}h | Qual média: ${avgQual7}/10</div>
+                    </div>
+
+                    <!-- Heatmap 30 dias (como nutrição) -->
+                    <div class="sleep-section">
+                        <label class="sleep-label">🔥 Heatmap Qualidade (30 dias)</label>
+                        <div class="sleep-heatmap">
+                            ${hist30.map(h => `
+                                <div class="heat-cell-sleep" 
+                                     title="${h.date}: ${h.duration}h, Qual ${h.quality}/10"
+                                     style="background: rgba(16,185,129,${Math.min(1, h.quality / 10)})"></div>
+                            `).join('')}
+                        </div>
+                        <div class="chart-stats">Média 30d: ${avg30}h</div>
+                    </div>
+
+                    <!-- Correlação Fadiga (Fase 3) -->
+                    <div class="sleep-section">
+                        <label class="sleep-label">🔗 Correlação com Fadiga</label>
+                        <div class="correlation-box">
+                            ${SleepSystem.renderCorrelationWithFatigue()}
+                        </div>
+                    </div>
+
+                    <!-- Sugestões -->
+                    <div class="sleep-section">
+                        <label class="sleep-label">💡 Recomendações</label>
+                        <div class="recommendations-list">
+                            ${SleepSystem.getRecommendations().map(r => `<li>${r}</li>`).join('')}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sleep-actions">
+                    <button class="btn-primary" onclick="SleepSystem.promptSleep()">Editar noite anterior</button>
+                    <button class="btn-secondary" onclick="SleepSystem.removePrompt()">Fechar</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(el);
+    },
+
+    // ============= FASE 3: Integração com Fadiga
+    renderCorrelationWithFatigue() {
+        const fatigueData = FatigueSystem.loadData();
+        const sleepData = this.load();
+        const todayRecord = this.getTodayRecord();
+        const lastFatigue = fatigueData.sessions?.[fatigueData.sessions.length - 1];
+
+        if (!todayRecord || !lastFatigue) {
+            return '<p style="color:#6b7280;">Dados insuficientes para correlação. Continue registrando.</p>';
+        }
+
+        const sleepScore = this.getScore(todayRecord);
+        const fatigueStatus = FatigueSystem.statusFromAvg(lastFatigue.avgRPE);
+        const recoveryScore = this.getRecoveryScore();
+
+        return `
+            <div class="correlation-stats">
+                <div class="corr-row">
+                    <span>Sono</span>
+                    <span class="corr-value">${sleepScore}/100</span>
+                </div>
+                <div class="corr-row">
+                    <span>RPE Treino</span>
+                    <span class="corr-value">${lastFatigue.avgRPE.toFixed(1)}</span>
+                </div>
+                <div class="corr-row">
+                    <span>🔄 Recovery Score</span>
+                    <span class="corr-value corr-highlight">${recoveryScore}/100</span>
+                </div>
+                <div class="corr-insight" style="border-top: 1px solid #e5e7eb; padding-top: 8px; margin-top: 8px;">
+                    ${SleepSystem.getCorrelationInsight()}
+                </div>
+            </div>
+        `;
+    },
+
+    getRecoveryScore() {
+        const sleepData = this.load();
+        const fatigueData = FatigueSystem?.loadData?.();
+
+        const todayRecord = this.getTodayRecord();
+        const lastFatigue = fatigueData?.sessions?.[fatigueData.sessions.length - 1];
+
+        if (!todayRecord || !lastFatigue) return 0;
+
+        const sleepScore = this.getScore(todayRecord);
+        const fatigueLevel = lastFatigue.avgRPE; // 1-10
+        const fatigueScore = ((10 - fatigueLevel) / 10) * 100; // inverte (menor RPE = melhor)
+
+        // Recovery = 50% sono + 50% fadiga controlada
+        return Math.round(sleepScore * 0.5 + fatigueScore * 0.5);
+    },
+
+    getCorrelationInsight() {
+        const todayRecord = this.getTodayRecord();
+        const fatigueData = FatigueSystem?.loadData?.();
+        const lastFatigue = fatigueData?.sessions?.[fatigueData.sessions.length - 1];
+
+        if (!todayRecord || !lastFatigue) return 'Registre treino com RPE para ver insights';
+
+        const duration = todayRecord.durationHours;
+        const rpe = lastFatigue.avgRPE;
+        const sleepScore = this.getScore(todayRecord);
+
+        let insight = '';
+
+        if (duration < 6) {
+            insight = `⚠️ Dormiu pouco (${duration}h). RPE ${rpe.toFixed(1)} tende a ser ${rpe > 7 ? 'ALTO demais' : 'normal'}. Considere descanso extra.`;
+        } else if (duration > 8) {
+            insight = `✅ Dormiram bem (${duration}h). Se RPE foi alto, recuperação está sendo priorizada. Continuar assim.`;
+        } else {
+            insight = `👍 Duração ótima (${duration}h). ${rpe > 7 ? 'RPE ainda alto → acompanhar próximos dias' : 'Recuperação equilibrada.'} `;
+        }
+
+        return insight;
+    },
+
+    getRecommendations() {
+        const today = this.getTodayRecord();
+        const hist7 = this.getHistory(7);
+        const recs = [];
+
+        if (!today) {
+            recs.push('📝 Registre a noite anterior para receber recomendações personalizadas');
+            return recs;
+        }
+
+        // Recomendações baseadas em duração
+        if (today.durationHours < 6) {
+            recs.push('⏰ Dormiu pouco. Aumente proteína +15% e considere reduzir volume do treino em 20%');
+        } else if (today.durationHours > 9) {
+            recs.push('😴 Excessivo. Se continuando, pode indicar overtraining. Monitore RPE.');
+        } else {
+            recs.push('✅ Duração dentro do ideal. Mantenha consistência.');
+        }
+
+        // Recomendações baseadas em qualidade
+        if (today.quality < 5) {
+            recs.push('🌙 Qualidade baixa. Evite telas 1h antes, reduza cafeína e estresse.');
+            if (today.factors.includes('tela')) recs.push('📱 Foco: Desligue dispositivos 60min antes de dormir');
+            if (today.factors.includes('estresse')) recs.push('🧘 Tente meditação ou respiração antes de dormir');
+        }
+
+        // Padrão da semana
+        if (hist7.length >= 3) {
+            const avgQual = hist7.reduce((s, h) => s + h.quality, 0) / hist7.length;
+            if (avgQual < 6) {
+                recs.push('📊 Semana com qualidade ruim. Priorize sleep hygiene: temperatura (18-20°C), escuridão, silêncio');
+            }
+        }
+
+        if (today.awakenings > 3) {
+            recs.push('😑 Muitos despertares. Verifique ambiente (luz, barulho) e hidratação noturna');
+        }
+
+        return recs.length ? recs : ['🎯 Tudo ótimo! Mantenha a consistência de sono.'];
+    }
+};
+
+// =====================================================
 // FATIGUE SYSTEM - RPE + Fadiga (Widget Expandido)
 // Versão séria (Strong/Hevy): Widget B + Slider B + Gráfico Completo
 // =====================================================
@@ -3175,6 +3803,68 @@ const NutritionSystem = {
         Toast.show('Receita salva ✅');
     },
 
+    promptEditSavedRecipe(idx) {
+        this.load();
+        const r = this.data.receitas?.[idx];
+        if (!r) return;
+        const name = (r.label || `Receita ${idx+1}`).replace(/"/g, '&quot;');
+        const note = (r.note || '').replace(/"/g, '&quot;');
+        const macros = r.macros || {};
+        document.querySelector('.nutrition-overlay')?.remove();
+        const el = document.createElement('div');
+        el.className = 'nutrition-overlay';
+        el.innerHTML = `
+            <div class="nutrition-card">
+                <div class="nutrition-header"><h3>Editar receita</h3><button class="nutrition-close" onclick="NutritionSystem.showDashboard()">✕</button></div>
+                <div class="nutrition-body">
+                    <label>Nome</label>
+                    <input id="rec-label" type="text" value="${name}">
+                    <label>Nota</label>
+                    <input id="rec-note" type="text" value="${note}" placeholder="Opcional">
+                    <div class="grid-2">
+                        <div><label>Calorias</label><input id="rec-cals" type="number" value="${macros.cals||0}"></div>
+                        <div><label>Proteína</label><input id="rec-prot" type="number" value="${macros.proteina||0}"></div>
+                        <div><label>Carbo</label><input id="rec-carb" type="number" value="${macros.carbs||0}"></div>
+                        <div><label>Gordura</label><input id="rec-fat" type="number" value="${macros.gordura||0}"></div>
+                    </div>
+                </div>
+                <div class="nutrition-actions-bottom">
+                    <button class="btn-primary" onclick="NutritionSystem.handleSaveRecipe(${idx})">Salvar</button>
+                    <button class="btn-secondary" onclick="NutritionSystem.showDashboard()">Cancelar</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(el);
+    },
+
+    handleSaveRecipe(idx) {
+        this.load();
+        const r = this.data.receitas?.[idx];
+        if (!r) return;
+        const label = document.getElementById('rec-label')?.value || r.label || `Receita ${idx+1}`;
+        const note = document.getElementById('rec-note')?.value || '';
+        const cals = Number(document.getElementById('rec-cals')?.value)||0;
+        const proteina = Number(document.getElementById('rec-prot')?.value)||0;
+        const carbs = Number(document.getElementById('rec-carb')?.value)||0;
+        const gordura = Number(document.getElementById('rec-fat')?.value)||0;
+        r.label = label;
+        r.note = note;
+        r.macros = { cals, proteina, carbs, gordura };
+        this.save();
+        this.showDashboard();
+        Toast.show('Receita atualizada ✅');
+    },
+
+    deleteSavedRecipe(idx) {
+        this.load();
+        if (!this.data.receitas || !this.data.receitas[idx]) return;
+        if (!confirm('Remover esta receita salva?')) return;
+        this.data.receitas.splice(idx,1);
+        this.save();
+        this.showDashboard();
+        Toast.show('Receita removida ✅');
+    },
+
     getHistory(days = 7) {
         this.load();
         const cutoff = new Date();
@@ -3308,6 +3998,23 @@ const NutritionSystem = {
                         <ul>
                             ${recs.map(r => `<li>${r}</li>`).join('')}
                         </ul>
+                    </div>
+
+                    <div class="saved-recipes">
+                        <div class="chart-title">Suas receitas</div>
+                        ${(this.data?.receitas?.length) ? this.data.receitas.map((r,i) => `
+                            <div class="recipe-card">
+                                <div class="recipe-info">
+                                    <div class="recipe-name">${r.label || `Receita ${i+1}`}</div>
+                                    <div class="recipe-note">${r.note || 'Personalizada'}</div>
+                                    ${r.macros ? `<div class="recipe-macros"><span>${Math.round(r.macros.cals||0)} kcal</span><span>P ${Math.round(r.macros.proteina||0)}g</span><span>C ${Math.round(r.macros.carbs||0)}g</span><span>G ${Math.round(r.macros.gordura||0)}g</span></div>` : ''}
+                                </div>
+                                <div class="recipe-actions">
+                                    <button class="btn-mini" onclick="NutritionSystem.promptEditSavedRecipe(${i})">Editar</button>
+                                    <button class="btn-mini-secondary" onclick="NutritionSystem.deleteSavedRecipe(${i})">Excluir</button>
+                                </div>
+                            </div>
+                        `).join('') : '<p class="empty">Nenhuma receita salva ainda.</p>'}
                     </div>
 
                     <div class="nutrition-list">
