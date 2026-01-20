@@ -369,6 +369,58 @@
                     </button>
                 </div>
 
+                <!-- Configurações do Timer -->
+                <div class="settings-section">
+                    <h3 class="settings-title">⏱️ Configurações do Timer</h3>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Timer Automático</span>
+                            <span class="setting-desc">Inicia timer ao completar série</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="setting-auto-timer" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Som</span>
+                            <span class="setting-desc">Alerta sonoro ao terminar</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="setting-sound" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Vibração</span>
+                            <span class="setting-desc">Vibrar ao terminar descanso</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="setting-vibration" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Tempo Padrão</span>
+                            <span class="setting-desc">Descanso padrão entre séries</span>
+                        </div>
+                        <select id="setting-default-time" class="setting-select">
+                            <option value="30">30 seg</option>
+                            <option value="60">1 min</option>
+                            <option value="90" selected>1:30 min</option>
+                            <option value="120">2 min</option>
+                            <option value="180">3 min</option>
+                        </select>
+                    </div>
+                </div>
+
                 <!-- Danger Zone -->
                 <div class="danger-zone">
                     <h3>Zona de Perigo</h3>

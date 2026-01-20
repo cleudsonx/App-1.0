@@ -1361,6 +1361,50 @@ const App = {
         
         // Botão completar perfil (no alerta)
         $('#btn-complete-profile')?.addEventListener('click', () => Onboarding.show());
+
+        // Configurações do Timer
+        this.setupTimerSettings();
+    },
+
+    setupTimerSettings() {
+        // Carregar valores das configurações
+        const settings = RestTimer.settings;
+        
+        const autoTimer = $('#setting-auto-timer');
+        const sound = $('#setting-sound');
+        const vibration = $('#setting-vibration');
+        const defaultTime = $('#setting-default-time');
+
+        // Aplicar valores atuais
+        if (autoTimer) autoTimer.checked = settings.autoTimer;
+        if (sound) sound.checked = settings.soundEnabled;
+        if (vibration) vibration.checked = settings.vibrationEnabled;
+        if (defaultTime) defaultTime.value = settings.defaultTime;
+
+        // Event listeners
+        autoTimer?.addEventListener('change', (e) => {
+            RestTimer.updateSetting('autoTimer', e.target.checked);
+        });
+
+        sound?.addEventListener('change', (e) => {
+            RestTimer.updateSetting('soundEnabled', e.target.checked);
+            // Tocar som de teste
+            if (e.target.checked) {
+                RestTimer.playSound();
+            }
+        });
+
+        vibration?.addEventListener('change', (e) => {
+            RestTimer.updateSetting('vibrationEnabled', e.target.checked);
+            // Vibrar como teste
+            if (e.target.checked && navigator.vibrate) {
+                navigator.vibrate(100);
+            }
+        });
+
+        defaultTime?.addEventListener('change', (e) => {
+            RestTimer.updateSetting('defaultTime', parseInt(e.target.value));
+        });
     }
 };
 
@@ -1375,6 +1419,38 @@ const RestTimer = {
     remainingSeconds: 90,
     interval: null,
     audioContext: null,
+
+    // Configurações do Timer (persistidas no localStorage)
+    settings: {
+        autoTimer: true,      // Timer automático após completar série
+        soundEnabled: true,   // Som ao finalizar
+        vibrationEnabled: true, // Vibração ao finalizar
+        defaultTime: 90       // Tempo padrão em segundos
+    },
+
+    // Carregar configurações do localStorage
+    loadSettings() {
+        const saved = localStorage.getItem('timerSettings');
+        if (saved) {
+            try {
+                this.settings = { ...this.settings, ...JSON.parse(saved) };
+            } catch (e) {
+                console.log('Erro ao carregar configurações do timer');
+            }
+        }
+    },
+
+    // Salvar configurações no localStorage
+    saveSettings() {
+        localStorage.setItem('timerSettings', JSON.stringify(this.settings));
+    },
+
+    // Atualizar uma configuração específica
+    updateSetting(key, value) {
+        this.settings[key] = value;
+        this.saveSettings();
+        Toast.info(`Configuração atualizada`);
+    },
 
     // Presets de tempo em segundos
     presets: [
@@ -1556,13 +1632,15 @@ const RestTimer = {
         this.remainingSeconds = 0;
         this.updateDisplay();
         
-        // Vibração
-        if ('vibrate' in navigator) {
+        // Vibração (se habilitado)
+        if (this.settings.vibrationEnabled && 'vibrate' in navigator) {
             navigator.vibrate([200, 100, 200, 100, 200]);
         }
 
-        // Som
-        this.playSound();
+        // Som (se habilitado)
+        if (this.settings.soundEnabled) {
+            this.playSound();
+        }
 
         // Notificação visual
         Toast.success('⏱️ Tempo de descanso finalizado! Bora próxima série! 💪');
@@ -1654,10 +1732,24 @@ const RestTimer = {
 
     // Método para ser chamado pelo ActiveWorkout após completar série
     startFromWorkout(seconds = 90) {
-        this.open(seconds);
+        // Verifica se auto-timer está habilitado
+        if (!this.settings.autoTimer) {
+            return;
+        }
+        
+        const time = seconds || this.settings.defaultTime;
+        this.open(time);
         setTimeout(() => this.start(), 300);
+    },
+
+    // Inicialização - carrega configurações
+    init() {
+        this.loadSettings();
     }
 };
+
+// Inicializar RestTimer ao carregar
+RestTimer.init();
 
 // =====================================================
 // ACTIVE WORKOUT - Sistema de Treino Ativo
@@ -1879,13 +1971,17 @@ const ActiveWorkout = {
         this.updateExerciseCounter(exIdx);
         this.updateProgress();
         
-        // Se completou, iniciar timer de descanso
+        // Se completou, iniciar timer de descanso automático
         if (set.completed) {
             const restSec = this.parseRestTime(this.currentWorkout.exercicios[exIdx]?.descanso);
-            this.startRestTimer(restSec);
             
-            // Vibração haptica
-            if (navigator.vibrate) navigator.vibrate(50);
+            // Usar o RestTimer integrado
+            RestTimer.startFromWorkout(restSec);
+            
+            // Vibração haptica leve
+            if (RestTimer.settings.vibrationEnabled && navigator.vibrate) {
+                navigator.vibrate(50);
+            }
             
             // Verificar se completou todas séries do exercício
             const allComplete = this.setsCompleted[exIdx].every(s => s.completed);
