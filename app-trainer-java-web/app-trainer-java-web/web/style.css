@@ -1,4 +1,4 @@
-/* =====================================================
+﻿/* =====================================================
    APP TRAINER v2 - DESIGN SYSTEM MODERNO
    Inspirado em: Hevy, Strong, FitBod, MyFitnessPal
    ===================================================== */
@@ -1535,7 +1535,7 @@ input, select, textarea {
     display: none;
 }
 
-/* Estilos de .split-day foram movidos para seção SPLIT PREVIEW - ATUALIZADO COM ÍCONES */
+/* Estilos de .split-day foram movidos para seÃ§Ã£o SPLIT PREVIEW - ATUALIZADO COM ÃCONES */
 
 /* ========== CHAT ========== */
 .chat-container {
@@ -2569,7 +2569,7 @@ input, select, textarea {
 /* Landscape Mode for Mobile */
 @media (max-height: 500px) and (orientation: landscape) {
     .app-header {
-        height: 40px;
+        height: 52px;
     }
     
     .bottom-nav {
@@ -2582,8 +2582,8 @@ input, select, textarea {
     }
     
     .center-button {
-        width: 40px;
-        height: 40px;
+        width: 52px;
+        height: 52px;
     }
     
     .center-button svg {
@@ -3249,7 +3249,7 @@ input, select, textarea {
     letter-spacing: 0.5px;
 }
 
-/* ========== SETTINGS SECTION - Configurações do Timer ========== */
+/* ========== SETTINGS SECTION - ConfiguraÃ§Ãµes do Timer ========== */
 .settings-section {
     margin-top: var(--space-6);
     padding: var(--space-5);
@@ -3390,7 +3390,7 @@ input, select, textarea {
     }
 }
 
-/* ========== MODAL DE EDIÇÃO DE TREINO ========== */
+/* ========== MODAL DE EDIÃ‡ÃƒO DE TREINO ========== */
 .modal-overlay .modal-content {
     background: var(--bg-secondary);
     border-radius: var(--radius-xl);
@@ -3429,7 +3429,7 @@ input, select, textarea {
     border: none;
     background: var(--bg-elevated);
     color: var(--text-secondary);
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     cursor: pointer;
     transition: all var(--duration-fast);
 }
@@ -3643,8 +3643,8 @@ input, select, textarea {
 }
 
 .welcome-icon svg {
-    width: 40px;
-    height: 40px;
+    width: 52px;
+    height: 52px;
     color: white;
 }
 
@@ -3680,7 +3680,7 @@ input, select, textarea {
 }
 
 .feature-icon {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
 }
 
 .feature-item span:last-child {
@@ -3805,7 +3805,7 @@ input, select, textarea {
     color: var(--text-primary);
 }
 
-/* ========== MODAL VISUALIZAÇÃO TREINO COMPLETO ========== */
+/* ========== MODAL VISUALIZAÃ‡ÃƒO TREINO COMPLETO ========== */
 .modal-workout-view {
     max-width: 550px;
     max-height: 85vh;
@@ -3975,7 +3975,7 @@ input, select, textarea {
     color: var(--text-secondary);
 }
 
-/* Botão Ver Treino */
+/* BotÃ£o Ver Treino */
 .btn-view-workout {
     width: 44px;
     height: 44px;
@@ -4143,7 +4143,7 @@ input, select, textarea {
     transition: width 0.3s ease;
 }
 
-/* Exercícios */
+/* ExercÃ­cios */
 .aw-exercises {
     flex: 1;
     overflow-y: auto;
@@ -4285,13 +4285,13 @@ input, select, textarea {
 }
 
 .btn-complete-set {
-    width: 40px;
-    height: 40px;
+    width: 52px;
+    height: 52px;
     border-radius: var(--radius-full);
     background: var(--bg-card);
     border: 2px solid var(--border-color);
     color: var(--text-muted);
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -4396,7 +4396,7 @@ input, select, textarea {
 }
 
 .evolution-header h2 {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     font-weight: 700;
 }
 
@@ -4581,7 +4581,7 @@ input, select, textarea {
 }
 
 .rest-timer-content h3 {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     margin-bottom: var(--space-4);
     color: var(--text-primary);
 }
@@ -4712,7 +4712,7 @@ input, select, textarea {
 }
 
 .suggestion-icon {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     flex-shrink: 0;
 }
 
@@ -5441,7 +5441,7 @@ input, select, textarea {
 }
 
 /* =====================================================
-   BOTÃO EDITAR TREINO
+   BOTÃƒO EDITAR TREINO
    ===================================================== */
 
 .btn-edit-workout {
@@ -5484,7 +5484,7 @@ input, select, textarea {
    MELHORIAS VISUAIS GERAIS
    ===================================================== */
 
-/* Animação de pulso para elementos importantes */
+/* AnimaÃ§Ã£o de pulso para elementos importantes */
 @keyframes pulse {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.05); }
@@ -5494,7 +5494,7 @@ input, select, textarea {
     animation: pulse 2s infinite;
 }
 
-/* Gradiente animado para botões especiais */
+/* Gradiente animado para botÃµes especiais */
 .btn-gradient {
     background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
     background-size: 200% 200%;
@@ -5896,7 +5896,7 @@ input, select, textarea {
 }
 
 /* =====================================================
-   VIEW DAY MODAL (Visualização de um dia específico)
+   VIEW DAY MODAL (VisualizaÃ§Ã£o de um dia especÃ­fico)
    ===================================================== */
 
 .modal-view-day {
@@ -5972,7 +5972,7 @@ input, select, textarea {
 }
 
 /* =====================================================
-   SPLIT PREVIEW - ATUALIZADO COM ÍCONES
+   SPLIT PREVIEW - ATUALIZADO COM ÃCONES
    ===================================================== */
 
 .split-day {
@@ -6053,7 +6053,7 @@ input, select, textarea {
 }
 
 /* =====================================================
-   MODAL TEMPLATES - NOVO DESIGN CATÁLOGO
+   MODAL TEMPLATES - NOVO DESIGN CATÃLOGO
    ===================================================== */
 
 .modal-templates-new {
@@ -6491,7 +6491,7 @@ input, select, textarea {
     color: var(--text-muted);
 }
 
-/* Accordion de Exercícios */
+/* Accordion de ExercÃ­cios */
 .preview-exercises-accordion {
     display: flex;
     flex-direction: column;
@@ -6642,7 +6642,7 @@ input, select, textarea {
 }
 
 /* =====================================================
-   MODAL TEMPLATES V2 - DESIGN COM ÍCONES DE CATEGORIA
+   MODAL TEMPLATES V2 - DESIGN COM ÃCONES DE CATEGORIA
    ===================================================== */
 
 .modal-templates-v2 {
@@ -6709,7 +6709,7 @@ input, select, textarea {
     margin: 0;
 }
 
-/* Categorias com Ícones */
+/* Categorias com Ãcones */
 .templates-categories {
     display: flex;
     justify-content: center;
@@ -6744,8 +6744,8 @@ input, select, textarea {
 }
 
 .category-icon {
-    width: 40px;
-    height: 40px;
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -6970,7 +6970,7 @@ input, select, textarea {
     opacity: 1;
 }
 
-/* Botão flutuante de fallback para personalizar dashboard */
+/* BotÃ£o flutuante de fallback para personalizar dashboard */
 .btn-customize-floating {
     position: fixed;
     right: 16px;
@@ -7345,7 +7345,7 @@ input, select, textarea {
 }
 
 .timer-header h2 {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     font-weight: 700;
     margin: 0;
 }
@@ -7444,7 +7444,7 @@ input, select, textarea {
 }
 
 .preset-icon {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
 }
 
 .preset-label {
@@ -7475,7 +7475,7 @@ input, select, textarea {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     transition: all 0.2s ease;
 }
 
@@ -7717,7 +7717,7 @@ input, select, textarea {
     line-height: 1.6;
 }
 
-/* Próximos Treinos */
+/* PrÃ³ximos Treinos */
 .proximos-list {
     display: flex;
     flex-direction: column;
@@ -7735,8 +7735,8 @@ input, select, textarea {
 }
 
 .proximo-dia {
-    width: 40px;
-    height: 40px;
+    width: 52px;
+    height: 52px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -7846,8 +7846,8 @@ input, select, textarea {
 
 .widget-item-icon {
     font-size: 24px;
-    width: 40px;
-    height: 40px;
+    width: 52px;
+    height: 52px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -8033,7 +8033,7 @@ input, select, textarea {
 }
 
 .hint-icon {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     flex-shrink: 0;
 }
 
@@ -8127,8 +8127,8 @@ input, select, textarea {
 .widget-item-icon {
     font-size: 1.5rem;
     flex-shrink: 0;
-    width: 40px;
-    height: 40px;
+    width: 52px;
+    height: 52px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -8332,7 +8332,7 @@ input, select, textarea {
 
 .card-hero .card-content h3 {
     color: white;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     margin-bottom: var(--space-2);
 }
 
@@ -8365,7 +8365,7 @@ input, select, textarea {
     transform: scale(1.05);
 }
 
-/* Card Stats - Mini estatísticas */
+/* Card Stats - Mini estatÃ­sticas */
 .card-stats {
     flex-direction: row !important;
     justify-content: space-around;
@@ -8679,7 +8679,7 @@ input, select, textarea {
 
 .mini-stat-divider {
     width: 1px;
-    height: 40px;
+    height: 52px;
     background: var(--border-color);
 }
 
@@ -8728,7 +8728,7 @@ input, select, textarea {
     display: flex;
     align-items: flex-end;
     gap: 3px;
-    height: 40px;
+    height: 52px;
 }
 
 .chart-bar-mini {
@@ -8768,7 +8768,7 @@ input, select, textarea {
 .feature-badges-preview {
     display: flex;
     gap: var(--space-1);
-    font-size: 1.2rem;
+    font-size: 1.5rem;
 }
 
 /* Widget Section (Full Width with Content) */
@@ -8929,20 +8929,34 @@ input, select, textarea {
 
 .ficha-title {
     display: flex;
-    align-items: center;
-    gap: var(--space-2);
+    align-items: flex-start;
+    gap: var(--space-3);
 }
 
-.ficha-icon {
-    width: 40px;
-    height: 40px;
+.ficha-icon-container {
+    width: 64px;
+    height: 64px;
     border-radius: var(--radius-lg);
-    background: linear-gradient(135deg, var(--bg-elevated), var(--bg-card));
+    background: linear-gradient(135deg, var(--primary), var(--accent-purple));
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+    flex-shrink: 0;
+}
+
+.ficha-icon-container svg {
+    width: 100%;
+    height: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.ficha-icon-text {
+    font-size: 4.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .ficha-text {
@@ -9352,8 +9366,8 @@ input, select, textarea {
 }
 
 .chart-day {
-    width: 40px;
-    height: 40px;
+    width: 52px;
+    height: 52px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -9693,7 +9707,7 @@ input, select, textarea {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    display: none; /* Esconder subtítulo em grid compacto */
+    display: none; /* Esconder subtÃ­tulo em grid compacto */
 }
 
 .template-meta {
@@ -10135,8 +10149,8 @@ input, select, textarea {
 .recipe-actions { display:flex; gap:6px; }
 .saved-recipes .empty { color:#6b7280; font-size:0.9rem; margin:4px 0 2px; }
 /* ==========================================
-   SLEEP SYSTEM - Sono, Qualidade, Correla��es
-   Fases: 1=Log+Modal | 2=Gr�ficos | 3=Fadiga
+   SLEEP SYSTEM - Sono, Qualidade, Correlaï¿½ï¿½es
+   Fases: 1=Log+Modal | 2=Grï¿½ficos | 3=Fadiga
    ========================================== */
 
 /* Card Sono - Dashboard */
@@ -10168,7 +10182,7 @@ input, select, textarea {
 .sleep-header p { font-size: 0.85rem; color: #6b7280; margin: 2px 0 0; }
 .sleep-close { background: transparent; border: none; font-size: 18px; color: #6b7280; cursor: pointer; }
 
-/* Se��es */
+/* Seï¿½ï¿½es */
 .sleep-body { display: flex; flex-direction: column; gap: 12px; }
 .sleep-section { display: flex; flex-direction: column; gap: 8px; }
 .sleep-label { font-weight: 600; color: #111827; font-size: 0.95rem; }
@@ -10263,3 +10277,5 @@ input, select, textarea {
 .btn-primary:hover { background: #0284c7; }
 .btn-secondary { flex: 1; background: #e5e7eb; color: #111827; border: none; border-radius: 10px; padding: 10px; cursor: pointer; }
 .btn-secondary:hover { background: #d1d5db; }
+
+

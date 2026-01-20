@@ -238,7 +238,7 @@ const DashboardWidgets = {
                 <div class="ficha-badge"><span>📋</span><span>Minha Ficha</span></div>
                 <div class="ficha-content">
                     <div class="ficha-title">
-                        <span class="ficha-icon">${treino.icon || '📋'}</span>
+                        <div class="ficha-icon-container" id="ficha-icon-wrapper">${treino.icon?.includes('<svg') ? treino.icon : `<span class="ficha-icon-text">${treino.icon || '📋'}</span>`}</div>
                         <div class="ficha-text">
                             <h3>${treino.nome || 'Treino Personalizado'}</h3>
                             <span class="ficha-subtitle">${treino.subtitle || `${treino.dias?.length || 0}x/semana`}</span>
@@ -5074,7 +5074,7 @@ const WorkoutTemplates = {
             level: 'iniciante',
             days: 3,
             duration: '45-55',
-            icon: '🌱',
+            icon: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="40" y="55" width="20" height="35" fill="white" rx="2"/><circle cx="50" cy="35" r="18" fill="white" opacity="0.9"/><circle cx="32" cy="28" r="11" fill="white" opacity="0.7"/><circle cx="68" cy="28" r="11" fill="white" opacity="0.7"/></svg>',
             category: 'full_body',
             objetivos: ['hipertrofia', 'condicionamento'],
             benefits: ['Aprenda os movimentos', 'Adaptação neural', 'Recuperação adequada'],
@@ -5088,7 +5088,7 @@ const WorkoutTemplates = {
             level: 'iniciante',
             days: 4,
             duration: '50-60',
-            icon: '📊',
+            icon: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="15" y="15" width="70" height="30" fill="white" rx="3"/><rect x="15" y="55" width="70" height="30" fill="white" rx="3" opacity="0.7"/></svg>',
             category: 'upper_lower',
             objetivos: ['hipertrofia', 'forca'],
             benefits: ['Mais volume', 'Boa recuperação', 'Progressão fácil']
@@ -5102,7 +5102,7 @@ const WorkoutTemplates = {
             level: 'intermediario',
             days: 6,
             duration: '60-75',
-            icon: '💪',
+            icon: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="15" y="12" width="70" height="22" fill="white" rx="2" opacity="0.95"/><rect x="15" y="39" width="70" height="22" fill="white" rx="2" opacity="0.85"/><rect x="15" y="66" width="70" height="22" fill="white" rx="2" opacity="0.75"/></svg>',
             category: 'ppl',
             objetivos: ['hipertrofia'],
             benefits: ['Frequência 2x', 'Alto volume', 'Máximo ganho'],
@@ -5169,10 +5169,7 @@ const WorkoutTemplates = {
             level: 'avancado',
             days: 5,
             duration: '70-90',
-            icon: '🔥',
-            category: 'bro_split',
-            objetivos: ['hipertrofia'],
-            benefits: ['Volume máximo', 'Pump intenso', 'Foco total'],
+            icon: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="15" cy="50" r="10" fill="white"/><rect x="25" y="45" width="50" height="10" fill="white" rx="2"/><circle cx="85" cy="50" r="10" fill="white"/><rect x="10" y="65" width="12" height="10" fill="white" rx="1"/><rect x="78" y="65" width="12" height="10" fill="white" rx="1"/></svg>',
             featured: true
         },
         {
@@ -5237,7 +5234,7 @@ const WorkoutTemplates = {
             level: 'avancado',
             days: 6,
             duration: '50-60',
-            icon: '💀',
+            icon: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="25" cy="30" r="8" fill="none" stroke="white" stroke-width="2.5"/><circle cx="50" cy="30" r="8" fill="none" stroke="white" stroke-width="2.5"/><circle cx="75" cy="30" r="8" fill="none" stroke="white" stroke-width="2.5"/><circle cx="25" cy="70" r="8" fill="none" stroke="white" stroke-width="2.5"/><circle cx="50" cy="70" r="8" fill="none" stroke="white" stroke-width="2.5"/><circle cx="75" cy="70" r="8" fill="none" stroke="white" stroke-width="2.5"/><line x1="32" y1="30" x2="43" y2="30" stroke="white" stroke-width="2"/><line x1="57" y1="30" x2="68" y2="30" stroke="white" stroke-width="2"/><line x1="25" y1="38" x2="25" y2="62" stroke="white" stroke-width="2"/><line x1="75" y1="38" x2="75" y2="62" stroke="white" stroke-width="2"/></svg>',
             category: 'metabolic',
             objetivos: ['emagrecimento'],
             benefits: ['Cutting agressivo', 'Manutenção muscular', 'Definição']
