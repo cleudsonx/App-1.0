@@ -847,6 +847,12 @@ const App = {
         $$('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.tab === tab));
         $$('.tab-content').forEach(c => c.classList.toggle('active', c.id === `tab-${tab}`));
         
+        // Mostrar/ocultar botão flutuante de customização
+        const floatingBtn = $('#btn-customize-floating');
+        if (floatingBtn) {
+            floatingBtn.style.display = tab === 'home' ? 'flex' : 'none';
+        }
+        
         if (tab === 'home') this.loadDashboard();
         else if (tab === 'treino') this.loadTreinoTab();
         else if (tab === 'progresso') this.loadProgress();
@@ -861,10 +867,37 @@ const App = {
 
     setupModals() {
         $$('.modal-close, [data-close]').forEach(btn => {
-            btn.addEventListener('click', (e) => { e.preventDefault(); const modal = btn.closest('.modal-overlay'); if (modal) modal.style.display = 'none'; });
+            btn.addEventListener('click', (e) => { 
+                e.preventDefault(); 
+                const modal = btn.closest('.modal-overlay'); 
+                if (modal) {
+                    modal.classList.remove('active');
+                    modal.style.display = 'none'; 
+                }
+            });
         });
         $$('.modal-overlay').forEach(modal => {
-            modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+            modal.addEventListener('click', (e) => { 
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                    modal.style.display = 'none'; 
+                }
+            });
+        });
+
+        // Dashboard Customizer buttons
+        $('#btn-save-dashboard')?.addEventListener('click', () => {
+            DashboardWidgets.saveConfig();
+            this.loadDashboard();
+            this.closeDashboardCustomizer();
+            Toast.success('Dashboard atualizado!');
+        });
+
+        $('#btn-reset-dashboard')?.addEventListener('click', () => {
+            DashboardWidgets.resetToDefault();
+            this.renderCustomizerWidgets();
+            this.setupCustomizerDragDrop();
+            Toast.info('Dashboard restaurado ao padrão');
         });
     },
 
@@ -984,9 +1017,57 @@ const App = {
 
     openDashboardCustomizer() {
         const modal = $('#modal-dashboard-customizer');
-        if (!modal) { Toast.info('Personalizador em breve!'); return; }
+        if (!modal) { 
+            Toast.info('Personalizador em breve!'); 
+            return; 
+        }
+        modal.classList.add('active');
         modal.style.display = 'flex';
         this.renderCustomizerWidgets();
+        this.setupCustomizerDragDrop();
+    },
+
+    closeDashboardCustomizer() {
+        const modal = $('#modal-dashboard-customizer');
+        if (modal) {
+            modal.classList.remove('active');
+            modal.style.display = 'none';
+        }
+    },
+
+    setupCustomizerDragDrop() {
+        const container = $('#customizer-widgets-list');
+        if (!container) return;
+
+        const items = container.querySelectorAll('.customizer-widget-item');
+        items.forEach((item, index) => {
+            item.draggable = true;
+            item.addEventListener('dragstart', (e) => {
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', index);
+                item.classList.add('dragging');
+                DashboardWidgets.draggedItem = index;
+            });
+            item.addEventListener('dragend', () => {
+                item.classList.remove('dragging');
+                container.querySelectorAll('.customizer-widget-item').forEach(i => i.classList.remove('drag-over'));
+                if (DashboardWidgets.draggedItem !== null && DashboardWidgets.draggedOverItem !== null && 
+                    DashboardWidgets.draggedItem !== DashboardWidgets.draggedOverItem) {
+                    DashboardWidgets.reorderWidgets(DashboardWidgets.draggedItem, DashboardWidgets.draggedOverItem);
+                    DashboardWidgets.saveConfig();
+                    this.renderCustomizerWidgets();
+                    this.setupCustomizerDragDrop();
+                }
+                DashboardWidgets.draggedItem = null;
+                DashboardWidgets.draggedOverItem = null;
+            });
+            item.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                item.classList.add('drag-over');
+                DashboardWidgets.draggedOverItem = index;
+            });
+            item.addEventListener('dragleave', () => item.classList.remove('drag-over'));
+        });
     },
 
     renderCustomizerWidgets() {
