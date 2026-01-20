@@ -199,6 +199,7 @@ const DashboardWidgets = {
         const grupos = treinoHoje.grupos || 'Peito e Tríceps';
         const exercicios = treinoHoje.exercicios?.length || 6;
         const duracao = treino?.duracao || 60;
+        const icon = treino?.icon || '🏋️';
 
         return `
             <div class="dashboard-widget dashboard-hero" data-widget-id="hero-treino" onclick="App.startWorkout()">
@@ -206,6 +207,7 @@ const DashboardWidgets = {
                 <div class="hero-gradient"></div>
                 <div class="hero-content">
                     <div class="hero-badge"><span class="pulse-dot"></span><span>Hoje</span></div>
+                    ${icon?.includes('<svg') ? `<div class="hero-icon">${icon}</div>` : `<div class="hero-icon-emoji">${icon}</div>`}
                     <h2 class="hero-title">${nome}</h2>
                     <p class="hero-subtitle">${grupos}</p>
                     <div class="hero-meta">
