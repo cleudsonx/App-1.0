@@ -237,8 +237,13 @@ const DashboardWidgets = {
                 ${this.renderDragHandle()}
                 <div class="ficha-badge"><span>📋</span><span>Minha Ficha</span></div>
                 <div class="ficha-content">
-                    <h3>${treino.nome || 'Treino Personalizado'}</h3>
-                    <span>${treino.dias?.length || 0}x/semana</span>
+                    <div class="ficha-title">
+                        <span class="ficha-icon">${treino.icon || '📋'}</span>
+                        <div class="ficha-text">
+                            <h3>${treino.nome || 'Treino Personalizado'}</h3>
+                            <span class="ficha-subtitle">${treino.subtitle || `${treino.dias?.length || 0}x/semana`}</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="ficha-action">→</div>
             </div>
@@ -4097,6 +4102,11 @@ const ActiveWorkout = {
     renderActiveWorkout() {
         const exercicios = this.currentWorkout.exercicios;
         
+            // Descobrir índice da ficha atual (A, B, C, D...)
+            const treino = App.getTreinoAtual();
+            const dayIndex = treino?.dias?.findIndex(d => d.nome === this.currentWorkout.nome) ?? 0;
+            const dayLetter = String.fromCharCode(65 + dayIndex); // 0=A, 1=B, 2=C...
+        
         const overlay = document.createElement('div');
         overlay.className = 'active-workout-overlay';
         overlay.id = 'active-workout';
@@ -4109,7 +4119,10 @@ const ActiveWorkout = {
                         <button class="btn-aw-close" onclick="ActiveWorkout.confirmEnd()">✕</button>
                         <div class="aw-timer" id="aw-timer">00:00</div>
                     </div>
-                    <h2 class="aw-title">${this.currentWorkout.nome}</h2>
+                        <div class="aw-title-wrapper">
+                            <div class="workout-day-badge">${dayLetter}</div>
+                            <h2 class="aw-title">${this.currentWorkout.nome}</h2>
+                        </div>
                     <button class="btn-aw-finish" onclick="ActiveWorkout.finish()">Finalizar</button>
                 </div>
                 
@@ -7127,6 +7140,8 @@ const WorkoutTemplates = {
             return {
                 nome: template.name,
                 descricao: template.description,
+                icon: template.icon || '📋',
+                subtitle: template.subtitle || `${template.days}x/semana`,
                 divisao: template.category,
                 duracao: template.duration,
                 template_id: template.id,
@@ -7153,7 +7168,10 @@ const WorkoutTemplates = {
         
         treino.nome = template.name;
         treino.descricao = template.description;
+        treino.icon = template.icon || '📋';
+        treino.subtitle = template.subtitle || `${template.days}x/semana`;
         treino.template_id = template.id;
+        treino.duracao = template.duration || treino.duracao;
         
         return treino;
     },
