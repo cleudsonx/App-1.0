@@ -1752,6 +1752,268 @@ const RestTimer = {
 RestTimer.init();
 
 // =====================================================
+// PROGRESSÃO DE CARGA - Sistema Inteligente
+// Features: Histórico, Sugestão automática, Evolução
+// =====================================================
+const LoadProgression = {
+    // Chave do localStorage
+    storageKey: 'carga_historico',
+
+    // Configurações de progressão
+    config: {
+        incremento_percentual: 5,    // Aumentar 5% quando completar todas as reps
+        incremento_minimo: 2.5,      // Mínimo 2.5kg de aumento
+        rep_threshold: 2,            // Fez +2 reps do alvo = sugere aumento
+        deload_semanas: 4            // A cada 4 semanas sugere deload
+    },
+
+    // Obter histórico de cargas de um exercício
+    getHistory(exerciseId) {
+        const historico = JSON.parse(localStorage.getItem(this.storageKey) || '{}');
+        return historico[exerciseId] || [];
+    },
+
+    // Salvar entrada no histórico
+    saveEntry(exerciseId, entry) {
+        const historico = JSON.parse(localStorage.getItem(this.storageKey) || '{}');
+        if (!historico[exerciseId]) {
+            historico[exerciseId] = [];
+        }
+        
+        // Adicionar com data
+        entry.data = new Date().toISOString().split('T')[0];
+        historico[exerciseId].push(entry);
+        
+        // Manter apenas últimos 50 registros por exercício
+        if (historico[exerciseId].length > 50) {
+            historico[exerciseId] = historico[exerciseId].slice(-50);
+        }
+        
+        localStorage.setItem(this.storageKey, JSON.stringify(historico));
+    },
+
+    // Gerar ID único para exercício (baseado no nome)
+    generateExerciseId(exerciseName) {
+        return exerciseName.toLowerCase()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]/g, '_');
+    },
+
+    // Calcular sugestão de carga baseado no histórico
+    suggestLoad(exerciseId, targetReps) {
+        const history = this.getHistory(exerciseId);
+        
+        if (history.length === 0) {
+            return { carga: null, tipo: 'nova', mensagem: 'Primeiro treino!' };
+        }
+
+        // Pegar última sessão
+        const ultimo = history[history.length - 1];
+        const cargaAnterior = ultimo.carga;
+        const repsFeitas = ultimo.reps;
+        const targetRepsNum = parseInt(targetReps) || 10;
+
+        // Calcular sugestão
+        let novaCarga = cargaAnterior;
+        let tipo = 'manter';
+        let mensagem = '';
+
+        // Se fez mais reps que o alvo, sugere aumentar
+        if (repsFeitas >= targetRepsNum + this.config.rep_threshold) {
+            const aumento = Math.max(
+                cargaAnterior * (this.config.incremento_percentual / 100),
+                this.config.incremento_minimo
+            );
+            novaCarga = Math.ceil((cargaAnterior + aumento) / 2.5) * 2.5; // Arredondar para 2.5
+            tipo = 'aumentar';
+            mensagem = `+${(novaCarga - cargaAnterior).toFixed(1)}kg 💪`;
+        }
+        // Se não completou as reps, manter ou reduzir
+        else if (repsFeitas < targetRepsNum - 2) {
+            novaCarga = Math.max(cargaAnterior - this.config.incremento_minimo, 0);
+            tipo = 'reduzir';
+            mensagem = 'Ajuste a carga';
+        }
+        // Manteve no alvo
+        else {
+            mensagem = 'Boa! Continue assim';
+        }
+
+        // Verificar se precisa de deload
+        const semanas = this.contarSemanasConsecutivas(history);
+        if (semanas >= this.config.deload_semanas) {
+            tipo = 'deload';
+            novaCarga = cargaAnterior * 0.9; // -10%
+            mensagem = '💆 Semana de recuperação sugerida';
+        }
+
+        return {
+            carga: novaCarga,
+            cargaAnterior: cargaAnterior,
+            tipo: tipo,
+            mensagem: mensagem,
+            ultimaData: ultimo.data,
+            ultimasReps: repsFeitas
+        };
+    },
+
+    // Contar semanas consecutivas de treino
+    contarSemanasConsecutivas(history) {
+        if (history.length < 2) return 0;
+        
+        let semanas = 1;
+        const hoje = new Date();
+        
+        for (let i = history.length - 1; i > 0; i--) {
+            const dataAtual = new Date(history[i].data);
+            const dataAnterior = new Date(history[i - 1].data);
+            const diffDias = (dataAtual - dataAnterior) / (1000 * 60 * 60 * 24);
+            
+            if (diffDias <= 10) { // Menos de 10 dias = mesma "rotina"
+                semanas++;
+            } else {
+                break;
+            }
+        }
+        
+        return Math.floor(semanas / 4); // Converter para semanas aproximadas
+    },
+
+    // Obter estatísticas de evolução
+    getStats(exerciseId) {
+        const history = this.getHistory(exerciseId);
+        
+        if (history.length === 0) {
+            return null;
+        }
+
+        const cargas = history.map(h => h.carga).filter(c => c > 0);
+        const primeiro = cargas[0];
+        const ultimo = cargas[cargas.length - 1];
+        const maximo = Math.max(...cargas);
+        const evolucao = ((ultimo - primeiro) / primeiro * 100) || 0;
+
+        return {
+            total_sessoes: history.length,
+            carga_inicial: primeiro,
+            carga_atual: ultimo,
+            carga_maxima: maximo,
+            evolucao_percentual: evolucao.toFixed(1),
+            historico: history.slice(-10) // Últimas 10 sessões
+        };
+    },
+
+    // Renderizar badge de progressão
+    renderBadge(tipo, mensagem) {
+        const badges = {
+            'aumentar': { icon: '📈', class: 'progress-up' },
+            'manter': { icon: '➡️', class: 'progress-same' },
+            'reduzir': { icon: '📉', class: 'progress-down' },
+            'deload': { icon: '💆', class: 'progress-deload' },
+            'nova': { icon: '🆕', class: 'progress-new' }
+        };
+
+        const badge = badges[tipo] || badges['nova'];
+        return `<span class="load-progress-badge ${badge.class}" title="${mensagem}">${badge.icon}</span>`;
+    },
+
+    // Modal de evolução do exercício
+    showEvolutionModal(exerciseId, exerciseName) {
+        const stats = this.getStats(exerciseId);
+        
+        if (!stats) {
+            Toast.info('Ainda não há histórico para este exercício');
+            return;
+        }
+
+        // Remover modal anterior
+        document.getElementById('evolution-modal')?.remove();
+
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay active';
+        modal.id = 'evolution-modal';
+
+        // Preparar dados do gráfico
+        const historico = stats.historico;
+        const maxCarga = Math.max(...historico.map(h => h.carga));
+
+        modal.innerHTML = `
+            <div class="evolution-modal">
+                <div class="evolution-header">
+                    <h2>📊 Evolução de Carga</h2>
+                    <button class="modal-close" onclick="document.getElementById('evolution-modal').remove()">✕</button>
+                </div>
+                
+                <div class="evolution-exercise-name">${exerciseName}</div>
+                
+                <div class="evolution-stats-grid">
+                    <div class="evolution-stat">
+                        <span class="evolution-stat-value">${stats.carga_inicial}kg</span>
+                        <span class="evolution-stat-label">Inicial</span>
+                    </div>
+                    <div class="evolution-stat highlight">
+                        <span class="evolution-stat-value">${stats.carga_atual}kg</span>
+                        <span class="evolution-stat-label">Atual</span>
+                    </div>
+                    <div class="evolution-stat">
+                        <span class="evolution-stat-value">${stats.carga_maxima}kg</span>
+                        <span class="evolution-stat-label">Máximo</span>
+                    </div>
+                    <div class="evolution-stat ${stats.evolucao_percentual >= 0 ? 'positive' : 'negative'}">
+                        <span class="evolution-stat-value">${stats.evolucao_percentual >= 0 ? '+' : ''}${stats.evolucao_percentual}%</span>
+                        <span class="evolution-stat-label">Evolução</span>
+                    </div>
+                </div>
+                
+                <div class="evolution-chart">
+                    <div class="chart-title">Últimas ${historico.length} sessões</div>
+                    <div class="chart-bars">
+                        ${historico.map((h, i) => `
+                            <div class="chart-bar-container">
+                                <div class="chart-bar" style="height: ${(h.carga / maxCarga) * 100}%">
+                                    <span class="chart-bar-value">${h.carga}</span>
+                                </div>
+                                <span class="chart-bar-label">${this.formatDate(h.data)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div class="evolution-history">
+                    <h3>Histórico Detalhado</h3>
+                    <div class="history-list">
+                        ${historico.reverse().map(h => `
+                            <div class="history-item">
+                                <span class="history-date">${this.formatDateFull(h.data)}</span>
+                                <span class="history-load">${h.carga}kg × ${h.reps} reps</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Fechar ao clicar fora
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.remove();
+        });
+    },
+
+    formatDate(dateStr) {
+        const d = new Date(dateStr);
+        return `${d.getDate()}/${d.getMonth() + 1}`;
+    },
+
+    formatDateFull(dateStr) {
+        const d = new Date(dateStr);
+        const dias = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+        return `${dias[d.getDay()]} ${d.getDate()}/${d.getMonth() + 1}`;
+    }
+};
+
+// =====================================================
 // ACTIVE WORKOUT - Sistema de Treino Ativo
 // Inspirado em: Strong, Hevy, Nike Training Club
 // Features: Timer, Controle de Séries, Descanso Inteligente
@@ -1862,16 +2124,40 @@ const ActiveWorkout = {
     renderExerciseCard(exercise, exIdx) {
         const sets = this.setsCompleted[exIdx] || [];
         const isActive = exIdx === this.currentExerciseIndex;
-        const defaultWeight = exercise.carga_usuario || exercise.carga_sugerida || '';
         const defaultReps = exercise.repeticoes?.toString().split('-')[0] || '10';
+        
+        // Sistema de progressão de carga
+        const exerciseId = LoadProgression.generateExerciseId(exercise.nome);
+        const sugestao = LoadProgression.suggestLoad(exerciseId, defaultReps);
+        
+        // Determinar carga a usar: sugestão > usuário > template
+        let defaultWeight = '';
+        let progressBadge = '';
+        let progressHint = '';
+        
+        if (sugestao.carga !== null) {
+            defaultWeight = sugestao.carga;
+            progressBadge = LoadProgression.renderBadge(sugestao.tipo, sugestao.mensagem);
+            if (sugestao.tipo === 'aumentar') {
+                progressHint = `<span class="progress-hint up">↑ ${sugestao.mensagem}</span>`;
+            } else if (sugestao.tipo === 'reduzir') {
+                progressHint = `<span class="progress-hint down">↓ Reduzir carga</span>`;
+            } else if (sugestao.cargaAnterior) {
+                progressHint = `<span class="progress-hint same">Última: ${sugestao.cargaAnterior}kg</span>`;
+            }
+        } else {
+            defaultWeight = exercise.carga_usuario || exercise.carga_sugerida || '';
+            progressBadge = LoadProgression.renderBadge('nova', 'Primeiro treino');
+        }
         
         return `
             <div class="aw-exercise-card ${isActive ? 'active' : ''}" id="aw-exercise-${exIdx}">
                 <div class="aw-exercise-header" onclick="ActiveWorkout.toggleExercise(${exIdx})">
                     <div class="aw-exercise-number">${exIdx + 1}</div>
                     <div class="aw-exercise-info">
-                        <span class="aw-exercise-name">${exercise.nome}</span>
+                        <span class="aw-exercise-name">${exercise.nome} ${progressBadge}</span>
                         <span class="aw-exercise-meta">${exercise.series}×${exercise.repeticoes} • ${exercise.descanso}</span>
+                        ${progressHint}
                     </div>
                     <div class="aw-exercise-status">
                         <span class="aw-exercise-completed" id="aw-completed-${exIdx}">0/${sets.length}</span>
@@ -1911,9 +2197,14 @@ const ActiveWorkout = {
                         </div>
                     `).join('')}
                     
-                    <button class="btn-add-set" onclick="ActiveWorkout.addSet(${exIdx})">
-                        + Adicionar Série
-                    </button>
+                    <div class="aw-exercise-actions">
+                        <button class="btn-add-set" onclick="ActiveWorkout.addSet(${exIdx})">
+                            + Série
+                        </button>
+                        <button class="btn-view-evolution" onclick="LoadProgression.showEvolutionModal('${exerciseId}', '${exercise.nome.replace(/'/g, "\\'")}')">
+                            📊 Evolução
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
@@ -2157,11 +2448,28 @@ const ActiveWorkout = {
         if (idx === -1) return;
         
         this.setsCompleted.forEach((sets, exIdx) => {
-            // Pegar a maior carga usada
-            const maxWeight = Math.max(...sets.filter(s => s.weight).map(s => s.weight), 0);
-            if (maxWeight > 0 && treino.dias[idx].exercicios[exIdx]) {
+            const exercise = this.currentWorkout.exercicios[exIdx];
+            if (!exercise) return;
+            
+            // Pegar a maior carga e reps usados nas séries completas
+            const completedSets = sets.filter(s => s.completed && s.weight > 0);
+            if (completedSets.length === 0) return;
+            
+            const maxWeight = Math.max(...completedSets.map(s => s.weight));
+            const avgReps = Math.round(completedSets.reduce((sum, s) => sum + (s.reps || 0), 0) / completedSets.length);
+            
+            // Salvar no treino local
+            if (treino.dias[idx].exercicios[exIdx]) {
                 treino.dias[idx].exercicios[exIdx].carga_usuario = maxWeight;
             }
+            
+            // Salvar no histórico de progressão
+            const exerciseId = LoadProgression.generateExerciseId(exercise.nome);
+            LoadProgression.saveEntry(exerciseId, {
+                carga: maxWeight,
+                reps: avgReps,
+                series: completedSets.length
+            });
         });
         
         localStorage.setItem('treino_atual', JSON.stringify(treino));
@@ -2173,6 +2481,9 @@ const ActiveWorkout = {
         if (pct === 100) msg = '💪 TREINO PERFEITO!';
         else if (pct >= 80) msg = '🔥 Excelente treino!';
         else if (pct >= 60) msg = '👍 Bom trabalho!';
+        
+        // Gerar sugestões de progressão para próximo treino
+        const progressionSuggestions = this.getProgressionSuggestions();
         
         const modal = document.createElement('div');
         modal.className = 'modal-overlay active';
@@ -2199,12 +2510,74 @@ const ActiveWorkout = {
                     </div>
                 </div>
                 <div class="summary-message">${msg}</div>
+                
+                ${progressionSuggestions.length > 0 ? `
+                <div class="progression-suggestions">
+                    <h3>📈 Sugestões para Próximo Treino</h3>
+                    <div class="suggestion-list">
+                        ${progressionSuggestions.map(s => `
+                            <div class="suggestion-item ${s.tipo}">
+                                <span class="suggestion-icon">${s.icon}</span>
+                                <div class="suggestion-info">
+                                    <span class="suggestion-exercise">${s.exercicio}</span>
+                                    <span class="suggestion-text">${s.texto}</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                ` : ''}
+                
                 <button class="btn-primary btn-lg" onclick="document.getElementById('workout-summary').remove(); App.loadDashboard();">
                     Fechar
                 </button>
             </div>
         `;
         document.body.appendChild(modal);
+    },
+    
+    getProgressionSuggestions() {
+        const suggestions = [];
+        
+        if (!this.currentWorkout || !this.setsCompleted) return suggestions;
+        
+        this.currentWorkout.exercicios.forEach((exercise, exIdx) => {
+            const sets = this.setsCompleted[exIdx] || [];
+            const completedSets = sets.filter(s => s.completed && s.weight > 0);
+            
+            if (completedSets.length === 0) return;
+            
+            const exerciseId = LoadProgression.generateExerciseId(exercise.nome);
+            const targetReps = parseInt(exercise.repeticoes?.toString().split('-')[0]) || 10;
+            const avgReps = Math.round(completedSets.reduce((sum, s) => sum + (s.reps || 0), 0) / completedSets.length);
+            const maxWeight = Math.max(...completedSets.map(s => s.weight));
+            
+            // Determinar sugestão baseado no desempenho
+            if (avgReps >= targetReps + 2) {
+                // Fez mais reps que o alvo - sugerir aumento
+                const aumento = Math.max(maxWeight * 0.05, 2.5);
+                const novaCarga = Math.ceil((maxWeight + aumento) / 2.5) * 2.5;
+                suggestions.push({
+                    exercicio: exercise.nome,
+                    tipo: 'up',
+                    icon: '📈',
+                    texto: `Aumentar para ${novaCarga}kg (+${(novaCarga - maxWeight).toFixed(1)}kg)`
+                });
+            } else if (avgReps < targetReps - 2) {
+                // Não completou as reps - sugerir manter ou reduzir
+                suggestions.push({
+                    exercicio: exercise.nome,
+                    tipo: 'down',
+                    icon: '💪',
+                    texto: `Manter ${maxWeight}kg e focar na técnica`
+                });
+            }
+        });
+        
+        // Limitar a 3 sugestões mais relevantes (priorizar aumentos)
+        return suggestions
+            .sort((a, b) => (a.tipo === 'up' ? -1 : 1))
+            .slice(0, 3);
     },
     
     cleanup() {
