@@ -1029,7 +1029,7 @@ const App = {
         }
 
         const visibleWidgets = DashboardWidgets.getVisibleWidgets();
-        let html = '<div class="dashboard-header-brand"><h1>💪 SHAIPADOS</h1><div class="badge-brand">Pronto para treinar</div></div>';
+        let html = '<div class="dashboard-header-brand"><div class="brand-mark"><img src="assets/Designer01.png" alt="SHAIPADOS" loading="lazy" /></div><div class="badge-brand">Pronto para treinar</div></div>';
         
         let halfWidgets = [];
         visibleWidgets.forEach(widget => {
