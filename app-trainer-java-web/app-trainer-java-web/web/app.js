@@ -1269,7 +1269,7 @@ const App = {
     },
 
     openTimer() {
-        Toast.info('Timer de descanso em breve!');
+        RestTimer.open();
     },
 
     // === PROGRESSO ===
@@ -1361,6 +1361,301 @@ const App = {
         
         // Botão completar perfil (no alerta)
         $('#btn-complete-profile')?.addEventListener('click', () => Onboarding.show());
+    }
+};
+
+// =====================================================
+// REST TIMER - Timer de Descanso Profissional
+// Features: Timer circular, presets, som, vibração
+// =====================================================
+const RestTimer = {
+    isRunning: false,
+    isPaused: false,
+    totalSeconds: 90,
+    remainingSeconds: 90,
+    interval: null,
+    audioContext: null,
+
+    // Presets de tempo em segundos
+    presets: [
+        { label: '30s', seconds: 30, icon: '⚡' },
+        { label: '60s', seconds: 60, icon: '🔥' },
+        { label: '90s', seconds: 90, icon: '💪' },
+        { label: '2min', seconds: 120, icon: '🏋️' },
+        { label: '3min', seconds: 180, icon: '⏰' },
+        { label: '5min', seconds: 300, icon: '🧘' }
+    ],
+
+    open(defaultSeconds = null) {
+        if (defaultSeconds) {
+            this.totalSeconds = defaultSeconds;
+            this.remainingSeconds = defaultSeconds;
+        }
+
+        // Remove modal anterior se existir
+        document.getElementById('rest-timer-modal')?.remove();
+
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay active';
+        modal.id = 'rest-timer-modal';
+
+        modal.innerHTML = `
+            <div class="timer-modal">
+                <div class="timer-header">
+                    <h2>⏱️ Timer de Descanso</h2>
+                    <button class="modal-close" onclick="RestTimer.close()">✕</button>
+                </div>
+
+                <div class="timer-circle-container">
+                    <svg class="timer-circle" viewBox="0 0 120 120">
+                        <circle class="timer-bg" cx="60" cy="60" r="54" />
+                        <circle class="timer-progress" cx="60" cy="60" r="54" 
+                            stroke-dasharray="339.292" 
+                            stroke-dashoffset="0" />
+                    </svg>
+                    <div class="timer-display-large">
+                        <span id="timer-minutes">${this.formatTime(this.remainingSeconds).split(':')[0]}</span>
+                        <span class="timer-colon">:</span>
+                        <span id="timer-seconds">${this.formatTime(this.remainingSeconds).split(':')[1]}</span>
+                    </div>
+                </div>
+
+                <div class="timer-presets">
+                    ${this.presets.map(p => `
+                        <button class="timer-preset ${p.seconds === this.totalSeconds ? 'active' : ''}" 
+                                onclick="RestTimer.setTime(${p.seconds})">
+                            <span class="preset-icon">${p.icon}</span>
+                            <span class="preset-label">${p.label}</span>
+                        </button>
+                    `).join('')}
+                </div>
+
+                <div class="timer-controls">
+                    <button class="timer-btn timer-reset" onclick="RestTimer.reset()">
+                        <span>↺</span>
+                    </button>
+                    <button class="timer-btn timer-play" id="timer-play-btn" onclick="RestTimer.togglePlay()">
+                        <span id="timer-play-icon">▶</span>
+                    </button>
+                    <button class="timer-btn timer-add" onclick="RestTimer.addTime(15)">
+                        <span>+15s</span>
+                    </button>
+                </div>
+
+                <div class="timer-quick-actions">
+                    <button class="quick-action" onclick="RestTimer.startPreset(30)">⚡ Rápido</button>
+                    <button class="quick-action" onclick="RestTimer.startPreset(90)">💪 Normal</button>
+                    <button class="quick-action" onclick="RestTimer.startPreset(180)">🏋️ Pesado</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Clique fora fecha
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) RestTimer.close();
+        });
+    },
+
+    close() {
+        this.stop();
+        document.getElementById('rest-timer-modal')?.remove();
+    },
+
+    setTime(seconds) {
+        this.stop();
+        this.totalSeconds = seconds;
+        this.remainingSeconds = seconds;
+        this.updateDisplay();
+        
+        // Atualiza presets ativos
+        document.querySelectorAll('.timer-preset').forEach(btn => {
+            btn.classList.remove('active');
+            if (parseInt(btn.querySelector('.preset-label').textContent) === seconds ||
+                btn.querySelector('.preset-label').textContent === this.formatPresetLabel(seconds)) {
+                btn.classList.add('active');
+            }
+        });
+
+        // Marca o preset correto
+        this.presets.forEach((p, i) => {
+            const btn = document.querySelectorAll('.timer-preset')[i];
+            if (btn) {
+                btn.classList.toggle('active', p.seconds === seconds);
+            }
+        });
+    },
+
+    formatPresetLabel(seconds) {
+        if (seconds < 60) return `${seconds}s`;
+        return `${Math.floor(seconds / 60)}min`;
+    },
+
+    startPreset(seconds) {
+        this.setTime(seconds);
+        this.start();
+    },
+
+    togglePlay() {
+        if (this.isRunning) {
+            this.pause();
+        } else {
+            this.start();
+        }
+    },
+
+    start() {
+        if (this.remainingSeconds <= 0) {
+            this.remainingSeconds = this.totalSeconds;
+        }
+
+        this.isRunning = true;
+        this.isPaused = false;
+        this.updatePlayButton();
+
+        this.interval = setInterval(() => {
+            this.remainingSeconds--;
+            this.updateDisplay();
+
+            if (this.remainingSeconds <= 0) {
+                this.finish();
+            }
+        }, 1000);
+    },
+
+    pause() {
+        this.isRunning = false;
+        this.isPaused = true;
+        clearInterval(this.interval);
+        this.updatePlayButton();
+    },
+
+    stop() {
+        this.isRunning = false;
+        this.isPaused = false;
+        clearInterval(this.interval);
+        this.updatePlayButton();
+    },
+
+    reset() {
+        this.stop();
+        this.remainingSeconds = this.totalSeconds;
+        this.updateDisplay();
+    },
+
+    addTime(seconds) {
+        this.remainingSeconds += seconds;
+        this.totalSeconds = Math.max(this.totalSeconds, this.remainingSeconds);
+        this.updateDisplay();
+        Toast.info(`+${seconds}s adicionados`);
+    },
+
+    finish() {
+        this.stop();
+        this.remainingSeconds = 0;
+        this.updateDisplay();
+        
+        // Vibração
+        if ('vibrate' in navigator) {
+            navigator.vibrate([200, 100, 200, 100, 200]);
+        }
+
+        // Som
+        this.playSound();
+
+        // Notificação visual
+        Toast.success('⏱️ Tempo de descanso finalizado! Bora próxima série! 💪');
+
+        // Pisca o timer
+        const circle = document.querySelector('.timer-circle-container');
+        if (circle) {
+            circle.classList.add('timer-finished');
+            setTimeout(() => circle.classList.remove('timer-finished'), 2000);
+        }
+    },
+
+    playSound() {
+        try {
+            // Cria contexto de áudio se não existir
+            if (!this.audioContext) {
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            const ctx = this.audioContext;
+            
+            // Toca 3 beeps
+            [0, 0.2, 0.4].forEach(delay => {
+                const oscillator = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(ctx.destination);
+                
+                oscillator.frequency.value = 880; // Nota A5
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, ctx.currentTime + delay);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + delay + 0.15);
+                
+                oscillator.start(ctx.currentTime + delay);
+                oscillator.stop(ctx.currentTime + delay + 0.15);
+            });
+        } catch (e) {
+            console.log('Audio not supported');
+        }
+    },
+
+    updateDisplay() {
+        const minutes = document.getElementById('timer-minutes');
+        const seconds = document.getElementById('timer-seconds');
+        const progress = document.querySelector('.timer-progress');
+
+        if (minutes && seconds) {
+            const time = this.formatTime(this.remainingSeconds);
+            const [m, s] = time.split(':');
+            minutes.textContent = m;
+            seconds.textContent = s;
+        }
+
+        if (progress) {
+            const circumference = 2 * Math.PI * 54; // 339.292
+            const offset = circumference * (1 - this.remainingSeconds / this.totalSeconds);
+            progress.style.strokeDashoffset = offset;
+
+            // Muda cor quando está acabando
+            if (this.remainingSeconds <= 10 && this.remainingSeconds > 0) {
+                progress.style.stroke = '#ff4444';
+            } else if (this.remainingSeconds <= 30) {
+                progress.style.stroke = '#ffaa00';
+            } else {
+                progress.style.stroke = 'var(--primary)';
+            }
+        }
+    },
+
+    updatePlayButton() {
+        const icon = document.getElementById('timer-play-icon');
+        const btn = document.getElementById('timer-play-btn');
+        
+        if (icon) {
+            icon.textContent = this.isRunning ? '⏸' : '▶';
+        }
+        if (btn) {
+            btn.classList.toggle('playing', this.isRunning);
+        }
+    },
+
+    formatTime(totalSeconds) {
+        const mins = Math.floor(totalSeconds / 60);
+        const secs = totalSeconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    },
+
+    // Método para ser chamado pelo ActiveWorkout após completar série
+    startFromWorkout(seconds = 90) {
+        this.open(seconds);
+        setTimeout(() => this.start(), 300);
     }
 };
 

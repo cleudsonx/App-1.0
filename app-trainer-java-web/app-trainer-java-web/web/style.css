@@ -6424,6 +6424,268 @@ input, select, textarea {
     color: var(--accent-cyan);
 }
 
+/* ==========================================
+   REST TIMER MODAL - Timer de Descanso
+   ========================================== */
+.timer-modal {
+    background: var(--bg-card);
+    border-radius: 24px;
+    padding: 24px;
+    width: 90%;
+    max-width: 360px;
+    animation: slideUp 0.3s ease;
+}
+
+.timer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.timer-header h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Timer Circle */
+.timer-circle-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.timer-circle {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.timer-bg {
+    fill: none;
+    stroke: var(--bg-secondary);
+    stroke-width: 8;
+}
+
+.timer-progress {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.3s ease, stroke 0.3s ease;
+}
+
+.timer-display-large {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: 700;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: var(--text-primary);
+    z-index: 1;
+}
+
+.timer-colon {
+    animation: blink 1s infinite;
+    margin: 0 2px;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.3; }
+}
+
+.timer-circle-container.timer-finished {
+    animation: pulse-finish 0.5s ease 3;
+}
+
+@keyframes pulse-finish {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Timer Presets */
+.timer-presets {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.timer-preset {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 8px;
+    background: var(--bg-secondary);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.timer-preset:hover {
+    background: var(--bg-elevated);
+    border-color: var(--primary);
+}
+
+.timer-preset.active {
+    background: rgba(var(--primary-rgb), 0.15);
+    border-color: var(--primary);
+}
+
+.preset-icon {
+    font-size: 1.2rem;
+}
+
+.preset-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.timer-preset.active .preset-label {
+    color: var(--primary);
+}
+
+/* Timer Controls */
+.timer-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.timer-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all 0.2s ease;
+}
+
+.timer-btn span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.timer-reset {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-size: 1.5rem;
+}
+
+.timer-reset:hover {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+}
+
+.timer-play {
+    width: 72px;
+    height: 72px;
+    background: var(--primary);
+    color: white;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 20px var(--primary-glow);
+}
+
+.timer-play:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 25px var(--primary-glow);
+}
+
+.timer-play.playing {
+    background: #ff6b6b;
+    box-shadow: 0 4px 20px rgba(255, 107, 107, 0.4);
+}
+
+.timer-add {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.timer-add:hover {
+    background: var(--bg-elevated);
+    color: var(--primary);
+}
+
+/* Quick Actions */
+.timer-quick-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.quick-action {
+    padding: 10px 16px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.quick-action:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 380px) {
+    .timer-modal {
+        padding: 20px 16px;
+    }
+    
+    .timer-circle-container {
+        width: 160px;
+        height: 160px;
+    }
+    
+    .timer-display-large {
+        font-size: 2.5rem;
+    }
+    
+    .timer-presets {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+    }
+    
+    .timer-preset {
+        padding: 10px 6px;
+    }
+    
+    .timer-btn {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .timer-play {
+        width: 64px;
+        height: 64px;
+    }
+}
+
 .card-agua .feature-icon,
 .card-agua .agua-icon {
     font-size: 24px;
