@@ -3220,6 +3220,600 @@ const WorkoutTemplates = {
                     ]}
                 ]
             }
+        },
+        // === CATEGORIA FEMININA - GLÚTEOS, PERNAS & DEFINIÇÃO ===
+        {
+            id: 'glute_goddess_4x',
+            name: 'Glute Goddess',
+            subtitle: 'Iniciante/Intermediário • 4x/semana',
+            description: 'O treino perfeito para construir glúteos arredondados e firmes! Foco em ativação glútea, hipthrust progressivo e exercícios unilaterais. Resultados visíveis em 8 semanas.',
+            level: 'iniciante',
+            days: 4,
+            duration: '45-60',
+            icon: '🍑',
+            category: 'feminino',
+            objetivos: ['feminino', 'gluteo', 'definicao'],
+            benefits: ['Glúteos definidos', 'Pernas torneadas', 'Empoderamento'],
+            featured: true,
+            workout: {
+                dias: [
+                    { nome: 'Dia 1 - Glúteos (Foco Principal)', grupos: 'Glúteos, Posterior', exercicios: [
+                        { nome: 'Ativação Glútea (Clam Shell)', series: 3, repeticoes: '15 cada lado', descanso: '30s', nota: 'Aquecimento com elástico' },
+                        { nome: 'Hip Thrust com Barra', series: 4, repeticoes: '12-15', descanso: '90s', nota: 'Aperte no topo por 2s!' },
+                        { nome: 'Elevação Pélvica Unilateral', series: 3, repeticoes: '12 cada', descanso: '60s' },
+                        { nome: 'Stiff Romeno', series: 4, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Abdução na Máquina', series: 3, repeticoes: '15-20', descanso: '45s' },
+                        { nome: 'Kickback no Cabo', series: 3, repeticoes: '12 cada', descanso: '45s' },
+                        { nome: 'Frog Pump', series: 2, repeticoes: '20-30', descanso: '45s', nota: 'Finalizador!' }
+                    ]},
+                    { nome: 'Dia 2 - Quadríceps & Core', grupos: 'Quadríceps, Abdômen', exercicios: [
+                        { nome: 'Agachamento Sumô', series: 4, repeticoes: '12-15', descanso: '90s' },
+                        { nome: 'Leg Press (pés juntos)', series: 4, repeticoes: '15', descanso: '60s' },
+                        { nome: 'Cadeira Extensora', series: 3, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Passada Búlgara', series: 3, repeticoes: '10 cada', descanso: '60s' },
+                        { nome: 'Agachamento Goblet', series: 3, repeticoes: '15', descanso: '60s' },
+                        { nome: 'Prancha', series: 3, repeticoes: '45s', descanso: '30s' },
+                        { nome: 'Crunch Bicicleta', series: 3, repeticoes: '20 cada lado', descanso: '30s' },
+                        { nome: 'Elevação de Pernas', series: 3, repeticoes: '15', descanso: '30s' }
+                    ]},
+                    { nome: 'Dia 3 - Posterior & Panturrilha', grupos: 'Posterior, Panturrilha', exercicios: [
+                        { nome: 'Mesa Flexora', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Cadeira Flexora', series: 3, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Stiff Unilateral', series: 3, repeticoes: '10 cada', descanso: '60s' },
+                        { nome: 'Good Morning', series: 3, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Hiperextensão', series: 3, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Panturrilha em Pé', series: 4, repeticoes: '20', descanso: '30s' },
+                        { nome: 'Panturrilha Sentada', series: 3, repeticoes: '20', descanso: '30s' }
+                    ]},
+                    { nome: 'Dia 4 - Glúteos + Full Lower', grupos: 'Glúteos, Pernas Completo', exercicios: [
+                        { nome: 'Hip Thrust na Máquina', series: 4, repeticoes: '15', descanso: '90s' },
+                        { nome: 'Agachamento com Elástico', series: 3, repeticoes: '15', descanso: '60s' },
+                        { nome: 'Afundo Lateral', series: 3, repeticoes: '12 cada', descanso: '60s' },
+                        { nome: 'Step Up', series: 3, repeticoes: '12 cada', descanso: '60s' },
+                        { nome: 'Abdução em Pé (Cabo)', series: 3, repeticoes: '15 cada', descanso: '45s' },
+                        { nome: 'Sumo Squat Pulse', series: 2, repeticoes: '20', descanso: '45s' },
+                        { nome: 'Fire Hydrant', series: 2, repeticoes: '15 cada', descanso: '30s' }
+                    ]}
+                ]
+            }
+        },
+        {
+            id: 'bikini_prep_5x',
+            name: 'Bikini Competition Prep',
+            subtitle: 'Avançado • 5x/semana',
+            description: 'Treino usado por atletas de Bikini Fitness! Foco em proporção, cintura fina e glúteos redondos. Combinação de treino pesado com alto volume e exercícios de definição.',
+            level: 'avancado',
+            days: 5,
+            duration: '60-75',
+            icon: '👙',
+            category: 'feminino',
+            objetivos: ['feminino', 'gluteo', 'definicao'],
+            benefits: ['Físico de atleta', 'Proporção perfeita', 'Definição'],
+            featured: true,
+            workout: {
+                dias: [
+                    { nome: 'Dia 1 - Glúteos Heavy', grupos: 'Glúteos (Foco Força)', exercicios: [
+                        { nome: 'Hip Thrust com Barra', series: 5, repeticoes: '8-10', descanso: '120s', nota: 'Pesado! RPE 9' },
+                        { nome: 'Agachamento Profundo', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Stiff Romeno', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Cable Pull Through', series: 3, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Abdução Sentada (Máquina)', series: 4, repeticoes: '15-20', descanso: '45s' },
+                        { nome: 'Kickback na Máquina', series: 3, repeticoes: '12 cada', descanso: '45s' }
+                    ]},
+                    { nome: 'Dia 2 - Superior (Manutenção)', grupos: 'Costas, Ombros, Braços', exercicios: [
+                        { nome: 'Puxada Frontal', series: 4, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Remada Baixa', series: 3, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Elevação Lateral', series: 4, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Desenvolvimento com Halteres', series: 3, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Rosca Direta', series: 3, repeticoes: '12', descanso: '45s' },
+                        { nome: 'Tríceps Pulley', series: 3, repeticoes: '15', descanso: '45s' }
+                    ]},
+                    { nome: 'Dia 3 - Quadríceps & Panturrilha', grupos: 'Quadríceps, Panturrilha', exercicios: [
+                        { nome: 'Agachamento Hack', series: 4, repeticoes: '12-15', descanso: '90s' },
+                        { nome: 'Leg Press (pés baixos)', series: 4, repeticoes: '15', descanso: '60s' },
+                        { nome: 'Cadeira Extensora', series: 4, repeticoes: '15-20', descanso: '45s', nota: 'Dropset na última' },
+                        { nome: 'Passada Caminhando', series: 3, repeticoes: '20 passos', descanso: '60s' },
+                        { nome: 'Sissy Squat', series: 2, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Panturrilha em Pé', series: 5, repeticoes: '20', descanso: '30s' },
+                        { nome: 'Panturrilha Sentada', series: 4, repeticoes: '20', descanso: '30s' }
+                    ]},
+                    { nome: 'Dia 4 - Posterior & Glúteos', grupos: 'Posterior, Glúteos', exercicios: [
+                        { nome: 'Stiff com Barra', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Mesa Flexora', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Cadeira Flexora Unilateral', series: 3, repeticoes: '12 cada', descanso: '45s' },
+                        { nome: 'Hip Thrust Unilateral', series: 3, repeticoes: '12 cada', descanso: '60s' },
+                        { nome: 'Glute Bridge com Elástico', series: 3, repeticoes: '20', descanso: '45s' },
+                        { nome: 'Hiperextensão (foco glúteo)', series: 3, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Abdução no Cabo', series: 3, repeticoes: '15 cada', descanso: '30s' }
+                    ]},
+                    { nome: 'Dia 5 - Abs & Glúteo Volume', grupos: 'Abdômen, Glúteos (Alto Volume)', exercicios: [
+                        { nome: 'Crunch na Máquina', series: 4, repeticoes: '20', descanso: '30s' },
+                        { nome: 'Prancha', series: 3, repeticoes: '60s', descanso: '30s' },
+                        { nome: 'Russian Twist', series: 3, repeticoes: '20 cada lado', descanso: '30s' },
+                        { nome: 'Elevação de Pernas Suspenso', series: 3, repeticoes: '15', descanso: '30s' },
+                        { nome: 'Vacuum', series: 5, repeticoes: '30s', descanso: '30s', nota: 'Cintura fina!' },
+                        { nome: 'Hip Thrust Leve (Pump)', series: 3, repeticoes: '20-25', descanso: '45s' },
+                        { nome: 'Banda Walk', series: 3, repeticoes: '20 passos', descanso: '30s' },
+                        { nome: 'Frog Pump', series: 2, repeticoes: '30', descanso: '30s' }
+                    ]}
+                ]
+            }
+        },
+        {
+            id: 'strong_curves_4x',
+            name: 'Strong Curves (Bret Contreras)',
+            subtitle: 'Iniciante/Intermediário • 4x/semana',
+            description: 'O programa científico mais famoso para glúteos! Criado por Bret Contreras, o "Glute Guy". Baseado em anos de pesquisa sobre ativação e crescimento glúteo máximo.',
+            level: 'iniciante',
+            days: 4,
+            duration: '45-60',
+            icon: '📐',
+            category: 'feminino',
+            objetivos: ['feminino', 'gluteo', 'hipertrofia'],
+            benefits: ['Científico', 'Progressão estruturada', 'Resultados comprovados'],
+            workout: {
+                dias: [
+                    { nome: 'Dia A - Lower A', grupos: 'Glúteos, Quadríceps', exercicios: [
+                        { nome: 'Glute Bridge', series: 3, repeticoes: '20', descanso: '60s', nota: 'Ativação' },
+                        { nome: 'Box Squat', series: 3, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Hip Thrust', series: 3, repeticoes: '12-15', descanso: '90s' },
+                        { nome: 'Walking Lunge', series: 2, repeticoes: '12 cada', descanso: '60s' },
+                        { nome: 'Reverse Hyper', series: 2, repeticoes: '15', descanso: '60s' },
+                        { nome: 'Side Lying Clam', series: 2, repeticoes: '15 cada', descanso: '30s' }
+                    ]},
+                    { nome: 'Dia B - Upper', grupos: 'Costas, Peito, Ombros', exercicios: [
+                        { nome: 'Push Up (ou Joelhos)', series: 3, repeticoes: '10-15', descanso: '60s' },
+                        { nome: 'Puxada Frontal', series: 3, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Remada com Halteres', series: 3, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Elevação Lateral', series: 2, repeticoes: '12-15', descanso: '45s' },
+                        { nome: 'Rosca Direta', series: 2, repeticoes: '12', descanso: '45s' },
+                        { nome: 'Tríceps na Máquina', series: 2, repeticoes: '12', descanso: '45s' }
+                    ]},
+                    { nome: 'Dia C - Lower B', grupos: 'Posterior, Glúteos', exercicios: [
+                        { nome: 'Single Leg Glute Bridge', series: 3, repeticoes: '10 cada', descanso: '60s' },
+                        { nome: 'Romanian Deadlift', series: 3, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Hip Thrust Banda', series: 3, repeticoes: '15-20', descanso: '60s' },
+                        { nome: 'Cable Pull Through', series: 3, repeticoes: '15', descanso: '60s' },
+                        { nome: 'Back Extension', series: 2, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Lateral Band Walk', series: 2, repeticoes: '20 passos', descanso: '30s' }
+                    ]},
+                    { nome: 'Dia D - Full Body', grupos: 'Corpo Completo', exercicios: [
+                        { nome: 'Hip Thrust', series: 3, repeticoes: '15', descanso: '90s' },
+                        { nome: 'Goblet Squat', series: 3, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Deadlift', series: 3, repeticoes: '10', descanso: '90s' },
+                        { nome: 'Push Up', series: 2, repeticoes: 'max', descanso: '60s' },
+                        { nome: 'Inverted Row', series: 2, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Plank', series: 2, repeticoes: '45s', descanso: '30s' }
+                    ]}
+                ]
+            }
+        },
+        {
+            id: 'booty_burn_3x',
+            name: 'Booty Burn Express',
+            subtitle: 'Iniciante • 3x/semana',
+            description: 'Treinos curtos e intensos focados 100% em glúteos! Perfeito para quem tem pouco tempo mas quer resultados. Cada sessão menos de 40 minutos.',
+            level: 'iniciante',
+            days: 3,
+            duration: '30-40',
+            icon: '🔥',
+            category: 'feminino',
+            objetivos: ['feminino', 'gluteo', 'emagrecimento'],
+            benefits: ['Treino rápido', 'Alta intensidade', 'Queima localizada'],
+            workout: {
+                dias: [
+                    { nome: 'Dia 1 - Pump & Burn', grupos: 'Glúteos (Alto Volume)', exercicios: [
+                        { nome: 'Banda Walk Aquecimento', series: 2, repeticoes: '20 passos', descanso: '30s' },
+                        { nome: 'Hip Thrust', series: 4, repeticoes: '15-20', descanso: '60s' },
+                        { nome: 'Sumo Squat', series: 3, repeticoes: '15', descanso: '60s' },
+                        { nome: 'Kickback', series: 3, repeticoes: '15 cada', descanso: '45s' },
+                        { nome: 'Fire Hydrant', series: 2, repeticoes: '20 cada', descanso: '30s' },
+                        { nome: 'Glute Bridge Burnout', series: 1, repeticoes: '50', descanso: 'N/A', nota: 'Finalizador!' }
+                    ]},
+                    { nome: 'Dia 2 - Força & Crescimento', grupos: 'Glúteos (Foco Força)', exercicios: [
+                        { nome: 'Clam Shell c/ Elástico', series: 2, repeticoes: '15 cada', descanso: '30s' },
+                        { nome: 'Hip Thrust Pesado', series: 4, repeticoes: '8-10', descanso: '90s' },
+                        { nome: 'Romanian Deadlift', series: 3, repeticoes: '10', descanso: '90s' },
+                        { nome: 'Step Up Alto', series: 3, repeticoes: '10 cada', descanso: '60s' },
+                        { nome: 'Cable Kickback', series: 3, repeticoes: '12 cada', descanso: '45s' }
+                    ]},
+                    { nome: 'Dia 3 - Unilateral & Definição', grupos: 'Glúteos (Unilateral)', exercicios: [
+                        { nome: 'Single Leg Hip Thrust', series: 3, repeticoes: '12 cada', descanso: '60s' },
+                        { nome: 'Bulgarian Split Squat', series: 3, repeticoes: '10 cada', descanso: '60s' },
+                        { nome: 'Single Leg Deadlift', series: 3, repeticoes: '10 cada', descanso: '60s' },
+                        { nome: 'Curtsy Lunge', series: 2, repeticoes: '12 cada', descanso: '45s' },
+                        { nome: 'Frog Pump Final', series: 2, repeticoes: '30', descanso: '30s' }
+                    ]}
+                ]
+            }
+        },
+        {
+            id: 'legs_core_sculpt_4x',
+            name: 'Legs & Core Sculptor',
+            subtitle: 'Intermediário • 4x/semana',
+            description: 'Treino completo de pernas com ênfase em abdômen! Construa pernas definidas e um core forte. Perfeito para quem quer equilíbrio entre força e estética.',
+            level: 'intermediario',
+            days: 4,
+            duration: '50-60',
+            icon: '💎',
+            category: 'feminino',
+            objetivos: ['feminino', 'quadriceps', 'core'],
+            benefits: ['Pernas esculpidas', 'Core forte', 'Definição'],
+            workout: {
+                dias: [
+                    { nome: 'Dia 1 - Quadríceps Focus', grupos: 'Quadríceps, Core', exercicios: [
+                        { nome: 'Agachamento Livre', series: 4, repeticoes: '12', descanso: '90s' },
+                        { nome: 'Leg Press', series: 4, repeticoes: '15', descanso: '60s' },
+                        { nome: 'Cadeira Extensora', series: 3, repeticoes: '15-20', descanso: '45s' },
+                        { nome: 'Passada Frontal', series: 3, repeticoes: '12 cada', descanso: '60s' },
+                        { nome: 'Agachamento Sissy', series: 2, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Prancha', series: 3, repeticoes: '60s', descanso: '30s' },
+                        { nome: 'Dead Bug', series: 3, repeticoes: '10 cada', descanso: '30s' }
+                    ]},
+                    { nome: 'Dia 2 - Glúteos & Abs', grupos: 'Glúteos, Abdômen', exercicios: [
+                        { nome: 'Hip Thrust', series: 4, repeticoes: '12-15', descanso: '90s' },
+                        { nome: 'Sumo Squat', series: 3, repeticoes: '15', descanso: '60s' },
+                        { nome: 'Abdução Máquina', series: 3, repeticoes: '20', descanso: '45s' },
+                        { nome: 'Kickback', series: 3, repeticoes: '12 cada', descanso: '45s' },
+                        { nome: 'Crunch na Máquina', series: 4, repeticoes: '20', descanso: '30s' },
+                        { nome: 'Russian Twist', series: 3, repeticoes: '20 cada', descanso: '30s' },
+                        { nome: 'Leg Raise', series: 3, repeticoes: '15', descanso: '30s' }
+                    ]},
+                    { nome: 'Dia 3 - Posterior & Panturrilha', grupos: 'Posterior, Panturrilha', exercicios: [
+                        { nome: 'Stiff', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Mesa Flexora', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Cadeira Flexora', series: 3, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Good Morning', series: 3, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Panturrilha em Pé', series: 5, repeticoes: '20', descanso: '30s' },
+                        { nome: 'Panturrilha Sentada', series: 4, repeticoes: '20', descanso: '30s' },
+                        { nome: 'Panturrilha Unilateral', series: 2, repeticoes: '15 cada', descanso: '30s' }
+                    ]},
+                    { nome: 'Dia 4 - Full Legs + Core Intenso', grupos: 'Pernas Completo, Core', exercicios: [
+                        { nome: 'Agachamento Sumô', series: 3, repeticoes: '15', descanso: '60s' },
+                        { nome: 'Walking Lunge', series: 3, repeticoes: '20 passos', descanso: '60s' },
+                        { nome: 'Hip Thrust Banda', series: 3, repeticoes: '20', descanso: '60s' },
+                        { nome: 'Step Up', series: 2, repeticoes: '12 cada', descanso: '45s' },
+                        { nome: 'Ab Wheel Rollout', series: 3, repeticoes: '10-12', descanso: '45s' },
+                        { nome: 'Mountain Climber', series: 3, repeticoes: '30s', descanso: '30s' },
+                        { nome: 'Vacuum', series: 5, repeticoes: '30s', descanso: '15s' }
+                    ]}
+                ]
+            }
+        },
+        {
+            id: 'stephanie_sanzo_lower',
+            name: 'Stephanie Sanzo Lower Body',
+            subtitle: 'Avançado • 4x/semana',
+            description: 'Inspirado no treino da atleta Stephanie Sanzo! Combinação de powerlifting feminino com estética. Força + Volume para pernas e glúteos impressionantes.',
+            level: 'avancado',
+            days: 4,
+            duration: '60-75',
+            icon: '🦁',
+            category: 'feminino',
+            objetivos: ['feminino', 'gluteo', 'forca'],
+            benefits: ['Força feminina', 'Estética', 'Powerbuilding'],
+            workout: {
+                dias: [
+                    { nome: 'Dia 1 - Glúteos Força', grupos: 'Glúteos (Força Máxima)', exercicios: [
+                        { nome: 'Hip Thrust com Barra', series: 5, repeticoes: '5-8', descanso: '180s', nota: 'Força! RPE 9' },
+                        { nome: 'Sumo Deadlift', series: 4, repeticoes: '6-8', descanso: '120s' },
+                        { nome: 'Bulgarian Split Squat', series: 4, repeticoes: '8-10 cada', descanso: '90s' },
+                        { nome: 'Cable Pull Through', series: 3, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Abdução Sentada', series: 3, repeticoes: '20', descanso: '45s' }
+                    ]},
+                    { nome: 'Dia 2 - Quadríceps Força', grupos: 'Quadríceps (Força)', exercicios: [
+                        { nome: 'Back Squat', series: 5, repeticoes: '5-8', descanso: '180s', nota: 'Força! RPE 9' },
+                        { nome: 'Front Squat', series: 3, repeticoes: '8-10', descanso: '120s' },
+                        { nome: 'Leg Press Unilateral', series: 3, repeticoes: '10 cada', descanso: '60s' },
+                        { nome: 'Hack Squat', series: 3, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Cadeira Extensora', series: 3, repeticoes: '15-20', descanso: '45s' }
+                    ]},
+                    { nome: 'Dia 3 - Glúteos Volume', grupos: 'Glúteos (Alto Volume)', exercicios: [
+                        { nome: 'Hip Thrust', series: 4, repeticoes: '12-15', descanso: '90s' },
+                        { nome: 'Romanian Deadlift', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Walking Lunge', series: 3, repeticoes: '24 passos', descanso: '60s' },
+                        { nome: 'Kickback Máquina', series: 4, repeticoes: '12-15 cada', descanso: '45s' },
+                        { nome: 'Frog Pump c/ Banda', series: 3, repeticoes: '25-30', descanso: '45s' },
+                        { nome: 'Side Lying Hip Abduction', series: 3, repeticoes: '20 cada', descanso: '30s' }
+                    ]},
+                    { nome: 'Dia 4 - Posterior & Panturrilha', grupos: 'Posterior, Panturrilha', exercicios: [
+                        { nome: 'Deficit Romanian Deadlift', series: 4, repeticoes: '10', descanso: '90s' },
+                        { nome: 'Nordic Hamstring Curl', series: 3, repeticoes: '6-8', descanso: '90s' },
+                        { nome: 'Lying Leg Curl', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Seated Leg Curl', series: 3, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Standing Calf Raise', series: 5, repeticoes: '15-20', descanso: '30s' },
+                        { nome: 'Seated Calf Raise', series: 4, repeticoes: '20-25', descanso: '30s' }
+                    ]}
+                ]
+            }
+        },
+        {
+            id: 'peach_program_5x',
+            name: 'Peach Program 🍑',
+            subtitle: 'Intermediário • 5x/semana',
+            description: 'Programa de 12 semanas para glúteos perfeitos! Periodização específica: 4 semanas força, 4 semanas hipertrofia, 4 semanas metabólico. O mais completo!',
+            level: 'intermediario',
+            days: 5,
+            duration: '50-65',
+            icon: '🍑',
+            category: 'feminino',
+            objetivos: ['feminino', 'gluteo', 'hipertrofia'],
+            benefits: ['Periodizado', '12 semanas', 'Progressão científica'],
+            featured: true,
+            workout: {
+                dias: [
+                    { nome: 'Dia 1 - Glúteos A (Força)', grupos: 'Glúteos (Força)', exercicios: [
+                        { nome: 'Barbell Hip Thrust', series: 5, repeticoes: '6-8', descanso: '120s', nota: 'Progressão de carga semanal' },
+                        { nome: 'Sumo Squat', series: 4, repeticoes: '8-10', descanso: '90s' },
+                        { nome: 'Romanian Deadlift', series: 4, repeticoes: '8-10', descanso: '90s' },
+                        { nome: 'Bulgarian Split Squat', series: 3, repeticoes: '10 cada', descanso: '60s' },
+                        { nome: 'Cable Kickback', series: 3, repeticoes: '12 cada', descanso: '45s' }
+                    ]},
+                    { nome: 'Dia 2 - Quadríceps', grupos: 'Quadríceps, Panturrilha', exercicios: [
+                        { nome: 'Leg Press', series: 4, repeticoes: '12-15', descanso: '90s' },
+                        { nome: 'Hack Squat', series: 4, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Leg Extension', series: 4, repeticoes: '15-20', descanso: '45s' },
+                        { nome: 'Walking Lunge', series: 3, repeticoes: '20 passos', descanso: '60s' },
+                        { nome: 'Calf Raise em Pé', series: 4, repeticoes: '20', descanso: '30s' },
+                        { nome: 'Calf Raise Sentada', series: 3, repeticoes: '20', descanso: '30s' }
+                    ]},
+                    { nome: 'Dia 3 - Glúteos B (Volume)', grupos: 'Glúteos (Hipertrofia)', exercicios: [
+                        { nome: 'Hip Thrust', series: 4, repeticoes: '12-15', descanso: '90s' },
+                        { nome: 'Frog Pump', series: 3, repeticoes: '30', descanso: '45s' },
+                        { nome: 'Sumo Squat Pulse', series: 3, repeticoes: '20', descanso: '45s' },
+                        { nome: 'Step Up', series: 3, repeticoes: '12 cada', descanso: '60s' },
+                        { nome: 'Cable Pull Through', series: 3, repeticoes: '15', descanso: '60s' },
+                        { nome: 'Banded Side Walk', series: 3, repeticoes: '20 passos', descanso: '45s' },
+                        { nome: 'Fire Hydrant', series: 2, repeticoes: '20 cada', descanso: '30s' }
+                    ]},
+                    { nome: 'Dia 4 - Posterior', grupos: 'Posterior de Coxa', exercicios: [
+                        { nome: 'Stiff', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Lying Leg Curl', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Seated Leg Curl', series: 3, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Single Leg RDL', series: 3, repeticoes: '10 cada', descanso: '60s' },
+                        { nome: 'Back Extension (glute focus)', series: 3, repeticoes: '15', descanso: '45s' }
+                    ]},
+                    { nome: 'Dia 5 - Glúteos C (Metabólico)', grupos: 'Glúteos (Pump)', exercicios: [
+                        { nome: 'Banded Hip Thrust', series: 4, repeticoes: '20-25', descanso: '60s', nota: 'Alto volume, baixo descanso' },
+                        { nome: 'Glute Bridge March', series: 3, repeticoes: '30 total', descanso: '45s' },
+                        { nome: 'Curtsy Lunge', series: 3, repeticoes: '15 cada', descanso: '45s' },
+                        { nome: 'Sumo Squat Hold', series: 3, repeticoes: '45s', descanso: '30s' },
+                        { nome: 'Clamshell', series: 3, repeticoes: '20 cada', descanso: '30s' },
+                        { nome: 'Hip Circle Walk', series: 2, repeticoes: '30 passos', descanso: '30s' },
+                        { nome: 'Glute Bridge Burnout', series: 1, repeticoes: '100', descanso: 'N/A', nota: '100 reps finais!' }
+                    ]}
+                ]
+            }
+        },
+        {
+            id: 'hourglass_figure_4x',
+            name: 'Hourglass Figure',
+            subtitle: 'Intermediário • 4x/semana',
+            description: 'Treino para criar a silhueta ampulheta! Ênfase em glúteos + ombros, mantendo cintura fina. O segredo: vacuum diário + treino estratégico.',
+            level: 'intermediario',
+            days: 4,
+            duration: '55-65',
+            icon: '⏳',
+            category: 'feminino',
+            objetivos: ['feminino', 'definicao', 'gluteo'],
+            benefits: ['Silhueta perfeita', 'Cintura fina', 'Proporção'],
+            workout: {
+                dias: [
+                    { nome: 'Dia 1 - Glúteos & Posterior', grupos: 'Glúteos, Posterior', exercicios: [
+                        { nome: 'Hip Thrust', series: 4, repeticoes: '12-15', descanso: '90s' },
+                        { nome: 'Romanian Deadlift', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Sumo Squat', series: 3, repeticoes: '15', descanso: '60s' },
+                        { nome: 'Lying Leg Curl', series: 3, repeticoes: '12-15', descanso: '45s' },
+                        { nome: 'Cable Kickback', series: 3, repeticoes: '12 cada', descanso: '45s' },
+                        { nome: 'Vacuum', series: 5, repeticoes: '30s', descanso: '15s', nota: 'Cintura!' }
+                    ]},
+                    { nome: 'Dia 2 - Ombros & Costas (V-Taper)', grupos: 'Ombros, Costas', exercicios: [
+                        { nome: 'Elevação Lateral', series: 5, repeticoes: '15-20', descanso: '45s', nota: 'Ombros largos!' },
+                        { nome: 'Desenvolvimento com Halteres', series: 4, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Puxada Frontal Aberta', series: 4, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Remada Baixa', series: 3, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Face Pull', series: 3, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Vacuum', series: 3, repeticoes: '30s', descanso: '15s' }
+                    ]},
+                    { nome: 'Dia 3 - Quadríceps & Core', grupos: 'Quadríceps, Abdômen', exercicios: [
+                        { nome: 'Leg Press', series: 4, repeticoes: '12-15', descanso: '90s' },
+                        { nome: 'Hack Squat', series: 3, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Leg Extension', series: 3, repeticoes: '15-20', descanso: '45s' },
+                        { nome: 'Walking Lunge', series: 3, repeticoes: '20 passos', descanso: '60s' },
+                        { nome: 'Prancha', series: 3, repeticoes: '60s', descanso: '30s' },
+                        { nome: 'Dead Bug', series: 3, repeticoes: '10 cada', descanso: '30s' },
+                        { nome: 'Vacuum', series: 5, repeticoes: '45s', descanso: '15s' }
+                    ]},
+                    { nome: 'Dia 4 - Full Glute + Ombros', grupos: 'Glúteos, Ombros (Pump)', exercicios: [
+                        { nome: 'Hip Thrust Banda', series: 3, repeticoes: '20', descanso: '60s' },
+                        { nome: 'Frog Pump', series: 3, repeticoes: '25', descanso: '45s' },
+                        { nome: 'Fire Hydrant', series: 2, repeticoes: '20 cada', descanso: '30s' },
+                        { nome: 'Elevação Lateral', series: 4, repeticoes: '20', descanso: '45s' },
+                        { nome: 'Elevação Frontal', series: 3, repeticoes: '12', descanso: '45s' },
+                        { nome: 'Rear Delt Fly', series: 3, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Vacuum Final', series: 5, repeticoes: '60s', descanso: '15s' }
+                    ]}
+                ]
+            }
+        },
+        {
+            id: 'abs_blast_3x',
+            name: 'Abs Blast 6-Pack',
+            subtitle: 'Intermediário • 3x/semana',
+            description: 'Treino intensivo de abdômen! Foco em definição, cintura fina e core forte. Combina exercícios de resistência com vacuum para resultados rápidos.',
+            level: 'intermediario',
+            days: 3,
+            duration: '25-35',
+            icon: '🎯',
+            category: 'feminino',
+            objetivos: ['feminino', 'core', 'definicao'],
+            benefits: ['Abdômen definido', 'Core forte', 'Cintura fina'],
+            workout: {
+                dias: [
+                    { nome: 'Dia 1 - Abs Superior & Oblíquos', grupos: 'Reto Abdominal, Oblíquos', exercicios: [
+                        { nome: 'Crunch na Máquina', series: 4, repeticoes: '15-20', descanso: '30s' },
+                        { nome: 'Cable Crunch', series: 3, repeticoes: '15-20', descanso: '30s' },
+                        { nome: 'Russian Twist c/ Peso', series: 3, repeticoes: '20 cada lado', descanso: '30s' },
+                        { nome: 'Side Plank', series: 3, repeticoes: '30s cada', descanso: '30s' },
+                        { nome: 'Bicycle Crunch', series: 3, repeticoes: '20 cada', descanso: '30s' },
+                        { nome: 'Vacuum', series: 5, repeticoes: '30s', descanso: '15s' }
+                    ]},
+                    { nome: 'Dia 2 - Abs Inferior & TVA', grupos: 'Abs Inferior, Transverso', exercicios: [
+                        { nome: 'Leg Raise Suspenso', series: 4, repeticoes: '12-15', descanso: '45s' },
+                        { nome: 'Reverse Crunch', series: 3, repeticoes: '15-20', descanso: '30s' },
+                        { nome: 'Lying Leg Raise', series: 3, repeticoes: '15', descanso: '30s' },
+                        { nome: 'Dead Bug', series: 3, repeticoes: '10 cada', descanso: '30s' },
+                        { nome: 'Hollow Body Hold', series: 3, repeticoes: '30s', descanso: '30s' },
+                        { nome: 'Vacuum Intenso', series: 5, repeticoes: '45s', descanso: '15s' }
+                    ]},
+                    { nome: 'Dia 3 - Full Core & Estabilidade', grupos: 'Core Completo', exercicios: [
+                        { nome: 'Prancha', series: 3, repeticoes: '60s', descanso: '30s' },
+                        { nome: 'Prancha Lateral', series: 2, repeticoes: '45s cada', descanso: '30s' },
+                        { nome: 'Ab Wheel Rollout', series: 3, repeticoes: '10-12', descanso: '45s' },
+                        { nome: 'Mountain Climber', series: 3, repeticoes: '30s', descanso: '30s' },
+                        { nome: 'Pallof Press', series: 3, repeticoes: '12 cada lado', descanso: '30s' },
+                        { nome: 'Bird Dog', series: 3, repeticoes: '10 cada', descanso: '30s' },
+                        { nome: 'Vacuum Máximo', series: 5, repeticoes: '60s', descanso: '15s' }
+                    ]}
+                ]
+            }
+        },
+        {
+            id: 'krissy_cela_legs',
+            name: 'Krissy Cela Tone & Sculpt',
+            subtitle: 'Iniciante/Intermediário • 4x/semana',
+            description: 'Inspirado no método da influencer fitness Krissy Cela! Treino equilibrado focado em tonificar e esculpir o corpo feminino. Perfeito para iniciantes.',
+            level: 'iniciante',
+            days: 4,
+            duration: '45-55',
+            icon: '✨',
+            category: 'feminino',
+            objetivos: ['feminino', 'definicao', 'gluteo'],
+            benefits: ['Tonificação', 'Para iniciantes', 'Esculpir'],
+            workout: {
+                dias: [
+                    { nome: 'Dia 1 - Lower Body A', grupos: 'Glúteos, Quadríceps', exercicios: [
+                        { nome: 'Goblet Squat', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Hip Thrust', series: 4, repeticoes: '15', descanso: '60s' },
+                        { nome: 'Leg Press', series: 3, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Walking Lunge', series: 3, repeticoes: '12 cada', descanso: '60s' },
+                        { nome: 'Leg Extension', series: 3, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Glute Bridge', series: 3, repeticoes: '20', descanso: '45s' }
+                    ]},
+                    { nome: 'Dia 2 - Upper Body', grupos: 'Costas, Ombros, Braços', exercicios: [
+                        { nome: 'Lat Pulldown', series: 3, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Seated Row', series: 3, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Shoulder Press', series: 3, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Lateral Raise', series: 3, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Bicep Curl', series: 3, repeticoes: '12', descanso: '45s' },
+                        { nome: 'Tricep Pushdown', series: 3, repeticoes: '12', descanso: '45s' }
+                    ]},
+                    { nome: 'Dia 3 - Lower Body B', grupos: 'Posterior, Glúteos', exercicios: [
+                        { nome: 'Romanian Deadlift', series: 4, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Single Leg Hip Thrust', series: 3, repeticoes: '10 cada', descanso: '60s' },
+                        { nome: 'Lying Leg Curl', series: 3, repeticoes: '12-15', descanso: '45s' },
+                        { nome: 'Bulgarian Split Squat', series: 3, repeticoes: '10 cada', descanso: '60s' },
+                        { nome: 'Cable Kickback', series: 3, repeticoes: '12 cada', descanso: '45s' },
+                        { nome: 'Calf Raise', series: 3, repeticoes: '20', descanso: '30s' }
+                    ]},
+                    { nome: 'Dia 4 - Full Body & Core', grupos: 'Corpo Completo', exercicios: [
+                        { nome: 'Sumo Squat', series: 3, repeticoes: '15', descanso: '60s' },
+                        { nome: 'Push Up (ou Joelhos)', series: 3, repeticoes: '10-15', descanso: '60s' },
+                        { nome: 'Step Up', series: 3, repeticoes: '10 cada', descanso: '60s' },
+                        { nome: 'Face Pull', series: 3, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Plank', series: 3, repeticoes: '45s', descanso: '30s' },
+                        { nome: 'Dead Bug', series: 3, repeticoes: '10 cada', descanso: '30s' },
+                        { nome: 'Glute Bridge March', series: 2, repeticoes: '20', descanso: '30s' }
+                    ]}
+                ]
+            }
+        },
+        {
+            id: 'brazilian_booty_4x',
+            name: 'Brazilian Booty',
+            subtitle: 'Intermediário • 4x/semana',
+            description: 'O segredo das brasileiras! Treino inspirado nas técnicas usadas no Brasil para construir glúteos redondos e empinados. Alto volume + técnicas especiais.',
+            level: 'intermediario',
+            days: 4,
+            duration: '50-60',
+            icon: '🇧🇷',
+            category: 'feminino',
+            objetivos: ['feminino', 'gluteo', 'hipertrofia'],
+            benefits: ['Estilo brasileiro', 'Glúteos empinados', 'Alto volume'],
+            workout: {
+                dias: [
+                    { nome: 'Dia 1 - Glúteos Heavy', grupos: 'Glúteos (Força)', exercicios: [
+                        { nome: 'Agachamento Sumô', series: 4, repeticoes: '12', descanso: '90s', nota: 'Bem fundo!' },
+                        { nome: 'Hip Thrust', series: 5, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Stiff', series: 4, repeticoes: '10', descanso: '90s' },
+                        { nome: 'Passada Búlgara', series: 3, repeticoes: '10 cada', descanso: '60s' },
+                        { nome: 'Abdução Máquina', series: 4, repeticoes: '20', descanso: '45s' }
+                    ]},
+                    { nome: 'Dia 2 - Quadríceps', grupos: 'Quadríceps, Panturrilha', exercicios: [
+                        { nome: 'Leg Press', series: 4, repeticoes: '15', descanso: '90s' },
+                        { nome: 'Hack Squat', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Cadeira Extensora', series: 4, repeticoes: '15-20', descanso: '45s' },
+                        { nome: 'Passada Caminhando', series: 3, repeticoes: '20 passos', descanso: '60s' },
+                        { nome: 'Panturrilha em Pé', series: 5, repeticoes: '25', descanso: '30s' },
+                        { nome: 'Panturrilha Sentada', series: 4, repeticoes: '25', descanso: '30s' }
+                    ]},
+                    { nome: 'Dia 3 - Glúteos Pump', grupos: 'Glúteos (Volume)', exercicios: [
+                        { nome: 'Hip Thrust c/ Banda', series: 4, repeticoes: '20', descanso: '60s' },
+                        { nome: 'Frog Pump', series: 4, repeticoes: '30', descanso: '45s' },
+                        { nome: 'Kickback no Cabo', series: 4, repeticoes: '15 cada', descanso: '45s' },
+                        { nome: 'Abdução em Pé (Cabo)', series: 3, repeticoes: '15 cada', descanso: '45s' },
+                        { nome: 'Step Up', series: 3, repeticoes: '12 cada', descanso: '45s' },
+                        { nome: 'Fire Hydrant c/ Banda', series: 3, repeticoes: '20 cada', descanso: '30s' },
+                        { nome: 'Glute Bridge Hold', series: 3, repeticoes: '45s', descanso: '30s', nota: 'Segure no topo!' }
+                    ]},
+                    { nome: 'Dia 4 - Posterior & Finalização', grupos: 'Posterior, Glúteos', exercicios: [
+                        { nome: 'Stiff Romeno', series: 4, repeticoes: '10-12', descanso: '90s' },
+                        { nome: 'Mesa Flexora', series: 4, repeticoes: '12-15', descanso: '60s' },
+                        { nome: 'Cadeira Flexora', series: 3, repeticoes: '15', descanso: '45s' },
+                        { nome: 'Good Morning', series: 3, repeticoes: '12', descanso: '60s' },
+                        { nome: 'Hip Thrust Final', series: 3, repeticoes: '15-20', descanso: '60s' },
+                        { nome: 'Sumo Squat Pulse', series: 2, repeticoes: '30', descanso: '45s' },
+                        { nome: 'Banda Walk Final', series: 2, repeticoes: '30 passos', descanso: '30s' }
+                    ]}
+                ]
+            }
+        },
+        {
+            id: 'calf_specialization',
+            name: 'Panturrilhas de Aço',
+            subtitle: 'Todos Níveis • 3x/semana',
+            description: 'Especialização em panturrilhas! O grupo mais teimoso finalmente vai crescer. Treino baseado em ciência: frequência alta + variedade de estímulos.',
+            level: 'intermediario',
+            days: 3,
+            duration: '20-30',
+            icon: '🦵',
+            category: 'feminino',
+            objetivos: ['feminino', 'panturrilha', 'hipertrofia'],
+            benefits: ['Panturrilhas definidas', 'Alta frequência', 'Especializado'],
+            workout: {
+                dias: [
+                    { nome: 'Dia 1 - Força & Carga', grupos: 'Panturrilha (Força)', exercicios: [
+                        { nome: 'Panturrilha em Pé (Pesado)', series: 5, repeticoes: '8-10', descanso: '90s', nota: 'Carga máxima!' },
+                        { nome: 'Leg Press (panturrilha)', series: 4, repeticoes: '10-12', descanso: '60s' },
+                        { nome: 'Panturrilha Unilateral', series: 3, repeticoes: '10 cada', descanso: '60s' },
+                        { nome: 'Panturrilha Sentada', series: 3, repeticoes: '12-15', descanso: '45s' }
+                    ]},
+                    { nome: 'Dia 2 - Volume & Pump', grupos: 'Panturrilha (Volume)', exercicios: [
+                        { nome: 'Panturrilha em Pé', series: 4, repeticoes: '20', descanso: '45s' },
+                        { nome: 'Panturrilha Sentada', series: 4, repeticoes: '20', descanso: '45s' },
+                        { nome: 'Panturrilha no Leg Press', series: 3, repeticoes: '25', descanso: '45s' },
+                        { nome: 'Panturrilha em Pé (leve)', series: 2, repeticoes: '30-40', descanso: '30s' },
+                        { nome: 'Farmer Walk na Ponta dos Pés', series: 2, repeticoes: '30s', descanso: '30s' }
+                    ]},
+                    { nome: 'Dia 3 - Técnicas Especiais', grupos: 'Panturrilha (Intensidade)', exercicios: [
+                        { nome: 'Panturrilha em Pé (Pausa)', series: 4, repeticoes: '12', descanso: '60s', nota: '2s no topo e embaixo' },
+                        { nome: 'Panturrilha Sentada (Drop)', series: 3, repeticoes: '12+12+12', descanso: '90s', nota: 'Dropset triplo!' },
+                        { nome: 'Salto na Ponta dos Pés', series: 3, repeticoes: '20', descanso: '45s' },
+                        { nome: 'Panturrilha Tibial (Inversa)', series: 3, repeticoes: '20', descanso: '45s' },
+                        { nome: 'Panturrilha Burnout', series: 1, repeticoes: '100', descanso: 'N/A', nota: '100 reps finais!' }
+                    ]}
+                ]
+            }
         }
     ],
 
@@ -3335,6 +3929,7 @@ const WorkoutTemplates = {
                 
                 <div class="template-filters">
                     <button class="filter-btn active" data-filter="all">🏠 Todos</button>
+                    <button class="filter-btn" data-filter="feminino">👩 Feminino</button>
                     <button class="filter-btn" data-filter="hipertrofia">💪 Massa</button>
                     <button class="filter-btn" data-filter="forca">🏋️ Força</button>
                     <button class="filter-btn" data-filter="emagrecimento">🔥 Queima</button>
