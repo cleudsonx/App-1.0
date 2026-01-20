@@ -66,6 +66,7 @@ const DashboardWidgets = {
         'coach-ia': { id: 'coach-ia', name: 'Coach IA', icon: '🤖', size: 'half', category: 'assistente', order: 4 },
         'templates': { id: 'templates', name: 'Fichas de Treino', icon: '📋', size: 'half', category: 'treino', order: 5 },
         'conquistas': { id: 'conquistas', name: 'Conquistas', icon: '🏆', size: 'half', category: 'gamificacao', order: 6 },
+        'fadiga': { id: 'fadiga', name: 'Fadiga', icon: '🧭', size: 'half', category: 'recuperacao', order: 6.5 },
         'sua-divisao': { id: 'sua-divisao', name: 'Sua Divisão', icon: '📅', size: 'full', category: 'treino', order: 7 },
         'timer-descanso': { id: 'timer-descanso', name: 'Timer', icon: '⏱️', size: 'half', category: 'ferramentas', order: 8 },
         'agua': { id: 'agua', name: 'Hidratação', icon: '💧', size: 'half', category: 'saude', order: 9 },
@@ -83,6 +84,7 @@ const DashboardWidgets = {
         { id: 'coach-ia', visible: true, order: 4 },
         { id: 'templates', visible: true, order: 5 },
         { id: 'conquistas', visible: true, order: 6 },
+        { id: 'fadiga', visible: true, order: 6.5 },
         { id: 'sua-divisao', visible: true, order: 7 },
         { id: 'planejamento-semanal', visible: true, order: 8 },
         { id: 'motivacional', visible: true, order: 9 }
@@ -171,6 +173,7 @@ const DashboardWidgets = {
             'coach-ia': this.renderCoachIA,
             'templates': this.renderTemplates,
             'conquistas': this.renderConquistas,
+            'fadiga': this.renderFadiga,
             'sua-divisao': this.renderSuaDivisao,
             'timer-descanso': this.renderTimer,
             'agua': this.renderAgua,
@@ -328,6 +331,30 @@ const DashboardWidgets = {
                 <div class="feature-icon">🏆</div>
                 <div class="feature-info"><h3>Conquistas</h3><p>Suas medalhas</p></div>
                 <div class="feature-badges-preview"><span>🏆</span><span>💪</span><span>🔒</span></div>
+            </div>
+        `;
+    },
+
+    renderFadiga() {
+        const status = FatigueSystem.getDashboardStatus();
+        const bars = FatigueSystem.getRecentSessions(7);
+        return `
+            <div class="dashboard-widget widget-card card-fatigue" data-widget-id="fadiga" onclick="FatigueSystem.showFullChart()">
+                ${this.renderDragHandle()}
+                <div class="feature-row">
+                    <div class="feature-icon">🧭</div>
+                    <div class="feature-info">
+                        <h3>Fadiga</h3>
+                        <p>${status.label}</p>
+                    </div>
+                    <div class="fatigue-chip ${status.level}">${status.text}</div>
+                </div>
+                <div class="fatigue-mini-bars">
+                    ${bars.map(b => `
+                        <div class="mini-bar" title="${b.label}" style="height:${b.height}%; background:${b.color}"></div>
+                    `).join('')}
+                </div>
+                <div class="fatigue-footer">${status.suggestion}</div>
             </div>
         `;
     },
@@ -2452,6 +2479,288 @@ const Achievements = {
 };
 
 // =====================================================
+// FATIGUE SYSTEM - RPE + Fadiga (Widget Expandido)
+// Versão séria (Strong/Hevy): Widget B + Slider B + Gráfico Completo
+// =====================================================
+const FatigueSystem = {
+    storageKey: 'fatigue_data',
+    currentSession: null,
+
+    loadData() {
+        try {
+            return JSON.parse(localStorage.getItem(this.storageKey) || '{"sessions":[]}');
+        } catch (e) {
+            return { sessions: [] };
+        }
+    },
+
+    saveData(data) {
+        localStorage.setItem(this.storageKey, JSON.stringify(data));
+    },
+
+    startSession(workoutName) {
+        this.currentSession = {
+            workoutName,
+            start: Date.now(),
+            entries: []
+        };
+    },
+
+    cancelSession() {
+        this.currentSession = null;
+        this.removePrompt();
+        this.updateDuringWidget();
+    },
+
+    recordSet(entry) {
+        if (!this.currentSession) return;
+        this.currentSession.entries.push(entry);
+        this.updateDuringWidget();
+    },
+
+    getCurrentStatus() {
+        if (!this.currentSession || this.currentSession.entries.length === 0) {
+            return {
+                avg: null,
+                label: 'Sem RPE ainda',
+                text: 'Registrar após a série',
+                level: 'neutral',
+                suggestion: 'Use o slider no descanso',
+                color: 'var(--text-secondary)'
+            };
+        }
+
+        const avg = this.currentSession.entries.reduce((s, e) => s + e.rpe, 0) / this.currentSession.entries.length;
+        return this.statusFromAvg(avg);
+    },
+
+    statusFromAvg(avg) {
+        if (avg === null || avg === undefined) {
+            return {
+                avg: null,
+                label: 'Sem dados',
+                text: '—',
+                level: 'neutral',
+                suggestion: 'Registre RPE para análise',
+                color: 'var(--text-secondary)'
+            };
+        }
+
+        if (avg > 8.5) return { avg, label: `RPE ${avg.toFixed(1)}`, text: 'CRÍTICO', level: 'alta', suggestion: '⚠️ DELOAD OBRIGATÓRIA -10% min. Risco overtraining', color: '#ef4444' };
+        if (avg >= 7) return { avg, label: `RPE ${avg.toFixed(1)}`, text: 'Alto', level: 'moderada', suggestion: 'Monitorar próximas 48h. +20% descanso entre séries', color: '#f59e0b' };
+        if (avg >= 5) return { avg, label: `RPE ${avg.toFixed(1)}`, text: 'Alvo', level: 'ok', suggestion: 'Zona ótima hipertrofia. Manter estratégia', color: '#10b981' };
+        return { avg, label: `RPE ${avg.toFixed(1)}`, text: 'Subutilizado', level: 'baixa', suggestion: 'AUMENTAR +5–10% na próxima. Margem segura', color: '#22d3ee' };
+    },
+
+    renderInWorkoutWidget() {
+        const status = this.getCurrentStatus();
+        const avgText = status.avg ? status.label : 'RPE —';
+        return `
+            <div class="aw-fatigue-card ${status.level}">
+                <div class="fatigue-left">
+                    <div class="fatigue-title">Fadiga</div>
+                    <div class="fatigue-value">${avgText}</div>
+                    <div class="fatigue-suggestion">${status.suggestion}</div>
+                </div>
+                <div class="fatigue-status ${status.level}">${status.text}</div>
+            </div>
+        `;
+    },
+
+    updateDuringWidget() {
+        const container = document.getElementById('aw-fatigue-strip');
+        if (container) {
+            container.innerHTML = this.renderInWorkoutWidget();
+        }
+    },
+
+    promptRPE({ exerciseName, exIdx, setIdx, defaultValue = 6 }) {
+        this.removePrompt();
+
+        const overlay = document.createElement('div');
+        overlay.className = 'rpe-overlay';
+        overlay.id = 'rpe-overlay';
+        overlay.innerHTML = `
+            <div class="rpe-card">
+                <div class="rpe-header">
+                    <div>
+                        <div class="rpe-title">RPE da série</div>
+                        <div class="rpe-sub">${exerciseName} • Série ${setIdx + 1}</div>
+                    </div>
+                    <button class="rpe-close" onclick="FatigueSystem.removePrompt()">✕</button>
+                </div>
+                <div class="rpe-value" id="rpe-value-display">${defaultValue}</div>
+                <input type="range" min="1" max="10" step="0.5" value="${defaultValue}" class="rpe-slider" id="rpe-slider">
+                <div class="rpe-scale">
+                    <span>1</span><span>3</span><span>6</span><span>8</span><span>10</span>
+                </div>
+                <div class="rpe-actions">
+                    <button class="btn-rpe-secondary" onclick="FatigueSystem.removePrompt()">Pular</button>
+                    <button class="btn-rpe-primary" id="rpe-save-btn">Salvar e continuar</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        const slider = document.getElementById('rpe-slider');
+        const display = document.getElementById('rpe-value-display');
+        const saveBtn = document.getElementById('rpe-save-btn');
+
+        slider?.addEventListener('input', (e) => {
+            display.textContent = parseFloat(e.target.value).toFixed(1).replace('.0', '');
+        });
+
+        saveBtn?.addEventListener('click', () => {
+            const value = parseFloat(slider?.value || defaultValue);
+            this.handleRPE(exIdx, setIdx, exerciseName, value);
+        });
+    },
+
+    handleRPE(exIdx, setIdx, exerciseName, value) {
+        const set = ActiveWorkout.setsCompleted?.[exIdx]?.[setIdx];
+        if (set) {
+            set.rpe = value;
+            this.recordSet({
+                exerciseName,
+                rpe: value,
+                weight: set.weight || null,
+                reps: set.reps || null
+            });
+        }
+        this.removePrompt();
+        this.updateDuringWidget();
+    },
+
+    removePrompt() {
+        document.getElementById('rpe-overlay')?.remove();
+    },
+
+    finalizeSession({ volume = 0, duration = 0, workoutName = '' }) {
+        if (!this.currentSession) return;
+        const entries = this.currentSession.entries;
+        if (!entries.length) {
+            this.currentSession = null;
+            return;
+        }
+
+        const avg = entries.reduce((s, e) => s + e.rpe, 0) / entries.length;
+        const data = this.loadData();
+        data.sessions = data.sessions || [];
+
+        data.sessions.push({
+            date: new Date().toISOString().split('T')[0],
+            workoutName,
+            avgRPE: avg,
+            volume,
+            duration,
+            entries: entries.length
+        });
+
+        // manter últimos 60 registros
+        if (data.sessions.length > 60) {
+            data.sessions = data.sessions.slice(-60);
+        }
+
+        this.saveData(data);
+        this.currentSession = null;
+        this.updateDuringWidget();
+    },
+
+    getRecentSessions(limit = 7) {
+        const data = this.loadData();
+        const sessions = data.sessions || [];
+        const recent = sessions.slice(-limit);
+        const maxRpe = Math.max(...recent.map(r => r.avgRPE || 0), 10);
+        return recent.map(s => {
+            const pct = Math.max(10, Math.min(100, (s.avgRPE || 0) / maxRpe * 100));
+            const level = this.statusFromAvg(s.avgRPE).level;
+            const colorMap = { alta: '#ef4444', moderada: '#f59e0b', ok: '#10b981', baixa: '#22d3ee', neutral: 'var(--text-muted)' };
+            return {
+                height: pct,
+                color: colorMap[level] || 'var(--primary)',
+                label: `${s.date} • RPE ${s.avgRPE?.toFixed(1) || '--'}`
+            };
+        });
+    },
+
+    getDashboardStatus() {
+        const data = this.loadData();
+        const sessions = data.sessions || [];
+        if (!sessions.length) {
+            return {
+                label: 'Sem dados',
+                text: 'Registrar',
+                level: 'neutral',
+                suggestion: 'Registre RPE para ver tendências'
+            };
+        }
+        const last = sessions[sessions.length - 1];
+        const status = this.statusFromAvg(last.avgRPE);
+        return {
+            label: `Último RPE ${last.avgRPE.toFixed(1)}`,
+            text: status.text,
+            level: status.level,
+            suggestion: status.suggestion
+        };
+    },
+
+    showFullChart() {
+        const data = this.loadData();
+        const sessions = data.sessions || [];
+        if (!sessions.length) {
+            Toast.info('Sem registros de RPE ainda');
+            return;
+        }
+
+        document.getElementById('fatigue-chart-modal')?.remove();
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay active';
+        modal.id = 'fatigue-chart-modal';
+
+        const last14 = sessions.slice(-14);
+        const maxRpe = Math.max(...last14.map(s => s.avgRPE || 0), 10);
+        const maxVol = Math.max(...last14.map(s => s.volume || 0), 1);
+
+        modal.innerHTML = `
+            <div class="fatigue-modal">
+                <div class="fatigue-modal-header">
+                    <h2>📉 Fadiga vs Volume</h2>
+                    <button class="modal-close" onclick="document.getElementById('fatigue-chart-modal').remove()">✕</button>
+                </div>
+                <div class="fatigue-chart-legend">
+                    <span class="legend-rpe">RPE</span>
+                    <span class="legend-vol">Volume</span>
+                </div>
+                <div class="fatigue-chart-area">
+                    ${last14.map(s => {
+                        const rpeHeight = Math.max(10, (s.avgRPE || 0) / maxRpe * 100);
+                        const volHeight = Math.max(5, (s.volume || 0) / maxVol * 100);
+                        const status = this.statusFromAvg(s.avgRPE);
+                        return `
+                            <div class="fatigue-bar-group" title="${s.date} | RPE ${s.avgRPE?.toFixed(1) || '--'} | Vol ${Math.round(s.volume || 0)}kg">
+                                <div class="bar bar-rpe ${status.level}" style="height:${rpeHeight}%"></div>
+                                <div class="bar bar-vol" style="height:${volHeight}%"></div>
+                                <div class="bar-label">${s.date.slice(5)}</div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+                <div class="fatigue-modal-footer">
+                    <p>Regras: RPE>8 duas vezes seguidas sugere deload. RPE 6–8 manter. RPE<4 permite subir 2–3%.</p>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.remove();
+        });
+    }
+};
+
+// =====================================================
 // ACTIVE WORKOUT - Sistema de Treino Ativo
 // Inspirado em: Strong, Hevy, Nike Training Club
 // Features: Timer, Controle de Séries, Descanso Inteligente
@@ -2488,13 +2797,15 @@ const ActiveWorkout = {
             Array(parseInt(ex.series) || 3).fill(null).map(() => ({ 
                 reps: null, 
                 weight: null, 
-                completed: false 
+                completed: false,
+                rpe: null
             }))
         );
         
         this.currentExerciseIndex = 0;
         this.isActive = true;
         this.startTime = Date.now();
+        FatigueSystem.startSession(this.currentWorkout.nome);
         
         this.renderActiveWorkout();
         this.startTimer();
@@ -2524,6 +2835,11 @@ const ActiveWorkout = {
                 <!-- Progress -->
                 <div class="aw-progress-container">
                     <div class="aw-progress-bar" id="aw-progress-bar" style="width: 0%"></div>
+                </div>
+
+                <!-- Fatigue Widget (expandido) -->
+                <div class="aw-fatigue-strip" id="aw-fatigue-strip">
+                    ${FatigueSystem.renderInWorkoutWidget()}
                 </div>
                 
                 <!-- Exercises -->
@@ -2699,6 +3015,21 @@ const ActiveWorkout = {
         
         this.updateExerciseCounter(exIdx);
         this.updateProgress();
+
+        // Limpa RPE se desmarcou
+        if (!set.completed) {
+            set.rpe = null;
+            FatigueSystem.updateDuringWidget();
+            return;
+        }
+
+        // Prompt RPE para a série
+        FatigueSystem.promptRPE({
+            exerciseName: this.currentWorkout.exercicios[exIdx]?.nome || 'Série',
+            exIdx,
+            setIdx,
+            defaultValue: set.rpe || 7
+        });
         
         // Se completou, iniciar timer de descanso automático
         if (set.completed) {
@@ -2835,6 +3166,7 @@ const ActiveWorkout = {
     cancel() {
         this.cleanup();
         document.getElementById('active-workout')?.remove();
+        FatigueSystem.cancelSession();
         Toast.warning('Treino cancelado');
     },
     
@@ -2874,6 +3206,13 @@ const ActiveWorkout = {
         // Verificar conquistas
         Achievements.checkAfterWorkout(completedSets, totalSets, totalVolume, this.startTime);
         Achievements.checkProgressionAchievements();
+
+        // Salvar fadiga/RPE da sessão
+        FatigueSystem.finalizeSession({
+            volume: totalVolume,
+            duration: minutes,
+            workoutName: this.currentWorkout?.nome
+        });
         
         this.cleanup();
         document.getElementById('active-workout')?.remove();
@@ -3028,6 +3367,7 @@ const ActiveWorkout = {
         this.isActive = false;
         this.timerInterval = null;
         this.restInterval = null;
+        FatigueSystem.removePrompt();
     }
 };
 
@@ -5725,4 +6065,5 @@ window.Toast = Toast;
 window.ActiveWorkout = ActiveWorkout;
 window.WorkoutGenerator = WorkoutGenerator;
 window.WorkoutTemplates = WorkoutTemplates;
+window.FatigueSystem = FatigueSystem;
 

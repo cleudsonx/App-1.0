@@ -4729,6 +4729,226 @@ input, select, textarea {
     width: 100%;
 }
 
+/* Fatigue Widget (treino ativo) */
+.aw-fatigue-strip {
+    padding: var(--space-4);
+}
+
+.aw-fatigue-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-left: 6px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+}
+
+.aw-fatigue-card .fatigue-title {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 2px;
+}
+
+.aw-fatigue-card .fatigue-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.aw-fatigue-card .fatigue-suggestion {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.aw-fatigue-card .fatigue-status {
+    padding: 8px 12px;
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    font-size: 0.9rem;
+    min-width: 80px;
+    text-align: center;
+    color: white;
+}
+
+.aw-fatigue-card.alta { border-left-color: #ef4444; }
+.aw-fatigue-card.moderada { border-left-color: #f59e0b; }
+.aw-fatigue-card.ok { border-left-color: #10b981; }
+.aw-fatigue-card.baixa { border-left-color: #22d3ee; }
+
+.fatigue-status.alta { background: #ef4444; }
+.fatigue-status.moderada { background: #f59e0b; }
+.fatigue-status.ok { background: #10b981; }
+.fatigue-status.baixa { background: #22d3ee; }
+.fatigue-status.neutral { background: var(--text-muted); }
+
+/* RPE Overlay (Slider B) */
+.rpe-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 2000;
+    padding: var(--space-4);
+}
+
+.rpe-card {
+    background: var(--bg-card);
+    width: 100%;
+    max-width: 420px;
+    border-radius: var(--radius-xl);
+    padding: var(--space-5);
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.25s var(--ease-out);
+}
+
+.rpe-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-3);
+}
+
+.rpe-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.rpe-sub {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.rpe-close {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rpe-value {
+    font-size: 2.8rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: var(--space-2);
+}
+
+.rpe-slider {
+    width: 100%;
+    accent-color: var(--primary);
+}
+
+.rpe-scale {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-3);
+}
+
+.rpe-actions {
+    display: flex;
+    gap: var(--space-3);
+}
+
+.btn-rpe-secondary, .btn-rpe-primary {
+    flex: 1;
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    font-weight: 700;
+}
+
+.btn-rpe-secondary {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+}
+
+.btn-rpe-primary {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 10px 30px var(--primary-glow);
+}
+
+/* Fatigue Chart Modal */
+.fatigue-modal {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    padding: var(--space-5);
+    width: 90%;
+    max-width: 640px;
+    max-height: 90vh;
+    overflow: hidden;
+}
+
+.fatigue-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-3);
+}
+
+.fatigue-chart-legend {
+    display: flex;
+    gap: var(--space-3);
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-3);
+}
+
+.legend-rpe { color: var(--primary); }
+.legend-vol { color: var(--accent-green); }
+
+.fatigue-chart-area {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+    gap: var(--space-3);
+    align-items: end;
+    padding: var(--space-3);
+    background: var(--bg-elevated);
+    border-radius: var(--radius-lg);
+    max-height: 55vh;
+    overflow-y: auto;
+}
+
+.fatigue-bar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.fatigue-bar-group .bar {
+    width: 12px;
+    border-radius: 6px;
+}
+
+.bar-rpe { background: var(--primary); }
+.bar-rpe.alta { background: #ef4444; }
+.bar-rpe.moderada { background: #f59e0b; }
+.bar-rpe.ok { background: #10b981; }
+.bar-rpe.baixa { background: #22d3ee; }
+.bar-vol { background: var(--accent-green); width: 12px; opacity: 0.65; }
+
+.bar-label {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+
+.fatigue-modal-footer {
+    margin-top: var(--space-3);
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
 /* =====================================================
    SISTEMA DE CONQUISTAS
    ===================================================== */
@@ -7033,6 +7253,49 @@ input, select, textarea {
 .widget-card:hover {
     border-color: var(--primary-light);
     box-shadow: 0 4px 20px rgba(99, 102, 241, 0.15);
+}
+
+/* Fatigue Widget (dashboard) */
+.card-fatigue .feature-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.card-fatigue .fatigue-chip {
+    padding: 6px 10px;
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    color: white;
+    font-size: 0.85rem;
+}
+
+.card-fatigue .fatigue-chip.alta { background: #ef4444; }
+.card-fatigue .fatigue-chip.moderada { background: #f59e0b; }
+.card-fatigue .fatigue-chip.ok { background: #10b981; }
+.card-fatigue .fatigue-chip.baixa { background: #22d3ee; }
+.card-fatigue .fatigue-chip.neutral { background: var(--text-muted); }
+
+.fatigue-mini-bars {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    align-items: end;
+    margin: var(--space-3) 0;
+    height: 60px;
+}
+
+.fatigue-mini-bars .mini-bar {
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+    background: var(--primary);
+    min-height: 6px;
+}
+
+.card-fatigue .fatigue-footer {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
 }
 
 /* Section Widget */
