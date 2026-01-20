@@ -242,6 +242,12 @@ const DashboardWidgets = {
                         <div class="ficha-text">
                             <h3>${treino.nome || 'Treino Personalizado'}</h3>
                             <span class="ficha-subtitle">${treino.subtitle || `${treino.dias?.length || 0}x/semana`}</span>
+                            ${(() => {
+                                const nivel = treino.level || treino.nivel || 'personalizado';
+                                const labels = { iniciante: 'Iniciante', intermediario: 'Intermediário', avancado: 'Avançado', avançado: 'Avançado', personalizado: 'Personalizado' };
+                                const label = labels[nivel] || 'Personalizado';
+                                return `<span class="template-level ${nivel}">${label}</span>`;
+                            })()}
                         </div>
                     </div>
                 </div>
@@ -7142,6 +7148,7 @@ const WorkoutTemplates = {
                 descricao: template.description,
                 icon: template.icon || '📋',
                 subtitle: template.subtitle || `${template.days}x/semana`,
+                level: template.level || 'personalizado',
                 divisao: template.category,
                 duracao: template.duration,
                 template_id: template.id,
@@ -7170,6 +7177,7 @@ const WorkoutTemplates = {
         treino.descricao = template.description;
         treino.icon = template.icon || '📋';
         treino.subtitle = template.subtitle || `${template.days}x/semana`;
+        treino.level = template.level || 'personalizado';
         treino.template_id = template.id;
         treino.duracao = template.duration || treino.duracao;
         
