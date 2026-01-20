@@ -938,7 +938,7 @@ const DashboardWidgets = {
     renderMotivacional() {
         const frases = [
             // Originais
-            "A dor que você sente hoje será a força que você sente amanhã.",
+            "A dor que você sente hoje será a força que você sentirá amanhã.",
             "Não existe elevador para o sucesso. Use as escadas.",
             "Seu único limite é você.",
             "Transforme seus QUERO em VOU.",

@@ -1257,7 +1257,7 @@ const App = {
     },
 
     showAchievements() {
-        Toast.info('Conquistas em breve!');
+        Achievements.showModal();
     },
 
     addWater() {
@@ -2014,6 +2014,444 @@ const LoadProgression = {
 };
 
 // =====================================================
+// ACHIEVEMENTS - Sistema de Gamificação Inteligente
+// Inspirado em: Duolingo, Strava, Strong, Apple Fitness+
+// Features: Badges, Streak, XP, Níveis, Desafios
+// =====================================================
+const Achievements = {
+    storageKey: 'achievements_data',
+    
+    // Todas as conquistas disponíveis
+    badges: {
+        // INICIANTE
+        'first_workout': {
+            id: 'first_workout',
+            nome: 'Primeiro Passo',
+            icon: '🚀',
+            desc: 'Complete seu primeiro treino',
+            rarity: 'comum',
+            xp: 50
+        },
+        'first_week': {
+            id: 'first_week',
+            nome: 'Semana 1',
+            icon: '📅',
+            desc: 'Treine 3x em uma semana',
+            rarity: 'comum',
+            xp: 100
+        },
+        'five_workouts': {
+            id: 'five_workouts',
+            nome: 'Quinto Treino',
+            icon: '5️⃣',
+            desc: 'Complete 5 treinos',
+            rarity: 'comum',
+            xp: 150
+        },
+        
+        // CONSISTÊNCIA
+        'seven_day_streak': {
+            id: 'seven_day_streak',
+            nome: 'Uma Semana Seguida',
+            icon: '🔥',
+            desc: '7 dias seguidos treinando',
+            rarity: 'rara',
+            xp: 500
+        },
+        'thirty_day_streak': {
+            id: 'thirty_day_streak',
+            nome: 'Guerreiro do Mês',
+            icon: '⚔️',
+            desc: '30 dias consecutivos',
+            rarity: 'epica',
+            xp: 1500
+        },
+        
+        // VOLUME
+        'perfect_workout': {
+            id: 'perfect_workout',
+            nome: 'Treino Perfeito',
+            icon: '💯',
+            desc: 'Complete 100% de uma série',
+            rarity: 'comum',
+            xp: 100
+        },
+        'high_volume_day': {
+            id: 'high_volume_day',
+            nome: 'Volume Alto',
+            icon: '📊',
+            desc: 'Acumule 5000kg em um treino',
+            rarity: 'rara',
+            xp: 300
+        },
+        
+        // PROGRESSÃO
+        'first_pr': {
+            id: 'first_pr',
+            nome: 'Recorde Pessoal',
+            icon: '🏅',
+            desc: 'Bata seu peso máximo',
+            rarity: 'rara',
+            xp: 400
+        },
+        'progression_streak': {
+            id: 'progression_streak',
+            nome: 'Sempre Crescendo',
+            icon: '📈',
+            desc: 'Aumente carga 5 vezes seguidas',
+            rarity: 'epica',
+            xp: 1000
+        },
+        
+        // DISCIPLINA
+        'morning_person': {
+            id: 'morning_person',
+            nome: 'Madrugador',
+            icon: '🌅',
+            desc: 'Treine antes das 7AM',
+            rarity: 'comum',
+            xp: 75
+        },
+        'night_owl': {
+            id: 'night_owl',
+            nome: 'Coruja Noturna',
+            icon: '🌙',
+            desc: 'Treine após 8PM',
+            rarity: 'comum',
+            xp: 75
+        },
+        
+        // MILESTONES
+        'twenty_workouts': {
+            id: 'twenty_workouts',
+            nome: 'Duas Dezenas',
+            icon: '2️⃣0️⃣',
+            desc: 'Complete 20 treinos',
+            rarity: 'rara',
+            xp: 500
+        },
+        'hundred_workouts': {
+            id: 'hundred_workouts',
+            nome: 'Centésimo Treino',
+            icon: '💯',
+            desc: 'Complete 100 treinos',
+            rarity: 'lendaria',
+            xp: 3000
+        },
+        
+        // ESPECIAIS
+        'hydration_expert': {
+            id: 'hydration_expert',
+            nome: 'Hidratação',
+            icon: '💧',
+            desc: 'Beba 8 copos de água',
+            rarity: 'comum',
+            xp: 50
+        },
+        'comeback_kid': {
+            id: 'comeback_kid',
+            nome: 'De Volta ao Jogo',
+            icon: '🔄',
+            desc: 'Retorne após 7 dias parado',
+            rarity: 'rara',
+            xp: 250
+        }
+    },
+
+    // Rarity colors
+    rarityColors: {
+        'comum': '#4B5563',
+        'rara': '#0891B2',
+        'epica': '#7C3AED',
+        'lendaria': '#F59E0B'
+    },
+
+    // Carrega dados do usuário
+    loadData() {
+        const data = JSON.parse(localStorage.getItem(this.storageKey) || '{}');
+        return {
+            unlocked: data.unlocked || [],
+            totalXP: data.totalXP || 0,
+            notificationQueue: data.notificationQueue || []
+        };
+    },
+
+    // Salva dados do usuário
+    saveData(data) {
+        localStorage.setItem(this.storageKey, JSON.stringify(data));
+    },
+
+    // Desbloquear conquista
+    unlock(badgeId) {
+        const data = this.loadData();
+        
+        if (data.unlocked.includes(badgeId)) {
+            return false; // Já desbloqueada
+        }
+
+        const badge = this.badges[badgeId];
+        if (!badge) return false;
+
+        data.unlocked.push(badgeId);
+        data.totalXP += badge.xp;
+        
+        this.saveData(data);
+        this.showNotification(badge);
+        
+        return true;
+    },
+
+    // Mostrar notificação de conquista
+    showNotification(badge) {
+        const notification = document.createElement('div');
+        notification.className = 'achievement-notification';
+        notification.innerHTML = `
+            <span class="achievement-icon">${badge.icon}</span>
+            <div class="achievement-info">
+                <span class="achievement-title">CONQUISTA DESBLOQUEADA</span>
+                <span class="achievement-name">${badge.nome}</span>
+            </div>
+            <span class="achievement-xp">+${badge.xp} XP</span>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => notification.classList.add('show'), 100);
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 500);
+        }, 3000);
+    },
+
+    // Verificar conquistas após treino
+    checkAfterWorkout(completedSets, totalSets, volume, startTime) {
+        const historico = JSON.parse(localStorage.getItem('historico_treinos') || '[]');
+        const data = this.loadData();
+        
+        // Primeiro treino
+        if (historico.length === 1) {
+            this.unlock('first_workout');
+        }
+        
+        // 5 treinos
+        if (historico.length === 5) {
+            this.unlock('five_workouts');
+        }
+        
+        // 20 treinos
+        if (historico.length === 20) {
+            this.unlock('twenty_workouts');
+        }
+        
+        // 100 treinos
+        if (historico.length === 100) {
+            this.unlock('hundred_workouts');
+        }
+        
+        // Treino perfeito (100%)
+        if (completedSets === totalSets) {
+            this.unlock('perfect_workout');
+        }
+        
+        // Volume alto (5000kg)
+        if (volume >= 5000) {
+            this.unlock('high_volume_day');
+        }
+        
+        // Horários
+        const hora = new Date().getHours();
+        if (hora < 7) {
+            this.unlock('morning_person');
+        } else if (hora >= 20) {
+            this.unlock('night_owl');
+        }
+        
+        // Verificar semana
+        this.checkWeeklyAchievements(historico);
+        this.checkStreakAchievements(historico);
+    },
+
+    // Verificar conquistas de semana
+    checkWeeklyAchievements(historico) {
+        const hoje = new Date();
+        const seteDisMil = 7 * 24 * 60 * 60 * 1000;
+        const inicio = new Date(hoje.getTime() - seteDisMil);
+        
+        const treinos_semana = historico.filter(h => 
+            new Date(h.data) >= inicio
+        ).length;
+        
+        if (treinos_semana >= 3) {
+            this.unlock('first_week');
+        }
+    },
+
+    // Verificar streaks
+    checkStreakAchievements(historico) {
+        if (historico.length === 0) return;
+
+        let streak = 1;
+        const datas = historico.map(h => new Date(h.data).toISOString().split('T')[0]).reverse();
+        
+        for (let i = 1; i < datas.length; i++) {
+            const data1 = new Date(datas[i - 1]);
+            const data2 = new Date(datas[i]);
+            const diff = (data1 - data2) / (1000 * 60 * 60 * 24);
+            
+            if (diff === 1) {
+                streak++;
+            } else {
+                break;
+            }
+        }
+        
+        if (streak === 7) {
+            this.unlock('seven_day_streak');
+        }
+        if (streak === 30) {
+            this.unlock('thirty_day_streak');
+        }
+    },
+
+    // Verificar conquistas de progressão
+    checkProgressionAchievements() {
+        const historico_cargas = JSON.parse(localStorage.getItem('carga_historico') || '{}');
+        
+        Object.values(historico_cargas).forEach(exercise_history => {
+            if (!Array.isArray(exercise_history) || exercise_history.length < 2) return;
+            
+            // Primeiro PR (qualquer aumento)
+            let aumentos = 0;
+            for (let i = 1; i < exercise_history.length; i++) {
+                if (exercise_history[i].carga > exercise_history[i - 1].carga) {
+                    aumentos++;
+                    this.unlock('first_pr');
+                    
+                    // 5 aumentos seguidos
+                    if (aumentos === 5) {
+                        this.unlock('progression_streak');
+                    }
+                }
+            }
+        });
+    },
+
+    // Calcular nível baseado no XP
+    getLevel(totalXP) {
+        return Math.floor(Math.sqrt(totalXP / 100)) + 1;
+    },
+
+    // Calcular progresso para próximo nível
+    getLevelProgress(totalXP) {
+        const levelAtual = this.getLevel(totalXP);
+        const xpRequerido = (levelAtual - 1) ** 2 * 100;
+        const xpProximo = levelAtual ** 2 * 100;
+        const progresso = totalXP - xpRequerido;
+        const total = xpProximo - xpRequerido;
+        
+        return {
+            nivel: levelAtual,
+            xpAtual: progresso,
+            xpTotal: total,
+            percentual: Math.round((progresso / total) * 100)
+        };
+    },
+
+    // Modal de conquistas
+    showModal() {
+        const data = this.loadData();
+        const levelInfo = this.getLevelProgress(data.totalXP);
+        
+        document.getElementById('achievements-modal')?.remove();
+        
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay active';
+        modal.id = 'achievements-modal';
+        
+        // Dividir badges em desbloqueadas e bloqueadas
+        const desbloqueadas = Object.entries(this.badges).filter(([id]) => data.unlocked.includes(id));
+        const bloqueadas = Object.entries(this.badges).filter(([id]) => !data.unlocked.includes(id));
+        
+        modal.innerHTML = `
+            <div class="achievements-container">
+                <div class="achievements-header">
+                    <h2>🏆 Suas Conquistas</h2>
+                    <button class="modal-close" onclick="document.getElementById('achievements-modal').remove()">✕</button>
+                </div>
+                
+                <!-- Level Progress -->
+                <div class="level-progress-card">
+                    <div class="level-header">
+                        <div class="level-badge">NÍVEL ${levelInfo.nivel}</div>
+                        <span class="level-xp">${data.totalXP.toLocaleString()} XP</span>
+                    </div>
+                    <div class="level-bar">
+                        <div class="level-fill" style="width: ${levelInfo.percentual}%"></div>
+                    </div>
+                    <div class="level-info">${levelInfo.xpAtual} / ${levelInfo.xpTotal} XP</div>
+                </div>
+                
+                <!-- Stats -->
+                <div class="achievements-stats">
+                    <div class="stat-card">
+                        <span class="stat-value">${desbloqueadas.length}</span>
+                        <span class="stat-label">Desbloqueadas</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value">${bloqueadas.length}</span>
+                        <span class="stat-label">Por desbloquear</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value">${Math.round((desbloqueadas.length / Object.keys(this.badges).length) * 100)}%</span>
+                        <span class="stat-label">Completo</span>
+                    </div>
+                </div>
+                
+                <!-- Badges Desbloqueadas -->
+                ${desbloqueadas.length > 0 ? `
+                <div class="badges-section">
+                    <h3>✨ Desbloqueadas (${desbloqueadas.length})</h3>
+                    <div class="badges-grid">
+                        ${desbloqueadas.map(([id, badge]) => `
+                            <div class="badge-card unlocked" style="border-color: ${this.rarityColors[badge.rarity]}">
+                                <div class="badge-icon">${badge.icon}</div>
+                                <div class="badge-name">${badge.nome}</div>
+                                <div class="badge-desc">${badge.desc}</div>
+                                <div class="badge-xp">+${badge.xp} XP</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                ` : ''}
+                
+                <!-- Badges Bloqueadas -->
+                ${bloqueadas.length > 0 ? `
+                <div class="badges-section">
+                    <h3>🔒 Ainda por desbloquear (${bloqueadas.length})</h3>
+                    <div class="badges-grid">
+                        ${bloqueadas.map(([id, badge]) => `
+                            <div class="badge-card locked">
+                                <div class="badge-icon" style="opacity: 0.3">${badge.icon}</div>
+                                <div class="badge-name" style="opacity: 0.5">${badge.nome}</div>
+                                <div class="badge-desc" style="opacity: 0.4; font-size: 0.7rem">${badge.desc}</div>
+                                <div class="badge-rarity" style="color: ${this.rarityColors[badge.rarity]}">${badge.rarity.toUpperCase()}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                ` : ''}
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.remove();
+        });
+    }
+};
+
+// =====================================================
 // ACTIVE WORKOUT - Sistema de Treino Ativo
 // Inspirado em: Strong, Hevy, Nike Training Club
 // Features: Timer, Controle de Séries, Descanso Inteligente
@@ -2432,6 +2870,10 @@ const ActiveWorkout = {
         
         // Salvar cargas usadas no treino
         this.saveCargas();
+        
+        // Verificar conquistas
+        Achievements.checkAfterWorkout(completedSets, totalSets, totalVolume, this.startTime);
+        Achievements.checkProgressionAchievements();
         
         this.cleanup();
         document.getElementById('active-workout')?.remove();
