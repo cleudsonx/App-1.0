@@ -127,7 +127,7 @@ public class DataStorageSQL {
         String insertUserSQL = "INSERT INTO users (email, password_hash) VALUES (?, ?) RETURNING id";
         String insertAlunoSQL = """
             INSERT INTO alunos (user_id, nome, idade, objetivo, nivel, peso_kg, altura_cm, restricoes, equipamentos, metadata)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, '{}')
+            VALUES (?::uuid, ?, ?, ?, ?, ?, ?, ?, ?, '{}')
             RETURNING id
             """;
         
@@ -136,25 +136,25 @@ public class DataStorageSQL {
             conn.setAutoCommit(false);
             
             // Insert user
-            int userId = 0;
+            String userId = null;
             PreparedStatement pstmt = conn.prepareStatement(insertUserSQL, Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1, email);
             pstmt.setString(2, passwordHash);
             pstmt.executeUpdate();
             ResultSet rs = pstmt.getGeneratedKeys();
             if (rs.next()) {
-                userId = rs.getInt(1);
+                userId = rs.getString(1);  // UUID retornado como String
             }
             pstmt.close();
             
-            if (userId == 0) {
+            if (userId == null) {
                 conn.rollback();
                 throw new SQLException("Erro ao criar usuário");
             }
             
             // Insert aluno com valores padrão
             pstmt = conn.prepareStatement(insertAlunoSQL, Statement.RETURN_GENERATED_KEYS);
-            pstmt.setInt(1, userId);
+            pstmt.setString(1, userId);  // UUID como String
             pstmt.setString(2, nome);
             pstmt.setInt(3, 0); // idade padrão
             pstmt.setString(4, "hipertrofia"); // objetivo padrão
