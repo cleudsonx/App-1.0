@@ -23,6 +23,8 @@ from pathlib import Path
 from security.password_hasher import PasswordHasher
 from security.jwt_manager import JWTManager, TokenPair
 from security.rate_limiter import RateLimiter
+from security.input_validator import InputValidator, ValidationResult
+from security.app_logger import logger
 
 app = FastAPI(
     title="APP Trainer ML Service",
@@ -89,6 +91,7 @@ async def login(request: LoginRequest):
     # 🔐 Rate limiting
     if not RateLimiter.is_allowed(request.email):
         wait_seconds = RateLimiter.get_wait_time_seconds(request.email)
+        logger.auth_attempt(request.email, success=False, reason="RATE_LIMITED")
         raise HTTPException(
             status_code=429,
             detail=f"Muitas tentativas. Aguarde {wait_seconds} segundos"
@@ -106,6 +109,8 @@ async def login(request: LoginRequest):
                 # Generate JWT tokens
                 tokens = JWTManager.generate_tokens(user_id, request.email)
                 
+                logger.auth_attempt(request.email, success=True, user_id=user_id)
+                
                 return AuthResponse(
                     user_id=user_id,
                     nome=user_data["nome"],
@@ -116,8 +121,10 @@ async def login(request: LoginRequest):
                     perfil=user_data.get("perfil")
                 )
             else:
+                logger.auth_attempt(request.email, success=False, reason="INVALID_PASSWORD")
                 raise HTTPException(status_code=401, detail="Email ou senha inválidos")
     
+    logger.auth_attempt(request.email, success=False, reason="USER_NOT_FOUND")
     raise HTTPException(status_code=401, detail="Email ou senha inválidos")
 
 @app.post("/auth/registro", response_model=AuthResponse, status_code=201)
@@ -125,17 +132,29 @@ async def registro(request: RegisterRequest):
     """
     Register new user with secure password hashing
     - Password hashed with PBKDF2 (10k iterations)
+    - Password strength validation (8+ chars, maiuscula, numero, simbolo)
+    - Email validation
     - Returns JWT tokens
     """
     users = load_users()
+    
+    # ✅ Validar email
+    if not InputValidator.is_valid_email(request.email):
+        raise HTTPException(status_code=400, detail="Email inválido")
+    
+    # ✅ Validar nome
+    if not InputValidator.is_valid_name(request.nome):
+        raise HTTPException(status_code=400, detail="Nome inválido")
     
     # Verificar se email já existe
     for user_data in users.values():
         if user_data["email"] == request.email:
             raise HTTPException(status_code=409, detail="Email já cadastrado")
     
-    if len(request.senha) < 6:
-        raise HTTPException(status_code=400, detail="Senha deve ter no mínimo 6 caracteres")
+    # ✅ Validar força da senha (mesmas regras do Java)
+    password_result = InputValidator.validate_password(request.senha)
+    if not password_result.valid:
+        raise HTTPException(status_code=400, detail=password_result.message)
     
     user_id = uuid.uuid4().hex[:12]
     
@@ -152,6 +171,8 @@ async def registro(request: RegisterRequest):
     
     # Generate JWT tokens
     tokens = JWTManager.generate_tokens(user_id, request.email)
+    
+    logger.info(f"Novo usuário registrado: {request.email}", user_id=user_id)
     
     return AuthResponse(
         user_id=user_id,

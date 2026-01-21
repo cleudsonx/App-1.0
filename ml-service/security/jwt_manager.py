@@ -3,6 +3,7 @@ JWTManager - JWT token generation and verification
 Compatible with Java implementation
 """
 
+import os
 import json
 import time
 import hmac
@@ -42,9 +43,21 @@ class JWTManager:
     - HMAC-SHA256 signature
     """
     
-    SECRET_KEY = "shaipados-secret-key-very-secure-please-change-in-production"
+    # ✅ SECRET_KEY agora vem de variável de ambiente (produção segura)
+    SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "")
     ACCESS_TOKEN_EXPIRY_MINUTES = 15
     REFRESH_TOKEN_EXPIRY_DAYS = 7
+    
+    @staticmethod
+    def _get_secret_key() -> str:
+        """Obtém a chave secreta de variável de ambiente"""
+        key = os.environ.get("JWT_SECRET_KEY", "")
+        if key:
+            return key
+        # ⚠️ AVISO: Fallback apenas para desenvolvimento
+        import warnings
+        warnings.warn("JWT_SECRET_KEY não configurada! Usando chave padrão (NÃO USE EM PRODUÇÃO)")
+        return f"shaipados-dev-key-change-in-production-{int(time.time()) % 10000}"
     
     @staticmethod
     def generate_tokens(user_id: str, email: str) -> TokenPair:

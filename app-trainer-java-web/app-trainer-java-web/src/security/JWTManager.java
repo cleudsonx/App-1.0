@@ -15,9 +15,24 @@ import java.util.Base64;
  */
 public class JWTManager {
     
-    private static final String SECRET_KEY = "shaipados-secret-key-very-secure-please-change-in-production";
+    // ✅ SECRET_KEY agora vem de variável de ambiente (produção segura)
+    private static final String SECRET_KEY = getSecretKey();
     private static final int ACCESS_TOKEN_EXPIRY_MINUTES = 15;
     private static final int REFRESH_TOKEN_EXPIRY_DAYS = 7;
+    
+    /**
+     * Obtém a chave secreta de variável de ambiente
+     * Fallback para desenvolvimento local apenas
+     */
+    private static String getSecretKey() {
+        String envKey = System.getenv("JWT_SECRET_KEY");
+        if (envKey != null && !envKey.trim().isEmpty()) {
+            return envKey;
+        }
+        // ⚠️ AVISO: Fallback apenas para desenvolvimento
+        System.err.println("[SECURITY WARNING] JWT_SECRET_KEY não configurada! Usando chave padrão (NÃO USE EM PRODUÇÃO)");
+        return "shaipados-dev-key-change-in-production-" + System.currentTimeMillis() % 10000;
+    }
     
     public static class TokenPair {
         public String accessToken;

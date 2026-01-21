@@ -183,3 +183,9 @@
 2026-01-21 12:42:41.580 [INFO] [MLServiceHandler] Coach query successful: como+fazer+supino
 2026-01-21 12:42:41.612 [INFO] [MLServiceHandler] Request: GET /ml/suggest
 2026-01-21 12:42:41.619 [INFO] [MLServiceHandler] Suggest query successful: objetivo=hipertrofia, nivel=intermediario
+2026-01-21 13:04:29.814 [WARN] [AuthHandler] Email already registered: smoke.test@local.com
+2026-01-21 13:04:30.871 [INFO] [AuthHandler] Successful login for: smoke.test@local.com
+2026-01-21 13:04:30.907 [INFO] [MLServiceHandler] Request: GET /ml/coach
+2026-01-21 13:04:31.006 [INFO] [MLServiceHandler] Coach query successful: como+fazer+supino
+2026-01-21 13:04:31.031 [INFO] [MLServiceHandler] Request: GET /ml/suggest
+2026-01-21 13:04:31.046 [INFO] [MLServiceHandler] Suggest query successful: objetivo=hipertrofia, nivel=intermediario
