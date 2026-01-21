@@ -22,7 +22,8 @@ import java.util.Map;
  * - GET /ml/suggest?objetivo=objetivo&nivel=nivel&diasSemana=dias
  */
 public class MLServiceHandler implements HttpHandler {
-    private static final String ML_SERVICE_URL = "http://localhost:8001";
+    private static final String DEFAULT_URL = "http://localhost:8001";
+    private final String ML_SERVICE_URL;
     private AppLogger logger;
     
     public MLServiceHandler() {
@@ -31,6 +32,8 @@ public class MLServiceHandler implements HttpHandler {
         } catch (IOException e) {
             System.err.println("Failed to initialize logger: " + e.getMessage());
         }
+        String envUrl = System.getenv("ML_SERVICE_URL");
+        this.ML_SERVICE_URL = (envUrl != null && !envUrl.isBlank()) ? envUrl : DEFAULT_URL;
     }
 
     @Override

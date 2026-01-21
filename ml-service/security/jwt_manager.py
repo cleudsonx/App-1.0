@@ -43,21 +43,19 @@ class JWTManager:
     - HMAC-SHA256 signature
     """
     
-    # ✅ SECRET_KEY agora vem de variável de ambiente (produção segura)
-    SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "")
+    # ✅ SECRET_KEY vem exclusivamente de variável de ambiente (sem fallback em produção)
+    SECRET_KEY = None
     ACCESS_TOKEN_EXPIRY_MINUTES = 15
     REFRESH_TOKEN_EXPIRY_DAYS = 7
     
     @staticmethod
     def _get_secret_key() -> str:
-        """Obtém a chave secreta de variável de ambiente"""
+        """Obtém a chave secreta de variável de ambiente ou falha explicitamente"""
         key = os.environ.get("JWT_SECRET_KEY", "")
-        if key:
-            return key
-        # ⚠️ AVISO: Fallback apenas para desenvolvimento
-        import warnings
-        warnings.warn("JWT_SECRET_KEY não configurada! Usando chave padrão (NÃO USE EM PRODUÇÃO)")
-        return f"shaipados-dev-key-change-in-production-{int(time.time()) % 10000}"
+        if not key:
+            raise RuntimeError("JWT_SECRET_KEY não configurada. Defina a variável de ambiente JWT_SECRET_KEY antes de iniciar o serviço.")
+        JWTManager.SECRET_KEY = key
+        return key
     
     @staticmethod
     def generate_tokens(user_id: str, email: str) -> TokenPair:
@@ -186,8 +184,9 @@ class JWTManager:
     @staticmethod
     def _generate_signature(message: str) -> str:
         """Generate HMAC-SHA256 signature"""
+        secret = JWTManager.SECRET_KEY or JWTManager._get_secret_key()
         signature = hmac.new(
-            JWTManager.SECRET_KEY.encode(),
+            secret.encode(),
             message.encode(),
             hashlib.sha256
         ).digest()

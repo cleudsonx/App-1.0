@@ -12,13 +12,14 @@ FROM eclipse-temurin:17-jre
 WORKDIR /app
 ENV PORT=8081
 ENV HTTPS_ENABLED=false
+ENV HTTPS_PORT=8443
 COPY --from=build /app/bin ./bin
 COPY lib ./lib
 COPY web ./web
 COPY data ./data
 COPY src/log ./src/log
 COPY src/WebServer.java ./src/WebServer.java
-# Logs directory
-RUN mkdir -p logs
-EXPOSE 8081
+# Logs and certs directories (mount keystore into /app/certs in prod)
+RUN mkdir -p logs certs
+EXPOSE 8081 8443
 CMD ["java","-cp","bin:lib/postgresql.jar","WebServer"]

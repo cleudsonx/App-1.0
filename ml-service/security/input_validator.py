@@ -29,9 +29,8 @@ class InputValidator:
         r"^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
     )
     
-    SAFE_STRING_PATTERN = re.compile(
-        r"^[a-zA-Z0-9_\-. \u00C0-\u024F]*$"  # Inclui caracteres latinos acentuados
-    )
+    # Conjunto seguro: letras (qualquer idioma), números, espaço, hífen, underscore e ponto
+    SAFE_NAME_EXTRA_CHARS = {" ", "-", "_", "."}
     
     SQL_INJECTION_PATTERN = re.compile(
         r".*['\";\\].*|.*(--|;|/\*|\*/).*|.*(DROP|DELETE|INSERT|UPDATE|SELECT|CREATE).*",
@@ -157,7 +156,12 @@ class InputValidator:
             return False
         if len(name) > 255:
             return False
-        return bool(InputValidator.SAFE_STRING_PATTERN.match(name))
+        for ch in name:
+            # isalnum cobre letras (unicode) e números; extras permitidos estão em SAFE_NAME_EXTRA_CHARS
+            if ch.isalnum() or ch in InputValidator.SAFE_NAME_EXTRA_CHARS:
+                continue
+            return False
+        return True
     
     @staticmethod
     def is_valid_objetivo(objetivo: Optional[str]) -> bool:

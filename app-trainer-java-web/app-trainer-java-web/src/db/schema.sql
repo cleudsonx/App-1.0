@@ -15,8 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
     password_hash VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_login TIMESTAMP,
-    active BOOLEAN DEFAULT TRUE,
-    INDEX idx_email (email)
+    active BOOLEAN DEFAULT TRUE
 );
 
 -- Tabela de alunos (perfil de treino)
@@ -37,8 +36,7 @@ CREATE TABLE IF NOT EXISTS alunos (
     metadata JSONB DEFAULT '{}',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    INDEX idx_objetivo_nivel (objetivo, nivel)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Tabela de professores (coaches)
@@ -46,8 +44,7 @@ CREATE TABLE IF NOT EXISTS professores (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
     especialidade VARCHAR(50) CHECK (especialidade IN ('musculacao', 'cardio', 'funcional', 'alongamento')),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_especialidade (especialidade)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabela de treinos gerados
@@ -62,8 +59,7 @@ CREATE TABLE IF NOT EXISTS treinos (
     data_execucao TIMESTAMP,
     completado BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (aluno_id) REFERENCES alunos(id) ON DELETE CASCADE,
-    FOREIGN KEY (professor_id) REFERENCES professores(id),
-    INDEX idx_aluno_data (aluno_id, data_criacao)
+    FOREIGN KEY (professor_id) REFERENCES professores(id)
 );
 
 -- Tabela de histórico de treinos
@@ -78,8 +74,7 @@ CREATE TABLE IF NOT EXISTS historico_treinos (
     duracao_minutos INT,
     observacoes TEXT,
     FOREIGN KEY (aluno_id) REFERENCES alunos(id) ON DELETE CASCADE,
-    FOREIGN KEY (treino_id) REFERENCES treinos(id) ON DELETE SET NULL,
-    INDEX idx_aluno_data_exec (aluno_id, data_execucao)
+    FOREIGN KEY (treino_id) REFERENCES treinos(id) ON DELETE SET NULL
 );
 
 -- Tabela de rate limiting (segurança)
@@ -88,9 +83,7 @@ CREATE TABLE IF NOT EXISTS rate_limit_log (
     email VARCHAR(255) NOT NULL,
     endpoint VARCHAR(255),
     attempt_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    ip_address VARCHAR(45),
-    INDEX idx_email_time (email, attempt_time),
-    INDEX idx_cleanup (attempt_time)
+    ip_address VARCHAR(45)
 );
 
 -- ==================== ÍNDICES ====================

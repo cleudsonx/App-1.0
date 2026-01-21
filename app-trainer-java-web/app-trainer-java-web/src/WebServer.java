@@ -223,15 +223,19 @@ public class WebServer {
 
     private static HttpServer createServer(boolean httpsEnabled, String keystorePath, String keystorePassword, String keystoreType, int httpPort, int httpsPort, AppLogger logger) throws Exception {
         if (httpsEnabled) {
-            if (keystorePath == null || keystorePassword == null) {
-                logger.warn("HTTPS_ENABLED=true, mas TLS_KEYSTORE_PATH ou TLS_KEYSTORE_PASSWORD não configurados. Iniciando HTTP.", "WebServer");
-            } else {
-                SSLContext sslContext = createSSLContext(keystorePath, keystorePassword, keystoreType);
-                HttpsServer httpsServer = HttpsServer.create(new InetSocketAddress("0.0.0.0", httpsPort), 0);
-                httpsServer.setHttpsConfigurator(new HttpsConfigurator(sslContext));
-                logger.info("HTTPS habilitado na porta " + httpsPort + " usando keystore: " + keystorePath, "WebServer");
-                return httpsServer;
+            if (keystorePath == null || keystorePath.isBlank() || keystorePassword == null || keystorePassword.isBlank()) {
+                throw new IllegalStateException("HTTPS_ENABLED=true, mas TLS_KEYSTORE_PATH ou TLS_KEYSTORE_PASSWORD não configurados.");
             }
+            Path ksPath = Path.of(keystorePath);
+            if (!Files.exists(ksPath)) {
+                throw new IllegalStateException("Keystore não encontrado em " + ksPath.toAbsolutePath());
+            }
+
+            SSLContext sslContext = createSSLContext(keystorePath, keystorePassword, keystoreType);
+            HttpsServer httpsServer = HttpsServer.create(new InetSocketAddress("0.0.0.0", httpsPort), 0);
+            httpsServer.setHttpsConfigurator(new HttpsConfigurator(sslContext));
+            logger.info("HTTPS habilitado na porta " + httpsPort + " usando keystore: " + keystorePath, "WebServer");
+            return httpsServer;
         }
 
         HttpServer httpServer = HttpServer.create(new InetSocketAddress("0.0.0.0", httpPort), 0);

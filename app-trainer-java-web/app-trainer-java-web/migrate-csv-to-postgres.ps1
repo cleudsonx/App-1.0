@@ -46,14 +46,14 @@ Get-Content $profsSrc | ForEach-Object {
 } | Set-Content -Path $profsTmp -Encoding UTF8
 
 Info "Copiando CSVs temporarios para o container..."
-docker cp $alunosTmp "$Container:/tmp/alunos_migrate.csv"
-docker cp $profsTmp  "$Container:/tmp/professores_migrate.csv"
+docker cp $alunosTmp "${Container}:/tmp/alunos_migrate.csv"
+docker cp $profsTmp  "${Container}:/tmp/professores_migrate.csv"
 
 Info "Truncando tabelas e importando..."
 docker exec -e PGPASSWORD=$DbPassword $Container psql -U $DbUser -d $DbName -c "TRUNCATE TABLE alunos RESTART IDENTITY CASCADE;"
 docker exec -e PGPASSWORD=$DbPassword $Container psql -U $DbUser -d $DbName -c "TRUNCATE TABLE professores RESTART IDENTITY CASCADE;"
 
-docker exec -e PGPASSWORD=$DbPassword $Container psql -U $DbUser -d $DbName -c "\\copy alunos (nome, idade, objetivo, nivel, peso_kg, altura_cm, restricoes, equipamentos, rpe) FROM '/tmp/alunos_migrate.csv' WITH (FORMAT csv, DELIMITER ';', NULL '', ENCODING 'UTF8');"
-docker exec -e PGPASSWORD=$DbPassword $Container psql -U $DbUser -d $DbName -c "\\copy professores (nome, especialidade) FROM '/tmp/professores_migrate.csv' WITH (FORMAT csv, DELIMITER ';', NULL '', ENCODING 'UTF8');"
+docker exec -e PGPASSWORD=$DbPassword $Container psql -U $DbUser -d $DbName -c "COPY alunos (nome, idade, objetivo, nivel, peso_kg, altura_cm, restricoes, equipamentos, rpe) FROM '/tmp/alunos_migrate.csv' WITH (FORMAT csv, DELIMITER ';', NULL '', ENCODING 'UTF8');"
+docker exec -e PGPASSWORD=$DbPassword $Container psql -U $DbUser -d $DbName -c "COPY professores (nome, especialidade) FROM '/tmp/professores_migrate.csv' WITH (FORMAT csv, DELIMITER ';', NULL '', ENCODING 'UTF8');"
 
 Info "Migração concluida com sucesso."

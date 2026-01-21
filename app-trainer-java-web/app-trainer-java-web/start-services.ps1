@@ -3,6 +3,13 @@
 
 Write-Host "`n=== Iniciando Serviços ===" -ForegroundColor Cyan
 
+# Segurança: exigir JWT_SECRET_KEY definida antes de subir serviços
+if (-not $env:JWT_SECRET_KEY -or [string]::IsNullOrWhiteSpace($env:JWT_SECRET_KEY)) {
+    Write-Host "[ERRO] JWT_SECRET_KEY não configurada. Defina uma chave forte em variável de ambiente antes de iniciar." -ForegroundColor Red
+    Write-Host "Exemplo: $env:JWT_SECRET_KEY = 'sua-chave-super-segura'" -ForegroundColor Yellow
+    exit 1
+}
+
 # 1. Iniciar PostgreSQL
 Write-Host "`n[1/4] Iniciando PostgreSQL Docker..." -ForegroundColor Yellow
 & ".\install-postgresql-docker.ps1"

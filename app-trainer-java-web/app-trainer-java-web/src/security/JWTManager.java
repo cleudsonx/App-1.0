@@ -15,7 +15,7 @@ import java.util.Base64;
  */
 public class JWTManager {
     
-    // ✅ SECRET_KEY agora vem de variável de ambiente (produção segura)
+    // ✅ SECRET_KEY vem exclusivamente de variável de ambiente (sem fallback em produção)
     private static final String SECRET_KEY = getSecretKey();
     private static final int ACCESS_TOKEN_EXPIRY_MINUTES = 15;
     private static final int REFRESH_TOKEN_EXPIRY_DAYS = 7;
@@ -26,12 +26,10 @@ public class JWTManager {
      */
     private static String getSecretKey() {
         String envKey = System.getenv("JWT_SECRET_KEY");
-        if (envKey != null && !envKey.trim().isEmpty()) {
-            return envKey;
+        if (envKey == null || envKey.trim().isEmpty()) {
+            throw new IllegalStateException("JWT_SECRET_KEY não configurada. Defina a variável de ambiente JWT_SECRET_KEY antes de iniciar o servidor.");
         }
-        // ⚠️ AVISO: Fallback apenas para desenvolvimento
-        System.err.println("[SECURITY WARNING] JWT_SECRET_KEY não configurada! Usando chave padrão (NÃO USE EM PRODUÇÃO)");
-        return "shaipados-dev-key-change-in-production-" + System.currentTimeMillis() % 10000;
+        return envKey;
     }
     
     public static class TokenPair {
