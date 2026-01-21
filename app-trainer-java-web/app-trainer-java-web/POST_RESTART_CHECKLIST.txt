@@ -1,0 +1,173 @@
+# Checklist Pós-Reinicialização Docker
+# Imprima ou salve para referência
+# Data: 21/01/2026
+
+╔════════════════════════════════════════════════════════════════╗
+║        CHECKLIST PÓS-REINICIALIZAÇÃO WINDOWS 11 + DOCKER      ║
+╚════════════════════════════════════════════════════════════════╝
+
+PASSO 1: Abra PowerShell (como Administrador)
+─────────────────────────────────────────────
+[ ] 1. Pressione Win + X
+[ ] 2. Selecione "Terminal (Admin)" ou "PowerShell (Admin)"
+[ ] 3. Confirme se solicitado
+
+
+PASSO 2: Verifique Docker
+─────────────────────────
+[ ] Exec: docker --version
+[ ] Esperado: "Docker version 20.x.x" ou superior
+[ ] Se falhar: Verifique se Docker iniciou no taskbar
+
+
+PASSO 3: Navegue para o Projeto
+───────────────────────────────
+[ ] Exec: cd "c:\Users\cleud\Documents\PROJETOS 2026\APP-1.0\app-trainer-java-web\app-trainer-java-web"
+
+
+PASSO 4: Execute Script de Continuidade
+────────────────────────────────────────
+[ ] Exec: .\post-restart-continuity.ps1
+
+Este script irá automaticamente:
+  ✓ Compilar código Java
+  ✓ Configurar PostgreSQL com Docker
+  ✓ Iniciar Java Backend (8081)
+  ✓ Iniciar Python ML Service (8001)
+  ✓ Verificar conectividade
+
+
+PASSO 5: Aguarde Estabilização
+──────────────────────────────
+[ ] Aguarde ~15-20 segundos para containers iniciarem
+[ ] Todos os serviços devem estar rodando
+
+
+PASSO 6: Teste Endpoints
+────────────────────────
+[ ] Abra outro terminal PowerShell
+
+LOGIN (tome nota do token):
+[ ] Exec: $response = Invoke-WebRequest `
+           -Uri "http://localhost:8081/auth/login" `
+           -Method POST `
+           -Body '{"email":"teste@example.com","senha":"Senha@123"}' `
+           -ContentType "application/json" `
+           -UseBasicParsing
+[ ] Exec: $response.Content | ConvertFrom-Json | ConvertTo-Json
+
+REGISTRAR NOVO USUÁRIO:
+[ ] Exec: $response = Invoke-WebRequest `
+           -Uri "http://localhost:8081/auth/registro" `
+           -Method POST `
+           -Body '{"email":"novo@teste.com","senha":"SenhaForte@123","nome":"Teste"}' `
+           -ContentType "application/json" `
+           -UseBasicParsing
+[ ] Esperado: 201 Created
+
+
+PASSO 7: Verificar Dados em PostgreSQL
+───────────────────────────────────────
+[ ] Exec: docker exec -it postgres-app-trainer psql -U postgres -d app_trainer
+
+[ ] Em psql, execute:
+    SELECT COUNT(*) FROM users;      -- Ver usuários criados
+    SELECT * FROM users;              -- Ver todos os usuários
+    \d                                -- Listar tabelas
+    \q                                -- Sair
+
+[ ] Esperado: Ver os usuários criados durante os testes
+
+
+PASSO 8: Monitorar Logs
+──────────────────────
+[ ] Terminal 3: Get-Content logs\app_*.log -Tail 20 -Wait
+
+Você verá logs em tempo real:
+  [INFO] Successful login for: teste@example.com
+  [WARN] Weak password for: usuario@teste.com
+  [ERROR] Rate limit exceeded
+  etc.
+
+
+STATUS ESPERADO APÓS CONCLUSÃO
+───────────────────────────────
+
+Portas Ativas:
+✅ localhost:8081  → Java Backend
+✅ localhost:8001  → Python ML Service
+✅ localhost:5432  → PostgreSQL Container
+
+Containers Docker:
+✅ postgres-app-trainer  → RUNNING
+
+Variáveis de Ambiente:
+✅ DB_URL      = jdbc:postgresql://localhost:5432/app_trainer
+✅ DB_USER     = postgres
+✅ DB_PASSWORD = postgres123
+
+Arquivos:
+✅ bin/           → Classes Java compiladas
+✅ logs/          → Logs de execução
+✅ data/          → Schema PostgreSQL criado
+
+
+TROUBLESHOOTING
+───────────────
+
+❌ Docker não inicia:
+  → Verifique se Hyper-V foi ativado
+  → Restart PC se necessário
+  → Verifique Windows version (WSL2 requer Windows 10/11)
+
+❌ PostgreSQL container não inicia:
+  → Ver logs: docker logs postgres-app-trainer
+  → Remover container antigo: docker rm postgres-app-trainer -f
+  → Reexecutar: .\install-postgresql-docker.ps1
+
+❌ Java não compila:
+  → Verifique JAVA_HOME: echo $env:JAVA_HOME
+  → Deve apontar para Java 17+
+
+❌ Porta 8081 em uso:
+  → Parar processo: netstat -ano | findstr ":8081"
+  → Kill: taskkill /PID <PID> /F
+
+❌ Conexão Java com PostgreSQL falha:
+  → Verificar driver JDBC: lib\postgresql-42.7.1.jar
+  → Verificar credenciais em variáveis de ambiente
+  → Testar conexão manual com pgAdmin
+
+
+PRÓXIMOS PASSOS APÓS CONTINUIDADE
+──────────────────────────────────
+
+✅ FASE 3 CONCLUÍDO: PostgreSQL Setup
+⏳ FASE 4: Python Service Sync & ML Integration
+⏳ FASE 5: Testes Automatizados
+⏳ FASE 6: Deployment em Produção
+
+
+CONTATOS/RECURSOS
+─────────────────
+
+GitHub: https://github.com/cleudsonx/App-1.0
+Commit Atual: 81658d9
+Branch: main
+Data: 2026-01-21
+
+Documentação: 
+  • FASE2_TESTES_VALIDACAO.md
+  • SETUP_POSTGRESQL.md
+  • README.md
+
+
+═══════════════════════════════════════════════════════════════════
+
+Se tudo funcionar conforme esperado:
+→ Parabéns! Sistema 100% funcional com PostgreSQL
+→ Pronto para próximas fases de desenvolvimento
+→ Pronto para testes automatizados
+→ Próximo passo: Integração com Python ML Service
+
+═══════════════════════════════════════════════════════════════════
