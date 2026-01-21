@@ -85,5 +85,11 @@
       ],
       "local": "academia"
     }
+  },
+  "235698664bd2": {
+    "nome": "ML User",
+    "email": "ml@jwt.com",
+    "senha_hash": "10000$YQUlABpDwpJRR0Gec5akXqf2lAd5snH7/61KVdtTxa4=$ipfHbv/Q1zXQdIwYNwWCRVs7aujv+e8eC457fovh90I=",
+    "perfil": null
   }
 }

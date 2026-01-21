@@ -26,6 +26,8 @@ const ML_SERVICE = 'http://localhost:8001';
 const AppState = {
     user: null,
     token: null,
+    refreshToken: null,
+    tokenExpiry: null,
     profile: null,
     currentTab: 'home',
     onboardingStep: 1,
@@ -573,12 +575,30 @@ const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
 
 async function api(endpoint, options = {}) {
+    // Verifica se token está próximo de expirar (1 minuto de margem)
+    if (AppState.tokenExpiry && (AppState.tokenExpiry - Date.now()) < 60000) {
+        console.log('⚠️ Token próximo de expirar, fazendo refresh preventivo...');
+        await Auth.refreshAccessToken();
+    }
+    
     try {
         const response = await fetch(endpoint, {
             headers: { 'Content-Type': 'application/json', ...options.headers },
             ...options
         });
         const text = await response.text();
+        
+        // Se receber 401, tenta refresh e retry uma vez
+        if (response.status === 401 && AppState.refreshToken && !options._retried) {
+            console.log('🔄 Token inválido (401), tentando refresh...');
+            const refreshed = await Auth.refreshAccessToken();
+            if (refreshed) {
+                console.log('✅ Retry após refresh');
+                options._retried = true;
+                return api(endpoint, options); // Retry com novo token
+            }
+        }
+        
         const data = JSON.parse(text);
         if (!response.ok) throw new Error(data.error || data.detail || `HTTP ${response.status}`);
         return data;
@@ -706,9 +726,19 @@ const Auth = {
 
     saveSession(data) {
         AppState.user = { id: data.user_id, nome: data.nome, email: data.email };
-        AppState.token = data.token;
+        // Suporta tanto formato antigo (token) quanto novo (access_token)
+        AppState.token = data.access_token || data.token;
+        AppState.refreshToken = data.refresh_token || null;
+        // Calcula tempo de expiração (expires_in em segundos, convertido para timestamp)
+        AppState.tokenExpiry = data.expires_in ? Date.now() + (data.expires_in * 1000) : null;
         AppState.profile = data.perfil || null;
-        localStorage.setItem('shaipados_auth', JSON.stringify({ user: AppState.user, token: AppState.token, profile: AppState.profile }));
+        localStorage.setItem('shaipados_auth', JSON.stringify({ 
+            user: AppState.user, 
+            token: AppState.token, 
+            refreshToken: AppState.refreshToken,
+            tokenExpiry: AppState.tokenExpiry,
+            profile: AppState.profile 
+        }));
     },
 
     async checkSession() {
@@ -719,7 +749,20 @@ const Auth = {
             if (!data.user?.id || !data.token) { this.showLogin(); return; }
             AppState.user = data.user;
             AppState.token = data.token;
+            AppState.refreshToken = data.refreshToken || null;
+            AppState.tokenExpiry = data.tokenExpiry || null;
             AppState.profile = data.profile;
+            
+            // Verifica se token expirou
+            if (AppState.tokenExpiry && Date.now() > AppState.tokenExpiry) {
+                console.log('⏰ Token expirado, tentando refresh...');
+                const refreshed = await this.refreshAccessToken();
+                if (!refreshed) {
+                    console.log('❌ Refresh falhou, fazendo logout');
+                    this.logout();
+                    return;
+                }
+            }
             
             try {
                 let response;
@@ -738,13 +781,46 @@ const Auth = {
         this.showLogin();
     },
 
+    async refreshAccessToken() {
+        if (!AppState.refreshToken) {
+            console.log('❌ Sem refresh token disponível');
+            return false;
+        }
+        
+        try {
+            console.log('🔄 Tentando refresh do access token...');
+            const response = await api('/auth/refresh', {
+                method: 'POST',
+                body: JSON.stringify({ refresh_token: AppState.refreshToken })
+            });
+            
+            if (response.access_token) {
+                console.log('✅ Token refreshed com sucesso');
+                AppState.token = response.access_token;
+                AppState.tokenExpiry = Date.now() + (response.expires_in * 1000);
+                
+                // Atualiza localStorage
+                const stored = JSON.parse(localStorage.getItem('shaipados_auth') || '{}');
+                stored.token = AppState.token;
+                stored.tokenExpiry = AppState.tokenExpiry;
+                localStorage.setItem('shaipados_auth', JSON.stringify(stored));
+                
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('❌ Erro ao fazer refresh:', error);
+            return false;
+        }
+    },
+
     showLogin() {
         $('#auth-screen') && ($('#auth-screen').style.display = 'flex');
         $('#app') && ($('#app').style.display = 'none');
         $('#onboarding') && ($('#onboarding').style.display = 'none');
         $('#modal-welcome') && ($('#modal-welcome').style.display = 'none');
         localStorage.removeItem('shaipados_auth');
-        AppState.user = null; AppState.token = null; AppState.profile = null;
+        AppState.user = null; AppState.token = null; AppState.refreshToken = null; AppState.tokenExpiry = null; AppState.profile = null;
     },
 
     enterApp(temPerfil, isNewUser) {

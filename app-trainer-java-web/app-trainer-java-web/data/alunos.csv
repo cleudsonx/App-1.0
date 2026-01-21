@@ -13,3 +13,9 @@
 13;Rafael A;0;hipertrofia;iniciante;0.0;0.0;;;;rafael@test.com;123456;{}
 14;Emily;0;hipertrofia;iniciante;0.0;0.0;;;;cavalcanteemily486@gmail.com;emilylinda123;{}
 15;victor alves;0;hipertrofia;iniciante;0.0;0.0;;;;vito@gmail.com;11223344;{}
+16;Test User;0;hipertrofia;iniciante;0.0;0.0;;;;test123@example.com;password123;{}
+17;TestSecure;0;hipertrofia;iniciante;0.0;0.0;;;;secure@test.com;mypass123;{}
+18;Carlos Teste;0;hipertrofia;iniciante;0.0;0.0;;;;carlos@seguro.com;10000$Y04QzMcysZV10P/Oer6eijVGO/ThkpyYTmN5PzsiCg4=$HZmaNZXRI4Lf4JM/U8k+1z7YvXtvzSsYqAsQz96ux9g=;{}
+19;Frontend Test;0;hipertrofia;iniciante;0.0;0.0;;;;frontend@jwt.com;10000$ajadZUUWteQUS04unOiQGEbVRzDK71Edw49/9nOjlFg=$/xmcUM18pCTTZ1QtnQwxB615b8KYlQtXSNd3Q1vdRcc=;{}
+20;Refresh Test;0;hipertrofia;iniciante;0.0;0.0;;;;refresh@test.com;10000$UEbAlEjf26jGyte3+ueND2nWmdrtURECQBRjSb+cdHg=$HgwcdxDUpIGRB/aDBt9hNxamuKPUSxgLC67Lr2tzAMw=;{}
+21;Type Test;0;hipertrofia;iniciante;0.0;0.0;;;;type@test.com;10000$h8emev/LWg6pfeGoM6bALeHeqjx1U36UmC3nxFsZDRs=$27R3gq0CvvwjM6w7tYRDMXbcyxJzxOr023FSk47BUIA=;{}

@@ -80,6 +80,7 @@ public class WebServer {
         AuthHandler authHandler = new AuthHandler(storage);
         server.createContext("/auth/login", authHandler);
         server.createContext("/auth/registro", authHandler);
+        server.createContext("/auth/refresh", authHandler);
         server.createContext("/auth/verificar", authHandler);
         
         // Alunos - CRUD completo
@@ -125,6 +126,7 @@ public class WebServer {
         System.out.println("║  Endpoints disponíveis:                            ║");
         System.out.println("║  • POST       /auth/login                          ║");
         System.out.println("║  • POST       /auth/registro                       ║");
+        System.out.println("║  • POST       /auth/refresh                        ║");
         System.out.println("║  • GET        /auth/verificar/{user_id}            ║");
         System.out.println("║  • GET/POST   /api/alunos                          ║");
         System.out.println("║  • GET/POST   /api/professores                     ║");

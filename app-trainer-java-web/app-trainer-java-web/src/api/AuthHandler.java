@@ -2,19 +2,26 @@ package api;
 
 import com.sun.net.httpserver.HttpExchange;
 import storage.DataStorage;
+import security.PasswordHasher;
+import security.JWTManager;
+import security.RateLimiter;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Handler para endpoints de Autenticação
- * POST /auth/login - login (email, senha) → token
- * POST /auth/registro - registro (nome, email, senha) → user_id, token
+ * POST /auth/login - login (email, senha) → JWT token
+ * POST /auth/registro - registro (nome, email, senha) → user_id, JWT token
+ * 
+ * ✅ Segurança Implementada:
+ * - Senhas com hash PBKDF2
+ * - JWT com expiração (15min access, 7d refresh)
+ * - Rate limiting (5 tentativas em 5min)
  */
 public class AuthHandler extends BaseHandler {
     private final DataStorage storage;
     private static final AtomicInteger userIdCounter = new AtomicInteger(1000);
-    private static final Map<String, String> tokenMap = new HashMap<>();
     
     public AuthHandler(DataStorage storage) {
         this.storage = storage;
@@ -36,6 +43,8 @@ public class AuthHandler extends BaseHandler {
             handleLogin(ex, body);
         } else if (path.equals("/auth/registro")) {
             handleRegistro(ex, body);
+        } else if (path.equals("/auth/refresh")) {
+            handleRefresh(ex, body);
         } else if (path.startsWith("/auth/verificar/")) {
             handleVerificar(ex, path);
         } else {
@@ -46,17 +55,30 @@ public class AuthHandler extends BaseHandler {
     /**
      * POST /auth/login
      * Body: { "email": "...", "senha": "..." }
-     * Response: { "user_id": ..., "token": "...", "nome": "...", "email": "..." }
+     * Response: { "user_id": ..., "access_token": "...", "refresh_token": "...", "nome": "...", "email": "..." }
+     * 
+     * ✅ Rate Limiting: 5 tentativas em 5 minutos
+     * ✅ Senha com hash PBKDF2
+     * ✅ JWT com 15min expiração
      */
     private void handleLogin(HttpExchange ex, String body) throws IOException {
         try {
-            // Parse simples do JSON
             Map<String, String> data = parseSimpleJSON(body);
             String email = data.get("email");
             String senha = data.get("senha");
 
             if (email == null || email.trim().isEmpty() || senha == null || senha.isEmpty()) {
                 sendError(ex, 400, "Email e senha são obrigatórios");
+                return;
+            }
+
+            // 🔐 RATE LIMITING: Proteger contra brute force
+            if (!RateLimiter.isAllowed(email)) {
+                int waitSeconds = RateLimiter.getWaitTimeSeconds(email);
+                sendError(ex, 429, String.format(
+                    "Muitas tentativas. Aguarde %d segundos antes de tentar novamente", 
+                    waitSeconds
+                ));
                 return;
             }
 
@@ -68,21 +90,29 @@ public class AuthHandler extends BaseHandler {
                 return;
             }
 
-            // Verificar senha (simples comparação por enquanto - em produção usar hash)
-            if (!aluno.getSenha().equals(senha)) {
+            // 🔐 VERIFICAR SENHA: com hash seguro
+            if (!PasswordHasher.verifyPassword(senha, aluno.getSenha())) {
                 sendError(ex, 401, "Email ou senha inválidos");
                 return;
             }
 
-            // Gerar token (UUID simples)
-            String token = UUID.randomUUID().toString();
-            tokenMap.put(token, String.valueOf(aluno.getId()));
+            // ✅ Login bem-sucedido: gerar JWT tokens
+            RateLimiter.reset(email); // Limpar tentativas falhadas
+            
+            JWTManager.TokenPair tokens = JWTManager.generateTokens(
+                String.valueOf(aluno.getId()),
+                email
+            );
 
-            // Resposta de sucesso
+            // Resposta com tokens JWT
             String perfil = aluno.getPerfil() != null ? aluno.getPerfil() : "{}";
             String response = "{" +
+                "\"success\":true," +
                 "\"user_id\":" + aluno.getId() + "," +
-                "\"token\":\"" + token + "\"," +
+                "\"access_token\":\"" + tokens.accessToken + "\"," +
+                "\"refresh_token\":\"" + tokens.refreshToken + "\"," +
+                "\"expires_in\":" + tokens.expiresIn + "," +
+                "\"token_type\":\"Bearer\"," +
                 "\"nome\":\"" + jsonEsc(aluno.getNome()) + "\"," +
                 "\"email\":\"" + jsonEsc(aluno.getEmail()) + "\"," +
                 "\"perfil\":" + perfil +
@@ -98,7 +128,11 @@ public class AuthHandler extends BaseHandler {
     /**
      * POST /auth/registro
      * Body: { "nome": "...", "email": "...", "senha": "..." }
-     * Response: { "user_id": ..., "token": "...", "nome": "...", "email": "..." }
+     * Response: { "user_id": ..., "access_token": "...", "refresh_token": "...", ... }
+     * 
+     * ✅ Validação de senha (mínimo 6 caracteres)
+     * ✅ Senha armazenada com hash PBKDF2
+     * ✅ JWT tokens retornados
      */
     private void handleRegistro(HttpExchange ex, String body) throws IOException {
         try {
@@ -114,29 +148,99 @@ public class AuthHandler extends BaseHandler {
                 return;
             }
 
+            // Validar senha mínima
+            if (senha.length() < 6) {
+                sendError(ex, 400, "Senha deve ter no mínimo 6 caracteres");
+                return;
+            }
+
             // Verificar se email já existe
             if (storage.getAlunoByEmail(email) != null) {
                 sendError(ex, 409, "Email já cadastrado");
                 return;
             }
 
-            // Criar novo aluno diretamente no storage
-            var newAluno = storage.addAluno(nome, email, senha);
+            // 🔐 HASH DA SENHA: com PBKDF2
+            String senhaHash = PasswordHasher.hashPassword(senha);
+            
+            // Criar novo aluno com senha hasheada
+            var newAluno = storage.addAlunoWithHash(nome, email, senhaHash);
 
-            // Gerar token
-            String token = UUID.randomUUID().toString();
-            tokenMap.put(token, String.valueOf(newAluno.getId()));
+            // ✅ Gerar JWT tokens
+            JWTManager.TokenPair tokens = JWTManager.generateTokens(
+                String.valueOf(newAluno.getId()),
+                email
+            );
 
             // Resposta de sucesso
             String response = "{" +
+                "\"success\":true," +
                 "\"user_id\":" + newAluno.getId() + "," +
-                "\"token\":\"" + token + "\"," +
+                "\"access_token\":\"" + tokens.accessToken + "\"," +
+                "\"refresh_token\":\"" + tokens.refreshToken + "\"," +
+                "\"expires_in\":" + tokens.expiresIn + "," +
+                "\"token_type\":\"Bearer\"," +
                 "\"nome\":\"" + jsonEsc(nome) + "\"," +
                 "\"email\":\"" + jsonEsc(email) + "\"," +
                 "\"perfil\":{}" +
                 "}";
 
             sendJson(ex, 201, response);
+
+        } catch (Exception e) {
+            sendError(ex, 400, "Dados inválidos: " + e.getMessage());
+        }
+    }
+
+    /**
+     * POST /auth/refresh
+     * Body: { "refresh_token": "..." }
+     * Response: { "access_token": "...", "expires_in": 900 }
+     * 
+     * ✅ Valida refresh token e gera novo access token
+     */
+    private void handleRefresh(HttpExchange ex, String body) throws IOException {
+        try {
+            Map<String, String> data = parseSimpleJSON(body);
+            String refreshToken = data.get("refresh_token");
+
+            if (refreshToken == null || refreshToken.trim().isEmpty()) {
+                sendError(ex, 400, "refresh_token é obrigatório");
+                return;
+            }
+
+            // 🔐 VALIDAR REFRESH TOKEN
+            JWTManager.TokenPayload payload;
+            try {
+                payload = JWTManager.verifyToken(refreshToken);
+            } catch (Exception e) {
+                sendError(ex, 401, "Refresh token inválido ou expirado");
+                return;
+            }
+
+            // Verificar se é realmente um refresh token (não um access token)
+            if (!"refresh".equals(payload.type)) {
+                sendError(ex, 401, "Token fornecido não é um refresh token");
+                return;
+            }
+
+            // Verificar se usuário ainda existe
+            var aluno = storage.getAlunoByEmail(payload.email);
+            if (aluno == null) {
+                sendError(ex, 401, "Usuário não encontrado");
+                return;
+            }
+
+            // ✅ Gerar novo access token (15 minutos)
+            String newAccessToken = JWTManager.generateAccessToken(payload.userId, payload.email);
+            
+            String response = "{" +
+                "\"access_token\":\"" + newAccessToken + "\"," +
+                "\"expires_in\":900," +
+                "\"token_type\":\"Bearer\"" +
+                "}";
+
+            sendJson(ex, 200, response);
 
         } catch (Exception e) {
             sendError(ex, 400, "Dados inválidos: " + e.getMessage());

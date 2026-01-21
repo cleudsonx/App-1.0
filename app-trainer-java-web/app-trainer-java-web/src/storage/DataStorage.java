@@ -143,6 +143,18 @@ public class DataStorage {
         return a;
     }
 
+    /**
+     * Adiciona aluno com senha já hasheada (PBKDF2)
+     * ✅ Para uso com PasswordHasher - senha já vem criptografada
+     */
+    public synchronized Aluno addAlunoWithHash(String nome, String email, String senhaHash) throws IOException {
+        int id = alunoSeq.getAndIncrement();
+        Aluno a = new Aluno(id, nome, 0, "hipertrofia", "iniciante", 0, 0, "", "", null, email, senhaHash, "{}");
+        alunosCache.put(a.getId(), a);
+        saveAlunos();
+        return a;
+    }
+
     // ==================== PROFESSORES ====================
 
     public synchronized Professor addProfessor(String nome, String especialidade) throws IOException {

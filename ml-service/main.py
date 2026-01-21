@@ -15,10 +15,14 @@ from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 import re
 import random
-import hashlib
 import uuid
 import json
 from pathlib import Path
+
+# Security imports
+from security.password_hasher import PasswordHasher
+from security.jwt_manager import JWTManager, TokenPair
+from security.rate_limiter import RateLimiter
 
 app = FastAPI(
     title="APP Trainer ML Service",
@@ -49,12 +53,6 @@ def load_users() -> Dict[str, Any]:
 def save_users(users: Dict[str, Any]):
     USERS_FILE.write_text(json.dumps(users, ensure_ascii=False, indent=2), encoding="utf-8")
 
-def hash_password(password: str) -> str:
-    return hashlib.sha256(password.encode()).hexdigest()
-
-def generate_token() -> str:
-    return uuid.uuid4().hex
-
 class LoginRequest(BaseModel):
     email: str
     senha: str
@@ -68,7 +66,10 @@ class AuthResponse(BaseModel):
     user_id: str
     nome: str
     email: str
-    token: str
+    access_token: str
+    refresh_token: str
+    expires_in: int
+    token_type: str = "Bearer"
     perfil: Optional[Dict[str, Any]] = None
 
 class VerifyResponse(BaseModel):
@@ -79,56 +80,125 @@ class VerifyResponse(BaseModel):
 
 @app.post("/auth/login", response_model=AuthResponse)
 async def login(request: LoginRequest):
+    """
+    Login with JWT tokens and rate limiting
+    - Validates password with PBKDF2
+    - Rate limit: 5 attempts per 5 minutes
+    - Returns access + refresh tokens
+    """
+    # 🔐 Rate limiting
+    if not RateLimiter.is_allowed(request.email):
+        wait_seconds = RateLimiter.get_wait_time_seconds(request.email)
+        raise HTTPException(
+            status_code=429,
+            detail=f"Muitas tentativas. Aguarde {wait_seconds} segundos"
+        )
+    
     users = load_users()
     
     for user_id, user_data in users.items():
         if user_data["email"] == request.email:
-            if user_data["senha_hash"] == hash_password(request.senha):
-                token = generate_token()
-                user_data["token"] = token
-                save_users(users)
+            # 🔐 Verify password with PBKDF2
+            if PasswordHasher.verify_password(request.senha, user_data["senha_hash"]):
+                # ✅ Login successful - reset rate limiter
+                RateLimiter.reset(request.email)
+                
+                # Generate JWT tokens
+                tokens = JWTManager.generate_tokens(user_id, request.email)
+                
                 return AuthResponse(
                     user_id=user_id,
                     nome=user_data["nome"],
                     email=user_data["email"],
-                    token=token,
+                    access_token=tokens.access_token,
+                    refresh_token=tokens.refresh_token,
+                    expires_in=tokens.expires_in,
                     perfil=user_data.get("perfil")
                 )
             else:
-                raise HTTPException(status_code=401, detail="Senha incorreta")
+                raise HTTPException(status_code=401, detail="Email ou senha inválidos")
     
-    raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    raise HTTPException(status_code=401, detail="Email ou senha inválidos")
 
-@app.post("/auth/registro", response_model=AuthResponse)
+@app.post("/auth/registro", response_model=AuthResponse, status_code=201)
 async def registro(request: RegisterRequest):
+    """
+    Register new user with secure password hashing
+    - Password hashed with PBKDF2 (10k iterations)
+    - Returns JWT tokens
+    """
     users = load_users()
     
     # Verificar se email já existe
     for user_data in users.values():
         if user_data["email"] == request.email:
-            raise HTTPException(status_code=400, detail="Email já cadastrado")
+            raise HTTPException(status_code=409, detail="Email já cadastrado")
     
     if len(request.senha) < 6:
         raise HTTPException(status_code=400, detail="Senha deve ter no mínimo 6 caracteres")
     
     user_id = uuid.uuid4().hex[:12]
-    token = generate_token()
+    
+    # 🔐 Hash password with PBKDF2
+    senha_hash = PasswordHasher.hash_password(request.senha)
     
     users[user_id] = {
         "nome": request.nome,
         "email": request.email,
-        "senha_hash": hash_password(request.senha),
-        "token": token,
+        "senha_hash": senha_hash,
         "perfil": None
     }
     save_users(users)
+    
+    # Generate JWT tokens
+    tokens = JWTManager.generate_tokens(user_id, request.email)
     
     return AuthResponse(
         user_id=user_id,
         nome=request.nome,
         email=request.email,
-        token=token,
+        access_token=tokens.access_token,
+        refresh_token=tokens.refresh_token,
+        expires_in=tokens.expires_in,
         perfil=None
+    )
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
+class RefreshResponse(BaseModel):
+    access_token: str
+    expires_in: int
+    token_type: str = "Bearer"
+
+@app.post("/auth/refresh", response_model=RefreshResponse)
+async def refresh_token(request: RefreshRequest):
+    """
+    Refresh access token using refresh token
+    - Validates refresh token
+    - Generates new access token (15 minutes)
+    """
+    # 🔐 Verify refresh token
+    payload = JWTManager.verify_token(request.refresh_token)
+    
+    if not payload:
+        raise HTTPException(status_code=401, detail="Refresh token inválido ou expirado")
+    
+    # Verify it's actually a refresh token
+    if payload.token_type != "refresh":
+        raise HTTPException(status_code=401, detail="Token fornecido não é um refresh token")
+    
+    # Verify user still exists
+    users = load_users()
+    if payload.user_id not in users:
+        raise HTTPException(status_code=401, detail="Usuário não encontrado")
+    
+    # ✅ Generate new access token
+    new_access_token = JWTManager.generate_access_token(payload.user_id, payload.email)
+    
+    return RefreshResponse(
+        access_token=new_access_token,
+        expires_in=900  # 15 minutes
     )
 
 @app.get("/auth/verificar/{user_id}", response_model=VerifyResponse)
