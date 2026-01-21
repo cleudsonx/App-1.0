@@ -2,10 +2,15 @@ package api;
 
 import com.sun.net.httpserver.HttpExchange;
 import storage.DataStorage;
+import storage.DataStorageSQL;
 import security.PasswordHasher;
 import security.JWTManager;
 import security.RateLimiter;
+import validation.InputValidator;
+import error.ErrorHandler;
+import log.AppLogger;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -18,13 +23,34 @@ import java.util.concurrent.atomic.AtomicInteger;
  * - Senhas com hash PBKDF2
  * - JWT com expiração (15min access, 7d refresh)
  * - Rate limiting (5 tentativas em 5min)
+ * - Input validation (email, password strength)
+ * - SQL Injection prevention
+ * - Centralized error handling
  */
 public class AuthHandler extends BaseHandler {
     private final DataStorage storage;
+    private DataStorageSQL storageSQL;
+    private AppLogger logger;
     private static final AtomicInteger userIdCounter = new AtomicInteger(1000);
     
     public AuthHandler(DataStorage storage) {
         this.storage = storage;
+        this.storageSQL = null;
+        this.logger = null;
+    }
+    
+    public AuthHandler(DataStorage storage, DataStorageSQL storageSQL, AppLogger logger) {
+        this.storage = storage;
+        this.storageSQL = storageSQL;
+        this.logger = logger;
+    }
+    
+    public void setStorageSQL(DataStorageSQL storageSQL) {
+        this.storageSQL = storageSQL;
+    }
+    
+    public void setLogger(AppLogger logger) {
+        this.logger = logger;
     }
 
     @Override
@@ -60,6 +86,7 @@ public class AuthHandler extends BaseHandler {
      * ✅ Rate Limiting: 5 tentativas em 5 minutos
      * ✅ Senha com hash PBKDF2
      * ✅ JWT com 15min expiração
+     * ✅ Input Validation: Email format + SQL injection prevention
      */
     private void handleLogin(HttpExchange ex, String body) throws IOException {
         try {
@@ -67,14 +94,32 @@ public class AuthHandler extends BaseHandler {
             String email = data.get("email");
             String senha = data.get("senha");
 
+            // Validação básica
             if (email == null || email.trim().isEmpty() || senha == null || senha.isEmpty()) {
                 sendError(ex, 400, "Email e senha são obrigatórios");
+                return;
+            }
+            
+            // ✅ Validar formato de email
+            if (!InputValidator.isValidEmail(email)) {
+                if (logger != null) logger.warn("Invalid email format attempted: " + email, "AuthHandler");
+                sendError(ex, 400, "Email inválido");
+                return;
+            }
+            
+            // ✅ Sanitizar input para evitar SQL injection
+            try {
+                email = InputValidator.sanitizeString(email.trim());
+            } catch (IllegalArgumentException e) {
+                if (logger != null) logger.warn("SQL injection attempt: " + email, "AuthHandler");
+                sendError(ex, 400, "Email contém caracteres inválidos");
                 return;
             }
 
             // 🔐 RATE LIMITING: Proteger contra brute force
             if (!RateLimiter.isAllowed(email)) {
                 int waitSeconds = RateLimiter.getWaitTimeSeconds(email);
+                if (logger != null) logger.warn("Rate limit exceeded for: " + email, "AuthHandler");
                 sendError(ex, 429, String.format(
                     "Muitas tentativas. Aguarde %d segundos antes de tentar novamente", 
                     waitSeconds
@@ -86,12 +131,14 @@ public class AuthHandler extends BaseHandler {
             var aluno = storage.getAlunoByEmail(email);
             
             if (aluno == null) {
+                if (logger != null) logger.warn("Login failed - user not found: " + email, "AuthHandler");
                 sendError(ex, 401, "Email ou senha inválidos");
                 return;
             }
 
             // 🔐 VERIFICAR SENHA: com hash seguro
             if (!PasswordHasher.verifyPassword(senha, aluno.getSenha())) {
+                if (logger != null) logger.warn("Login failed - invalid password for: " + email, "AuthHandler");
                 sendError(ex, 401, "Email ou senha inválidos");
                 return;
             }
@@ -103,6 +150,8 @@ public class AuthHandler extends BaseHandler {
                 String.valueOf(aluno.getId()),
                 email
             );
+            
+            if (logger != null) logger.info("Successful login for: " + email, "AuthHandler");
 
             // Resposta com tokens JWT
             String perfil = aluno.getPerfil() != null ? aluno.getPerfil() : "{}";
@@ -121,7 +170,8 @@ public class AuthHandler extends BaseHandler {
             sendJson(ex, 200, response);
 
         } catch (Exception e) {
-            sendError(ex, 400, "Dados inválidos: " + e.getMessage());
+            if (logger != null) logger.error("Error in handleLogin", e, "AuthHandler");
+            sendError(ex, 400, "Dados inválidos");
         }
     }
 
@@ -130,9 +180,11 @@ public class AuthHandler extends BaseHandler {
      * Body: { "nome": "...", "email": "...", "senha": "..." }
      * Response: { "user_id": ..., "access_token": "...", "refresh_token": "...", ... }
      * 
-     * ✅ Validação de senha (mínimo 6 caracteres)
+     * ✅ Validação de senha forte (8+, maiúscula, número, símbolo)
+     * ✅ Email validation
      * ✅ Senha armazenada com hash PBKDF2
      * ✅ JWT tokens retornados
+     * ✅ SQL Injection prevention
      */
     private void handleRegistro(HttpExchange ex, String body) throws IOException {
         try {
@@ -147,15 +199,42 @@ public class AuthHandler extends BaseHandler {
                 sendError(ex, 400, "Nome, email e senha são obrigatórios");
                 return;
             }
+            
+            // ✅ Validar nome
+            if (!InputValidator.isValidName(nome)) {
+                if (logger != null) logger.warn("Invalid name format attempted: " + nome, "AuthHandler");
+                sendError(ex, 400, "Nome contém caracteres inválidos");
+                return;
+            }
+            
+            // ✅ Validar email format
+            if (!InputValidator.isValidEmail(email)) {
+                if (logger != null) logger.warn("Invalid email format in registro: " + email, "AuthHandler");
+                sendError(ex, 400, "Email inválido");
+                return;
+            }
+            
+            // ✅ Sanitizar inputs
+            try {
+                nome = InputValidator.sanitizeString(nome.trim());
+                email = InputValidator.sanitizeString(email.trim().toLowerCase());
+            } catch (IllegalArgumentException e) {
+                if (logger != null) logger.warn("SQL injection attempt in registro", "AuthHandler");
+                sendError(ex, 400, "Dados contêm caracteres inválidos");
+                return;
+            }
 
-            // Validar senha mínima
-            if (senha.length() < 6) {
-                sendError(ex, 400, "Senha deve ter no mínimo 6 caracteres");
+            // ✅ Validar força de senha
+            InputValidator.ValidationResult passwordValidation = InputValidator.validatePassword(senha);
+            if (!passwordValidation.valid) {
+                if (logger != null) logger.warn("Weak password for: " + email, "AuthHandler");
+                sendError(ex, 400, passwordValidation.message);
                 return;
             }
 
             // Verificar se email já existe
             if (storage.getAlunoByEmail(email) != null) {
+                if (logger != null) logger.warn("Email already registered: " + email, "AuthHandler");
                 sendError(ex, 409, "Email já cadastrado");
                 return;
             }
@@ -165,6 +244,8 @@ public class AuthHandler extends BaseHandler {
             
             // Criar novo aluno com senha hasheada
             var newAluno = storage.addAlunoWithHash(nome, email, senhaHash);
+            
+            if (logger != null) logger.info("New user registered: " + email, "AuthHandler");
 
             // ✅ Gerar JWT tokens
             JWTManager.TokenPair tokens = JWTManager.generateTokens(

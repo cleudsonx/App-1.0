@@ -4,12 +4,16 @@ import com.sun.net.httpserver.HttpHandler;
 
 import api.*;
 import storage.DataStorage;
+import storage.DataStorageSQL;
+import db.ConnectionPool;
+import log.AppLogger;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.sql.SQLException;
 import java.util.concurrent.Executors;
 
 /**
@@ -66,6 +70,29 @@ public class WebServer {
         // Storage compartilhado
         DataStorage storage = new DataStorage(dataDir);
         
+        // ✅ Inicializar Logger Centralizado
+        AppLogger logger = AppLogger.getInstance(Path.of("logs"));
+        logger.info("APP Trainer iniciado - Version " + VERSION, "WebServer");
+        logger.info("Web Directory: " + webDir.toAbsolutePath(), "WebServer");
+        
+        // ✅ Inicializar PostgreSQL Connection Pool (opcional - use quando DB estiver pronto)
+        DataStorageSQL storageSQL = null;
+        String dbUrl = System.getenv("DB_URL");
+        String dbUser = System.getenv("DB_USER");
+        String dbPassword = System.getenv("DB_PASSWORD");
+        
+        if (dbUrl != null && dbUser != null && dbPassword != null) {
+            try {
+                ConnectionPool pool = ConnectionPool.getInstance(dbUrl, dbUser, dbPassword);
+                storageSQL = new DataStorageSQL();
+                logger.info("PostgreSQL Connection Pool initialized: " + pool.getStatus(), "WebServer");
+            } catch (SQLException e) {
+                logger.warn("PostgreSQL não disponível - usando CSV storage: " + e.getMessage(), "WebServer");
+            }
+        } else {
+            logger.info("PostgreSQL não configurado - usando CSV storage", "WebServer");
+        }
+        
         // Cria servidor com thread pool para melhor performance
         // Bind em 0.0.0.0 para aceitar conexões de qualquer interface de rede
         HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0", port), 0);
@@ -77,7 +104,7 @@ public class WebServer {
         // ==================== API REST ====================
         
         // Autenticação
-        AuthHandler authHandler = new AuthHandler(storage);
+        AuthHandler authHandler = new AuthHandler(storage, storageSQL, logger);
         server.createContext("/auth/login", authHandler);
         server.createContext("/auth/registro", authHandler);
         server.createContext("/auth/refresh", authHandler);
@@ -133,9 +160,25 @@ public class WebServer {
         System.out.println("║  • GET/POST   /api/coach?q=pergunta                ║");
         System.out.println("║  • GET/POST   /api/sugestao?objetivo=&nivel=       ║");
         System.out.println("║  • GET        /api/health                          ║");
+        System.out.println("║                                                    ║");
+        System.out.println("║  🔐 Security: JWT, PBKDF2, Rate Limiting           ║");
+        System.out.println("║  📊 Storage: " + (storageSQL != null ? "PostgreSQL" : "CSV") + "                              ║");
+        System.out.println("║  📝 Logging: " + "Enabled" + "                                ║");
         System.out.println("╚════════════════════════════════════════════════════╝");
         
         server.start();
+        logger.info("Server started on port " + port, "WebServer");
+        
+        // ✅ Graceful shutdown hook
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            logger.warn("Shutting down server...", "WebServer");
+            server.stop(5);
+            if (storageSQL != null) {
+                storageSQL.close();
+            }
+            logger.info("Server stopped", "WebServer");
+            logger.close(); // Flush remaining logs
+        }));
         
         // Mantém servidor rodando - loop infinito
         Thread keepAlive = new Thread(() -> {
