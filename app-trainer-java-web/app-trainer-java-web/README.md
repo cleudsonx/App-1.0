@@ -53,3 +53,16 @@ javac -d bin src/*.java src/api/*.java src/storage/*.java src/db/*.java src/log/
 java -cp bin WebServer
 ```
 O servidor exibira URLs com https:// e usara a porta configurada (default 8443).
+
+## Migrar CSV -> PostgreSQL
+Com o container `postgres-app-trainer` em execucao:
+```powershell
+cd app-trainer-java-web\app-trainer-java-web
+./migrate-csv-to-postgres.ps1 `
+	-DataDir "./data" `
+	-Container "postgres-app-trainer" `
+	-DbName "app_trainer" `
+	-DbUser "postgres" `
+	-DbPassword "postgres123"
+```
+O script remove as tabelas `alunos` e `professores` e recarrega a partir de `data/alunos.csv` e `data/professores.csv` (descartando a coluna id do CSV).
