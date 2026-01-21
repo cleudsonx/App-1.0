@@ -124,9 +124,7 @@ Write-Host "╚═════════════════════�
 Write-Host "📋 Próximos passos:`n" -ForegroundColor Cyan
 
 Write-Host "1️⃣  Testar endpoints (aguarde 10 segundos para estabilizar):" -ForegroundColor White
-Write-Host "    curl -X POST http://localhost:8081/auth/login \" -ForegroundColor Gray
-Write-Host "      -H 'Content-Type: application/json' \" -ForegroundColor Gray
-Write-Host "      -d '{\"email\":\"teste@example.com\",\"senha\":\"Senha@123\"}'`n" -ForegroundColor Gray
+Write-Host "    Invoke-WebRequest -Uri http://localhost:8081/auth/login -Method POST -Body '{`"email`":`"teste@example.com`",`"senha`":`"Senha@123`"}' -ContentType 'application/json'`n" -ForegroundColor Gray
 
 Write-Host "2️⃣  Ver logs em tempo real:" -ForegroundColor White
 Write-Host "    Get-Content logs\app_*.log -Tail 20 -Wait`n" -ForegroundColor Gray

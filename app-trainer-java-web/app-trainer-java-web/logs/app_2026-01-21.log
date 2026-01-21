@@ -1,0 +1,67 @@
+2026-01-21 10:40:06.964 [INFO] [WebServer] APP Trainer iniciado - Version 2.0.0
+2026-01-21 10:40:06.965 [INFO] [WebServer] Web Directory: C:\Users\cleud\Documents\PROJETOS 2026\APP-1.0\app-trainer-java-web\app-trainer-java-web\web
+2026-01-21 10:40:06.967 [INFO] [WebServer] PostgreSQL não configurado - usando CSV storage
+2026-01-21 10:40:55.851 [INFO] [WebServer] APP Trainer iniciado - Version 2.0.0
+2026-01-21 10:40:55.851 [INFO] [WebServer] Web Directory: C:\Users\cleud\Documents\PROJETOS 2026\APP-1.0\app-trainer-java-web\app-trainer-java-web\web
+2026-01-21 10:40:55.853 [INFO] [WebServer] PostgreSQL não configurado - usando CSV storage
+2026-01-21 10:40:56.169 [INFO] [WebServer] Server started on port 8081
+2026-01-21 10:41:25.138 [WARN] [WebServer] Shutting down server...
+2026-01-21 10:41:30.235 [INFO] [WebServer] Server stopped
+2026-01-21 10:41:35.514 [INFO] [WebServer] APP Trainer iniciado - Version 2.0.0
+2026-01-21 10:41:35.514 [INFO] [WebServer] Web Directory: C:\Users\cleud\Documents\PROJETOS 2026\APP-1.0\app-trainer-java-web\app-trainer-java-web\web
+2026-01-21 10:41:35.517 [INFO] [WebServer] PostgreSQL não configurado - usando CSV storage
+2026-01-21 10:41:35.828 [INFO] [WebServer] Server started on port 8081
+2026-01-21 10:42:19.779 [WARN] [WebServer] Shutting down server...
+2026-01-21 10:42:24.891 [INFO] [WebServer] Server stopped
+2026-01-21 10:42:39.396 [INFO] [WebServer] APP Trainer iniciado - Version 2.0.0
+2026-01-21 10:42:39.396 [INFO] [WebServer] Web Directory: C:\Users\cleud\Documents\PROJETOS 2026\APP-1.0\app-trainer-java-web\app-trainer-java-web\web
+2026-01-21 10:42:39.399 [INFO] [WebServer] PostgreSQL não configurado - usando CSV storage
+2026-01-21 10:42:39.689 [INFO] [WebServer] Server started on port 8081
+2026-01-21 10:43:13.777 [INFO] [AuthHandler] New user registered: teste@example.com
+2026-01-21 10:43:41.228 [WARN] [AuthHandler] Weak password for: teste2@example.com
+2026-01-21 10:43:50.409 [WARN] [AuthHandler] Weak password for: teste3@example.com
+2026-01-21 10:43:57.349 [WARN] [AuthHandler] Weak password for: teste4@example.com
+2026-01-21 10:44:05.835 [INFO] [AuthHandler] Successful login for: teste@example.com
+2026-01-21 11:36:20.882 [INFO] [WebServer] APP Trainer iniciado - Version 2.0.0
+2026-01-21 11:36:20.884 [INFO] [WebServer] Web Directory: C:\Users\cleud\Documents\PROJETOS 2026\APP-1.0\app-trainer-java-web\app-trainer-java-web\web
+2026-01-21 11:36:21.040 [WARN] [WebServer] PostgreSQL não disponível - usando CSV storage: Connection to localhost:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+2026-01-21 11:36:21.412 [INFO] [WebServer] Server started on port 8081
+2026-01-21 11:37:32.271 [WARN] [AuthHandler] Email already registered: teste@example.com
+2026-01-21 11:37:41.109 [INFO] [AuthHandler] Successful login for: teste@example.com
+2026-01-21 11:42:31.982 [INFO] [WebServer] APP Trainer iniciado - Version 2.0.0
+2026-01-21 11:42:31.982 [INFO] [WebServer] Web Directory: C:\Users\cleud\Documents\PROJETOS 2026\APP-1.0\app-trainer-java-web\app-trainer-java-web\web
+2026-01-21 11:42:32.694 [INFO] [WebServer] PostgreSQL Connection Pool initialized: [DB] Pool Status: Available=10, Total=10, Closed=false
+2026-01-21 11:42:32.940 [INFO] [WebServer] Server started on port 8081
+2026-01-21 11:42:50.739 [INFO] [AuthHandler] New user registered: novo.usuario@teste.com
+2026-01-21 11:45:10.785 [INFO] [AuthHandler] Successful login for: novo.usuario@teste.com
+2026-01-21 11:51:11.220 [INFO] [WebServer] APP Trainer iniciado - Version 2.0.0
+2026-01-21 11:51:11.220 [INFO] [WebServer] Web Directory: C:\Users\cleud\Documents\PROJETOS 2026\APP-1.0\app-trainer-java-web\app-trainer-java-web\web
+2026-01-21 11:51:11.948 [INFO] [WebServer] PostgreSQL Connection Pool initialized: [DB] Pool Status: Available=10, Total=10, Closed=false
+2026-01-21 11:51:12.167 [INFO] [WebServer] Server started on port 8081
+2026-01-21 11:52:06.014 [INFO] [MLServiceHandler] Request: GET /ml/coach
+2026-01-21 11:52:06.125 [INFO] [MLServiceHandler] Coach query successful: Como+fazer+flexao
+2026-01-21 11:53:14.304 [INFO] [MLServiceHandler] Request: GET /ml/suggest
+2026-01-21 11:53:14.315 [INFO] [MLServiceHandler] Suggest query successful: objetivo=forca, nivel=avancado
+2026-01-21 11:54:11.425 [INFO] [AuthHandler] Successful login for: teste@example.com
+2026-01-21 11:54:11.605 [INFO] [MLServiceHandler] Request: GET /ml/coach
+2026-01-21 11:54:11.623 [INFO] [MLServiceHandler] Coach query successful: qual+o+melhor+exercicio+para+peito?
+2026-01-21 11:54:11.791 [INFO] [MLServiceHandler] Request: GET /ml/suggest
+2026-01-21 11:54:11.796 [INFO] [MLServiceHandler] Suggest query successful: objetivo=hipertrofia, nivel=intermediario
+2026-01-21 11:54:18.617 [INFO] [AuthHandler] Successful login for: teste@example.com
+2026-01-21 11:54:24.335 [INFO] [MLServiceHandler] Request: GET /ml/coach
+2026-01-21 11:54:24.343 [INFO] [MLServiceHandler] Coach query successful: qual+o+melhor+exercicio+para+peito
+2026-01-21 11:54:28.470 [INFO] [MLServiceHandler] Request: GET /ml/suggest
+2026-01-21 11:54:28.475 [INFO] [MLServiceHandler] Suggest query successful: objetivo=hipertrofia, nivel=intermediario
+2026-01-21 12:10:20.204 [INFO] [WebServer] APP Trainer iniciado - Version 2.0.0
+2026-01-21 12:10:20.204 [INFO] [WebServer] Web Directory: C:\Users\cleud\Documents\PROJETOS 2026\APP-1.0\app-trainer-java-web\app-trainer-java-web\web
+2026-01-21 12:10:21.008 [INFO] [WebServer] PostgreSQL Connection Pool initialized: [DB] Pool Status: Available=10, Total=10, Closed=false
+2026-01-21 12:10:21.224 [INFO] [WebServer] Server started on port 8081
+2026-01-21 12:10:50.366 [WARN] [AuthHandler] PostgreSQL save failed, using CSV fallback: ERROR: relation "alunos" does not exist
+  Posição: 13
+2026-01-21 12:10:50.410 [INFO] [AuthHandler] New user registered: postgres.test@example.com
+2026-01-21 12:11:57.480 [INFO] [WebServer] APP Trainer iniciado - Version 2.0.0
+2026-01-21 12:11:57.481 [INFO] [WebServer] Web Directory: C:\Users\cleud\Documents\PROJETOS 2026\APP-1.0\app-trainer-java-web\app-trainer-java-web\web
+2026-01-21 12:11:58.955 [INFO] [WebServer] PostgreSQL Connection Pool initialized: [DB] Pool Status: Available=10, Total=10, Closed=false
+2026-01-21 12:11:59.376 [INFO] [WebServer] Server started on port 8081
+2026-01-21 12:12:09.826 [INFO] [AuthHandler] User saved to PostgreSQL: novo.usuario@postgres.com
+2026-01-21 12:12:09.826 [INFO] [AuthHandler] New user registered: novo.usuario@postgres.com

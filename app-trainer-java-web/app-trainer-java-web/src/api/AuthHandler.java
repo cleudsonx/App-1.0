@@ -3,6 +3,7 @@ package api;
 import com.sun.net.httpserver.HttpExchange;
 import storage.DataStorage;
 import storage.DataStorageSQL;
+import storage.Aluno;
 import security.PasswordHasher;
 import security.JWTManager;
 import security.RateLimiter;
@@ -243,7 +244,19 @@ public class AuthHandler extends BaseHandler {
             String senhaHash = PasswordHasher.hashPassword(senha);
             
             // Criar novo aluno com senha hasheada
-            var newAluno = storage.addAlunoWithHash(nome, email, senhaHash);
+            // ✅ Usar PostgreSQL se disponível, fallback para CSV
+            Aluno newAluno;
+            if (storageSQL != null) {
+                try {
+                    newAluno = storageSQL.addAlunoWithHash(nome, email, senhaHash);
+                    if (logger != null) logger.info("User saved to PostgreSQL: " + email, "AuthHandler");
+                } catch (Exception e) {
+                    if (logger != null) logger.warn("PostgreSQL save failed, using CSV fallback: " + e.getMessage(), "AuthHandler");
+                    newAluno = storage.addAlunoWithHash(nome, email, senhaHash);
+                }
+            } else {
+                newAluno = storage.addAlunoWithHash(nome, email, senhaHash);
+            }
             
             if (logger != null) logger.info("New user registered: " + email, "AuthHandler");
 

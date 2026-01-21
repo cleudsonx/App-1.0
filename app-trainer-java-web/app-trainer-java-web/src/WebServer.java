@@ -128,13 +128,19 @@ public class WebServer {
         server.createContext("/api/sugestao", sugestaoHandler);
         server.createContext("/api/treino/gerar", sugestaoHandler);
         
+        // ML Service Integration - Direct Python Service
+        MLServiceHandler mlHandler = new MLServiceHandler();
+        server.createContext("/ml/coach", mlHandler);
+        server.createContext("/ml/suggest", mlHandler);
+        server.createContext("/ml/health", mlHandler);
+        
         // Health check e info
         server.createContext("/api/health", ex -> {
             String json = "{\"status\":\"ok\",\"version\":\"" + VERSION + "\"}";
             sendJson(ex, 200, json);
         });
         
-        // Proxy para serviço ML Python (opcional)
+        // Proxy para serviço ML Python (opcional - deprecated, usar /ml/ direto)
         server.createContext("/api/sugestao-ml", ex -> Proxy.forward(ex, "http://localhost:8001/suggest"));
         server.createContext("/api/coach-ml", ex -> Proxy.forward(ex, "http://localhost:8001/coach"));
 
@@ -159,11 +165,15 @@ public class WebServer {
         System.out.println("║  • GET/POST   /api/professores                     ║");
         System.out.println("║  • GET/POST   /api/coach?q=pergunta                ║");
         System.out.println("║  • GET/POST   /api/sugestao?objetivo=&nivel=       ║");
+        System.out.println("║  • GET        /ml/coach?q=&nome=&objetivo=&nivel=  ║");
+        System.out.println("║  • GET        /ml/suggest?objetivo=&nivel=&dias=   ║");
+        System.out.println("║  • GET        /ml/health                           ║");
         System.out.println("║  • GET        /api/health                          ║");
         System.out.println("║                                                    ║");
         System.out.println("║  🔐 Security: JWT, PBKDF2, Rate Limiting           ║");
         System.out.println("║  📊 Storage: " + (storageSQLHolder[0] != null ? "PostgreSQL" : "CSV") + "                              ║");
         System.out.println("║  📝 Logging: " + "Enabled" + "                                ║");
+        System.out.println("║  🤖 ML Service: Python FastAPI (port 8001)         ║");
         System.out.println("╚════════════════════════════════════════════════════╝");
         
         server.start();

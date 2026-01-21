@@ -120,6 +120,75 @@ public class DataStorageSQL {
     }
 
     /**
+     * Adiciona aluno com hash de senha apenas (autenticação simplificada)
+     * Cria usuário na tabela users e aluno na tabela alunos
+     */
+    public Aluno addAlunoWithHash(String nome, String email, String passwordHash) throws SQLException {
+        String insertUserSQL = "INSERT INTO users (email, password_hash) VALUES (?, ?) RETURNING id";
+        String insertAlunoSQL = """
+            INSERT INTO alunos (user_id, nome, idade, objetivo, nivel, peso_kg, altura_cm, restricoes, equipamentos, metadata)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, '{}')
+            RETURNING id
+            """;
+        
+        Connection conn = pool.getConnection();
+        try {
+            conn.setAutoCommit(false);
+            
+            // Insert user
+            int userId = 0;
+            PreparedStatement pstmt = conn.prepareStatement(insertUserSQL, Statement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1, email);
+            pstmt.setString(2, passwordHash);
+            pstmt.executeUpdate();
+            ResultSet rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                userId = rs.getInt(1);
+            }
+            pstmt.close();
+            
+            if (userId == 0) {
+                conn.rollback();
+                throw new SQLException("Erro ao criar usuário");
+            }
+            
+            // Insert aluno com valores padrão
+            pstmt = conn.prepareStatement(insertAlunoSQL, Statement.RETURN_GENERATED_KEYS);
+            pstmt.setInt(1, userId);
+            pstmt.setString(2, nome);
+            pstmt.setInt(3, 0); // idade padrão
+            pstmt.setString(4, "hipertrofia"); // objetivo padrão
+            pstmt.setString(5, "iniciante"); // nivel padrão
+            pstmt.setDouble(6, 0.0); // peso_kg padrão
+            pstmt.setInt(7, 0); // altura_cm padrão
+            pstmt.setString(8, ""); // restricoes
+            pstmt.setString(9, ""); // equipamentos
+            pstmt.executeUpdate();
+            rs = pstmt.getGeneratedKeys();
+            int alunoId = 0;
+            if (rs.next()) {
+                alunoId = rs.getInt(1);
+            }
+            pstmt.close();
+            
+            conn.commit();
+            
+            return new Aluno(alunoId, nome, 0, "hipertrofia", "iniciante", 0.0, 0, 
+                           "", "", null, email, passwordHash, "{}");
+        } catch (SQLException e) {
+            try {
+                conn.rollback();
+            } catch (SQLException ignored) {}
+            throw e;
+        } finally {
+            try {
+                conn.setAutoCommit(true);
+            } catch (SQLException ignored) {}
+            pool.returnConnection(conn);
+        }
+    }
+
+    /**
      * Obtém aluno por ID
      */
     public Aluno getAlunoById(int id) throws SQLException {
