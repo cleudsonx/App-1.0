@@ -66,3 +66,33 @@ cd app-trainer-java-web\app-trainer-java-web
 	-DbPassword "postgres123"
 ```
 O script remove as tabelas `alunos` e `professores` e recarrega a partir de `data/alunos.csv` e `data/professores.csv` (descartando a coluna id do CSV).
+
+## Testes Automatizados (Smoke, Pytest e SQLi)
+Pré-requisitos (Windows PowerShell):
+- Ambiente Python virtual em `../.venv` com dependências do `ml-service/requirements.txt` instaladas.
+- Docker com container PostgreSQL `postgres-app-trainer` em execução.
+
+Executar a suíte completa a partir de `APP-1.0`:
+```powershell
+cd APP-1.0
+./tests/run-all.ps1
+```
+O script:
+- Compila e sobe o servidor Java em background.
+- Roda Smoke tests (porta 8081, integração ML, Postgres).
+- Roda Pytest do ML Service.
+- Roda testes de segurança (SQL injection) contra o backend.
+
+Parâmetros dos testes de segurança (execução isolada):
+```powershell
+cd app-trainer-java-web\app-trainer-java-web
+./tests/security-sqli-tests.ps1 `
+	-JavaUrl "http://localhost:8081" `
+	-DbContainer "postgres-app-trainer" `
+	-DbName "app_trainer" `
+	-DbUser "postgres" `
+	-DbPassword "postgres123"
+```
+Notas:
+- O backend Java respeita `PORT` (default 8081).
+- O ML Service expõe por default 8001 (em Docker usa `PORT`).
