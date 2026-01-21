@@ -24,3 +24,5 @@
 24;Postgres Test;0;hipertrofia;iniciante;0.0;0.0;;;;postgres.test@example.com;10000$IoUBwT4P0fJSSHIRLECykATQbVpwBbEj4I5tk+H1/Gw=$Ff/VAo2r3IyZQwrR/FjN1nTDHEab6sx0XLmPDXFp1qg=;{}
 25;Smoke Test;0;hipertrofia;iniciante;0.0;0.0;;;;smoke.test@local.com;10000$lXIkgVHDQrOClMaKAhtFGQLxTFbWhcwj6cMEM5ERMAU=$sUiAsPT0PHBk/JPVCQD8CmE1RQ4se4j5G0/BnFQJLQo=;{}
 26;Java Test;0;hipertrofia;iniciante;0.0;0.0;;;;java.test@local.com;10000$HwgiSYULKc6Y1eeGPLd2B7AxddfQM3zyhzl2W3ZgbTI=$3RbKfVOhNlGYeIagazYZuH1mkI7gelrNvWl0arAeQ0E=;{}
+27;Test Debug;0;hipertrofia;iniciante;0.0;0.0;;;;test.debug@example.com;10000$QFv8YjgcT91jIMk+G+dfU4hUwFUSFEO1EH01li6BHHY=$8zB3K+NzenvNUm5niDjugaz381BVpy/FFD0mtFLse/s=;{}
+28;Test PostgreSQL;0;hipertrofia;iniciante;0.0;0.0;;;;test.postgres@example.com;10000$EonMidHeFvifGB1QXuEbyO0Z+kLKZsatHzgZb/JHWEg=$1jhcY7VN/Y08P2TyHF57sbVNZflX93pbp2WJdJXY+gE=;{}

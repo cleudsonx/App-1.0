@@ -10,12 +10,13 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy only necessary app files (exclude tests, logs, cache)
-COPY main.py main_ml.py ./
+# Copia apenas arquivos essenciais do app
+COPY main.py .
+COPY main_ml.py .
 COPY models/ ./models/
 COPY security/ ./security/
 
-# Create directories for runtime data
+# Cria diretórios para dados e logs (vazios)
 RUN mkdir -p data/users data/auth logs
 
 EXPOSE 8001
