@@ -64,5 +64,26 @@
     "senha_hash": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
     "token": "ecc92312b1d94767b477c0e7a1026c8d",
     "perfil": null
+  },
+  "21d6010e02e1": {
+    "nome": "cleudson 52",
+    "email": "cleudson52@test.com",
+    "senha_hash": "d7e220729113e5cae52830612067d91350e9f3416c85177602c1dc78e0c20dee",
+    "token": "c1540615e3f4494bb0ed7e6902cb8282",
+    "perfil": {
+      "idade": 22,
+      "peso": 56.0,
+      "altura": 180.0,
+      "sexo": "M",
+      "objetivo": "forca",
+      "nivel": "iniciante",
+      "dias_disponiveis": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "local": "academia"
+    }
   }
 }
