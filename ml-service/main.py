@@ -10,6 +10,7 @@ v2.0 - Melhorias:
 """
 
 from fastapi import FastAPI, Query, HTTPException
+from fastapi import Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
@@ -17,6 +18,9 @@ import re
 import random
 import uuid
 import json
+import smtplib
+import secrets
+from email.message import EmailMessage
 from pathlib import Path
 
 # Security imports
@@ -169,20 +173,24 @@ async def registro(request: RegisterRequest):
     }
     save_users(users)
     
-    # Generate JWT tokens
-    tokens = JWTManager.generate_tokens(user_id, request.email)
-    
+    # Gerar token de confirmação
+    confirm_token = secrets.token_urlsafe(32)
+    users[user_id] = {
+        "nome": request.nome,
+        "email": request.email,
+        "senha_hash": senha_hash,
+        "perfil": None,
+        "email_confirmed": False,
+        "confirm_token": confirm_token
+    }
+    save_users(users)
+
+    # Enviar email de confirmação
+    send_confirmation_email(request.email, confirm_token, user_id)
+
     logger.info(f"Novo usuário registrado: {request.email}", user_id=user_id)
-    
-    return AuthResponse(
-        user_id=user_id,
-        nome=request.nome,
-        email=request.email,
-        access_token=tokens.access_token,
-        refresh_token=tokens.refresh_token,
-        expires_in=tokens.expires_in,
-        perfil=None
-    )
+
+    return {"message": "Cadastro realizado. Confirme seu email para ativar a conta."}
 
 class RefreshRequest(BaseModel):
     refresh_token: str
@@ -591,6 +599,7 @@ def gerar_treino(objetivo: str, nivel: str, dias: int = 4, restricoes: str = "",
     for i, grupos in enumerate(divisao):
         dia = {
             "numero": i + 1,
+        def send_confirmation_email(email: str, token: str, user_id: str):
             "nome": " / ".join([g.capitalize() for g in grupos]),
             "exercicios": []
         }
@@ -626,6 +635,7 @@ def gerar_treino(objetivo: str, nivel: str, dias: int = 4, restricoes: str = "",
         "resistencia": "Mantenha ritmo constante. Hidrate-se bem. Considere adicionar cardio após o treino."
     }
     
+    from fastapi.responses import RedirectResponse
     return {
         "titulo": f"Treino de {objetivo.capitalize()} - Nível {nivel.capitalize()}",
         "objetivo": objetivo,
@@ -636,6 +646,9 @@ def gerar_treino(objetivo: str, nivel: str, dias: int = 4, restricoes: str = "",
     }
 
 
+                if not user_data.get("email_confirmed"):
+                    logger.auth_attempt(request.email, success=False, reason="EMAIL_NOT_CONFIRMED")
+                    raise HTTPException(status_code=403, detail="Email não confirmado. Verifique sua caixa de entrada.")
 # ============ ENDPOINTS ============
 
 class CoachResponse(BaseModel):
