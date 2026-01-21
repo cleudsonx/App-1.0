@@ -71,12 +71,12 @@ public class WebServer {
         DataStorage storage = new DataStorage(dataDir);
         
         // ✅ Inicializar Logger Centralizado
-        AppLogger logger = AppLogger.getInstance(Path.of("logs"));
+        final AppLogger logger = AppLogger.getInstance(Path.of("logs"));
         logger.info("APP Trainer iniciado - Version " + VERSION, "WebServer");
         logger.info("Web Directory: " + webDir.toAbsolutePath(), "WebServer");
         
         // ✅ Inicializar PostgreSQL Connection Pool (opcional - use quando DB estiver pronto)
-        DataStorageSQL storageSQL = null;
+        final DataStorageSQL[] storageSQLHolder = {null};
         String dbUrl = System.getenv("DB_URL");
         String dbUser = System.getenv("DB_USER");
         String dbPassword = System.getenv("DB_PASSWORD");
@@ -84,7 +84,7 @@ public class WebServer {
         if (dbUrl != null && dbUser != null && dbPassword != null) {
             try {
                 ConnectionPool pool = ConnectionPool.getInstance(dbUrl, dbUser, dbPassword);
-                storageSQL = new DataStorageSQL();
+                storageSQLHolder[0] = new DataStorageSQL(pool);
                 logger.info("PostgreSQL Connection Pool initialized: " + pool.getStatus(), "WebServer");
             } catch (SQLException e) {
                 logger.warn("PostgreSQL não disponível - usando CSV storage: " + e.getMessage(), "WebServer");
@@ -104,7 +104,7 @@ public class WebServer {
         // ==================== API REST ====================
         
         // Autenticação
-        AuthHandler authHandler = new AuthHandler(storage, storageSQL, logger);
+        AuthHandler authHandler = new AuthHandler(storage, storageSQLHolder[0], logger);
         server.createContext("/auth/login", authHandler);
         server.createContext("/auth/registro", authHandler);
         server.createContext("/auth/refresh", authHandler);
@@ -162,7 +162,7 @@ public class WebServer {
         System.out.println("║  • GET        /api/health                          ║");
         System.out.println("║                                                    ║");
         System.out.println("║  🔐 Security: JWT, PBKDF2, Rate Limiting           ║");
-        System.out.println("║  📊 Storage: " + (storageSQL != null ? "PostgreSQL" : "CSV") + "                              ║");
+        System.out.println("║  📊 Storage: " + (storageSQLHolder[0] != null ? "PostgreSQL" : "CSV") + "                              ║");
         System.out.println("║  📝 Logging: " + "Enabled" + "                                ║");
         System.out.println("╚════════════════════════════════════════════════════╝");
         
@@ -173,8 +173,8 @@ public class WebServer {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             logger.warn("Shutting down server...", "WebServer");
             server.stop(5);
-            if (storageSQL != null) {
-                storageSQL.close();
+            if (storageSQLHolder[0] != null) {
+                storageSQLHolder[0].close();
             }
             logger.info("Server stopped", "WebServer");
             logger.close(); // Flush remaining logs

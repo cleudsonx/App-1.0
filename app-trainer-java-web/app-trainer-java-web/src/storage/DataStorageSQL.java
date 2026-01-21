@@ -20,6 +20,10 @@ public class DataStorageSQL {
         this.pool = ConnectionPool.getInstance(dbUrl, dbUser, dbPassword);
     }
 
+    public DataStorageSQL(ConnectionPool pool) {
+        this.pool = pool;
+    }
+
     public DataStorageSQL() throws SQLException {
         this.pool = ConnectionPool.getInstance();
     }
@@ -191,11 +195,11 @@ public class DataStorageSQL {
      * Atualiza aluno
      */
     public Aluno updateAluno(int id, Map<String, String> updates) throws SQLException {
-        String sql = "UPDATE alunos SET ";
+        StringBuilder sql = new StringBuilder("UPDATE alunos SET ");
         List<Object> params = new ArrayList<>();
         
         updates.forEach((key, value) -> {
-            if (!sql.endsWith("SET ")) sql.append(", ");
+            if (!sql.toString().endsWith("SET ")) sql.append(", ");
             sql.append(key).append(" = ? ");
             params.add(value);
         });
@@ -203,7 +207,7 @@ public class DataStorageSQL {
         sql.append("WHERE id = ?");
         params.add(id);
         
-        pool.executeUpdate(sql, params.toArray());
+        pool.executeUpdate(sql.toString(), params.toArray());
         return getAlunoById(id);
     }
 
