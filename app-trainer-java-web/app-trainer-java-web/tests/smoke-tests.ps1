@@ -22,16 +22,21 @@ $pgRunning = (docker ps | findstr $DbContainer).Length -gt 0
 Assert-True $pgRunning "PostgreSQL container em execução"
 
 # 3) Auth registro/login
+$regSuccess = $false
 try {
-    $reg = Invoke-WebRequest -Uri "$JavaUrl/auth/registro" -Method POST -Body '{"email":"smoke.test@local.com","senha":"SenhaForte@2026","nome":"Smoke Test"}' -ContentType "application/json" -UseBasicParsing
-    Assert-True ($reg.StatusCode -eq 201 -or $reg.StatusCode -eq 409) "Registro usuário (201/409)"
-} catch { Assert-True $false "Registro usuário" }
+    $reg = Invoke-WebRequest -Uri "$JavaUrl/auth/registro" -Method POST -Body '{"email":"smoke.test@local.com","senha":"SenhaForte@2026","nome":"Smoke Test"}' -ContentType "application/json" -UseBasicParsing -ErrorAction Stop
+    $regSuccess = ($reg.StatusCode -eq 201)
+} catch {
+    # Se StatusCode for 409 (Conflict - usuário já existe), é sucesso
+    $regSuccess = ($_.Exception.Response.StatusCode.value__ -eq 409)
+}
+Assert-True $regSuccess "Registro usuário"
 
 try {
     Start-Sleep -Seconds 1
     $login = Invoke-WebRequest -Uri "$JavaUrl/auth/login" -Method POST -Body '{"email":"smoke.test@local.com","senha":"SenhaForte@2026"}' -ContentType "application/json" -UseBasicParsing
     if ($login.StatusCode -eq 429) {
-        # PossÃ­vel rate limiting, tenta novamente
+        # Possível rate limiting, tenta novamente
         Start-Sleep -Seconds 2
         $login = Invoke-WebRequest -Uri "$JavaUrl/auth/login" -Method POST -Body '{"email":"smoke.test@local.com","senha":"SenhaForte@2026"}' -ContentType "application/json" -UseBasicParsing
     }

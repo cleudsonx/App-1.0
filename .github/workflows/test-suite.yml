@@ -1,0 +1,124 @@
+name: Test Suite CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  smoke-tests:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+      
+      - name: Start PostgreSQL Container
+        run: |
+          docker run -d --name postgres-app-trainer -e POSTGRES_PASSWORD=postgres123 `
+            -e POSTGRES_DB=app_trainer -p 5432:5432 postgres:15
+          Start-Sleep -Seconds 3
+        shell: powershell
+      
+      - name: Initialize Database
+        run: |
+          $initSql = @"
+          CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            email VARCHAR(255) UNIQUE NOT NULL,
+            password_hash VARCHAR(255) NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          );
+          
+          CREATE TABLE IF NOT EXISTS alunos (
+            id SERIAL PRIMARY KEY,
+            user_id INT REFERENCES users(id),
+            nome VARCHAR(255),
+            email VARCHAR(255),
+            objetivo VARCHAR(255),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          );
+          @"
+          
+          `$initSql | docker exec -i postgres-app-trainer psql -U postgres -d app_trainer
+        shell: powershell
+      
+      - name: Run Smoke Tests
+        run: |
+          cd app-trainer-java-web\app-trainer-java-web
+          .\tests\smoke-tests.ps1
+        shell: powershell
+        continue-on-error: false
+
+  java-tests:
+    runs-on: windows-latest
+    needs: smoke-tests
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      
+      - name: Compile Java Tests
+        run: |
+          cd app-trainer-java-web\app-trainer-java-web
+          javac -cp "lib/*" -d bin src\WebServer.java src\Aluno.java src\Professor.java `
+            src\Proxy.java src\Storage.java src\CORSHandler.java src\api\*.java `
+            src\security\*.java src\storage\*.java src\db\*.java src\error\*.java `
+            src\log\*.java src\model\*.java src\coach\*.java 2>$null
+          javac -cp "bin;lib/*" -d bin tests\java\TestRunner.java 2>$null
+        shell: powershell
+      
+      - name: Run Java Integration Tests
+        run: |
+          cd app-trainer-java-web\app-trainer-java-web
+          java -cp "bin;lib/*" tests.java.TestRunner
+        shell: powershell
+        continue-on-error: false
+
+  pytest:
+    runs-on: windows-latest
+    needs: smoke-tests
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      
+      - name: Install Dependencies
+        run: |
+          cd ml-service
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+        shell: powershell
+      
+      - name: Run Pytest
+        run: |
+          cd ml-service
+          python -m pytest -v
+        shell: powershell
+        continue-on-error: false
+
+  summary:
+    runs-on: ubuntu-latest
+    needs: [ smoke-tests, java-tests, pytest ]
+    if: always()
+    steps:
+      - name: Test Summary
+        run: |
+          if [ "${{ needs.smoke-tests.result }}" = "success" ] && \
+             [ "${{ needs.java-tests.result }}" = "success" ] && \
+             [ "${{ needs.pytest.result }}" = "success" ]; then
+            echo "✓ Todos os testes passaram!"
+            exit 0
+          else
+            echo "✗ Alguns testes falharam."
+            exit 1
+          fi
