@@ -65,3 +65,33 @@
 2026-01-21 12:11:59.376 [INFO] [WebServer] Server started on port 8081
 2026-01-21 12:12:09.826 [INFO] [AuthHandler] User saved to PostgreSQL: novo.usuario@postgres.com
 2026-01-21 12:12:09.826 [INFO] [AuthHandler] New user registered: novo.usuario@postgres.com
+2026-01-21 12:28:07.738 [INFO] [AuthHandler] User saved to PostgreSQL: smoke.test@local.com
+2026-01-21 12:28:07.738 [INFO] [AuthHandler] New user registered: smoke.test@local.com
+2026-01-21 12:28:07.831 [WARN] [AuthHandler] Login failed - user not found: smoke.test@local.com
+2026-01-21 12:28:07.883 [INFO] [MLServiceHandler] Request: GET /ml/coach
+2026-01-21 12:28:08.041 [INFO] [MLServiceHandler] Coach query successful: como+fazer+supino
+2026-01-21 12:28:08.057 [INFO] [MLServiceHandler] Request: GET /ml/suggest
+2026-01-21 12:28:08.073 [INFO] [MLServiceHandler] Suggest query successful: objetivo=hipertrofia, nivel=intermediario
+2026-01-21 12:28:39.858 [WARN] [AuthHandler] PostgreSQL save failed, using CSV fallback: ERROR: duplicate key value violates unique constraint "users_email_key"
+  Detalhe: Key (email)=(smoke.test@local.com) already exists.
+2026-01-21 12:28:39.914 [INFO] [AuthHandler] New user registered: smoke.test@local.com
+2026-01-21 12:28:40.969 [INFO] [AuthHandler] Successful login for: smoke.test@local.com
+2026-01-21 12:28:41.125 [INFO] [MLServiceHandler] Request: GET /ml/coach
+2026-01-21 12:28:41.131 [INFO] [MLServiceHandler] Coach query successful: como+fazer+supino
+2026-01-21 12:28:41.151 [INFO] [MLServiceHandler] Request: GET /ml/suggest
+2026-01-21 12:28:41.158 [INFO] [MLServiceHandler] Suggest query successful: objetivo=hipertrofia, nivel=intermediario
+2026-01-21 12:28:52.057 [INFO] [AuthHandler] User saved to PostgreSQL: java.test@local.com
+2026-01-21 12:28:52.057 [INFO] [AuthHandler] New user registered: java.test@local.com
+2026-01-21 12:28:52.063 [WARN] [AuthHandler] Login failed - user not found: java.test@local.com
+2026-01-21 12:28:52.071 [INFO] [MLServiceHandler] Request: GET /ml/coach
+2026-01-21 12:28:52.078 [INFO] [MLServiceHandler] Coach query successful: como+fazer+agachamento
+2026-01-21 12:28:52.079 [INFO] [MLServiceHandler] Request: GET /ml/suggest
+2026-01-21 12:28:52.088 [INFO] [MLServiceHandler] Suggest query successful: objetivo=hipertrofia, nivel=intermediario
+2026-01-21 12:29:51.399 [WARN] [AuthHandler] PostgreSQL save failed, using CSV fallback: ERROR: duplicate key value violates unique constraint "users_email_key"
+  Detalhe: Key (email)=(java.test@local.com) already exists.
+2026-01-21 12:29:51.402 [INFO] [AuthHandler] New user registered: java.test@local.com
+2026-01-21 12:29:51.418 [INFO] [AuthHandler] Successful login for: java.test@local.com
+2026-01-21 12:29:51.423 [INFO] [MLServiceHandler] Request: GET /ml/coach
+2026-01-21 12:29:51.433 [INFO] [MLServiceHandler] Coach query successful: como+fazer+agachamento
+2026-01-21 12:29:51.435 [INFO] [MLServiceHandler] Request: GET /ml/suggest
+2026-01-21 12:29:51.444 [INFO] [MLServiceHandler] Suggest query successful: objetivo=hipertrofia, nivel=intermediario
