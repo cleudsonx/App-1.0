@@ -36,10 +36,10 @@ app = FastAPI(
     description="Serviço de IA para Coach Virtual de Musculação"
 )
 
-# CORS para acesso web
+# CORS para acesso web (shaipados.com)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://shaipados.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -701,10 +701,17 @@ async def suggest_endpoint(
     return SuggestResponse(**treino)
 
 
+
+# Healthcheck padrão
 @app.get("/health", response_model=HealthResponse)
 async def health():
     """Health check do serviço"""
     return HealthResponse(status="ok", version="2.0.0", endpoints=["/coach", "/suggest", "/health", "/docs"])
+
+# Healthcheck para /ml/health
+@app.get("/ml/health")
+async def ml_health():
+    return {"status": "ok"}
 
 
 @app.get("/")
