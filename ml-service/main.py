@@ -39,7 +39,10 @@ app = FastAPI(
 # CORS para acesso web (shaipados.com)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://shaipados.com"],
+    allow_origins=[
+        "https://shaipados.com",
+        "https://cleudsonx.github.io"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
