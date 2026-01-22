@@ -20,6 +20,10 @@ services:
         fromDatabase:
           name: app-trainer-db
           property: user
+
+      # URL pública do ML Service para proxy
+      - key: ML_SERVICE_URL
+        value: https://ml-service.onrender.com
       - key: DB_PASSWORD
         fromDatabase:
           name: app-trainer-db
@@ -37,6 +41,7 @@ services:
       - key: JWT_SECRET_KEY
         sync: false
 
-# Managed Postgres (Render)
+databases:
+  - name: app-trainer-db
 databases:
   - name: app-trainer-db
