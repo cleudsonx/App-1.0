@@ -1,3 +1,8 @@
+def send_confirmation_email(email: str, token: str, user_id: str):
+    # Função de envio de email de confirmação
+    # Implemente aqui o envio real de email
+    print(f"Enviando email de confirmação para {email} com token {token} e user_id {user_id}")
+
 """
 ML Service para APP Trainer
 Coach Virtual com NLP e geração de treino inteligente
@@ -602,7 +607,6 @@ def gerar_treino(objetivo: str, nivel: str, dias: int = 4, restricoes: str = "",
     for i, grupos in enumerate(divisao):
         dia = {
             "numero": i + 1,
-        def send_confirmation_email(email: str, token: str, user_id: str):
             "nome": " / ".join([g.capitalize() for g in grupos]),
             "exercicios": []
         }
