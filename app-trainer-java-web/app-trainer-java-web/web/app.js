@@ -21,7 +21,8 @@ window.addEventListener('unhandledrejection', (event) => {
 // CONFIGURAÇÃO & ESTADO
 // =====================================================
 const API_BASE = '';
-const ML_SERVICE = 'http://localhost:8001';
+// const ML_SERVICE = 'http://localhost:8001';
+const ML_SERVICE = 'https://app-trainer-java.onrender.com';
 
 const AppState = {
     user: null,
@@ -662,7 +663,7 @@ const Auth = {
             showLoading(true, 'Entrando...');
             let response;
             try { response = await api('/auth/login', { method: 'POST', body: JSON.stringify({ email, senha }) }); }
-            catch (e) { response = await api(`${ML_SERVICE}/auth/login`, { method: 'POST', body: JSON.stringify({ email, senha }) }); }
+            catch (e) { response = await api(`${ML_SERVICE}/api/auth/login`, { method: 'POST', body: JSON.stringify({ email, senha }) }); }
             
             if (response.user_id || response.success) {
                 this.saveSession(response);
@@ -690,7 +691,7 @@ const Auth = {
             showLoading(true, 'Criando conta...');
             let response;
             try { response = await api('/auth/registro', { method: 'POST', body: JSON.stringify({ nome, email, senha }) }); }
-            catch (e) { response = await api(`${ML_SERVICE}/auth/registro`, { method: 'POST', body: JSON.stringify({ nome, email, senha }) }); }
+            catch (e) { response = await api(`${ML_SERVICE}/api/auth/registro`, { method: 'POST', body: JSON.stringify({ nome, email, senha }) }); }
             
             if (response.user_id || response.success) {
                 this.saveSession(response);
@@ -724,7 +725,7 @@ const Auth = {
             try {
                 let response;
                 try { response = await api(`/auth/verificar/${data.user.id}`); }
-                catch (e) { response = await api(`${ML_SERVICE}/auth/verificar/${data.user.id}`); }
+                catch (e) { response = await api(`${ML_SERVICE}/api/auth/verificar/${data.user.id}`); }
                 if (response.valid !== false && (response.id || response.nome || response.valid)) {
                     AppState.user.nome = response.nome || AppState.user.nome;
                     this.enterApp(!!response.tem_perfil_completo || !!response.objetivo, false);
@@ -887,7 +888,7 @@ const Onboarding = {
         showLoading(true, 'Salvando perfil...');
         try {
             const perfilData = { ...AppState.onboardingData, dias_disponiveis: Array.from({length: AppState.onboardingData.dias}, (_, i) => i + 1) };
-            await api(`${ML_SERVICE}/perfil/${AppState.user.id}`, { method: 'POST', body: JSON.stringify(perfilData) });
+            await api(`${ML_SERVICE}/api/perfil/${AppState.user.id}`, { method: 'POST', body: JSON.stringify(perfilData) });
             AppState.profile = perfilData;
             const stored = JSON.parse(localStorage.getItem('shaipados_auth') || '{}');
             stored.profile = perfilData;
