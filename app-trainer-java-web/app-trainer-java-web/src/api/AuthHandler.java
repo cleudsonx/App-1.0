@@ -2,7 +2,6 @@ package api;
 
 import com.sun.net.httpserver.HttpExchange;
 import storage.DataStorage;
-import storage.DataStorageSQL;
 import storage.Aluno;
 import security.PasswordHasher;
 import security.JWTManager;
@@ -30,7 +29,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class AuthHandler extends BaseHandler {
     private final DataStorage storage;
-    private DataStorageSQL storageSQL;
     private AppLogger logger;
     private static final AtomicInteger userIdCounter = new AtomicInteger(1000);
     
@@ -40,15 +38,7 @@ public class AuthHandler extends BaseHandler {
         this.logger = null;
     }
     
-    public AuthHandler(DataStorage storage, DataStorageSQL storageSQL, AppLogger logger) {
-        this.storage = storage;
-        this.storageSQL = storageSQL;
-        this.logger = logger;
-    }
-    
-    public void setStorageSQL(DataStorageSQL storageSQL) {
-        this.storageSQL = storageSQL;
-    }
+    // Removido suporte a DataStorageSQL
     
     public void setLogger(AppLogger logger) {
         this.logger = logger;
@@ -313,7 +303,7 @@ public class AuthHandler extends BaseHandler {
             }
 
             // Verificar se é realmente um refresh token (não um access token)
-            if (!"refresh".equals(payload.type)) {
+            if (!"refresh".equals(payload.tokenType)) {
                 sendError(ex, 401, "Token fornecido não é um refresh token");
                 return;
             }
@@ -326,7 +316,8 @@ public class AuthHandler extends BaseHandler {
             }
 
             // ✅ Gerar novo access token (15 minutos)
-            String newAccessToken = JWTManager.generateAccessToken(payload.userId, payload.email);
+            JWTManager.TokenPair tokens = JWTManager.generateTokens(payload.userId, payload.email);
+            String newAccessToken = tokens.accessToken;
             
             String response = "{" +
                 "\"access_token\":\"" + newAccessToken + "\"," +
