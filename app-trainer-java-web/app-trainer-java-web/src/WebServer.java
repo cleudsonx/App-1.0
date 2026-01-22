@@ -107,8 +107,8 @@ public class WebServer {
         });
         
         // Proxy para serviço ML Python (opcional)
-        server.createContext("/api/sugestao-ml", ex -> Proxy.forward(ex, "http://localhost:8001/suggest"));
-        server.createContext("/api/coach-ml", ex -> Proxy.forward(ex, "http://localhost:8001/coach"));
+        server.createContext("/api/sugestao-ml", ex -> Proxy.forward(ex, "https://ml-service.onrender.com/suggest"));
+        server.createContext("/api/coach-ml", ex -> Proxy.forward(ex, "https://ml-service.onrender.com/coach"));
 
         // Obtém IP local para exibição
         String localIP = getLocalIPAddress();

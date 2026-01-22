@@ -16,7 +16,7 @@ import java.util.concurrent.*;
  */
 public class MLServiceClient {
 
-    private static final String ML_SERVICE_URL = "http://localhost:8001";
+    private static final String ML_SERVICE_URL = "https://ml-service.onrender.com";
     private static final int TIMEOUT_SECONDS = 5;
     
     private final HttpClient httpClient;
