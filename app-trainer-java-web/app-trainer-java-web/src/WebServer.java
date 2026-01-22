@@ -1,28 +1,16 @@
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpsConfigurator;
-import com.sun.net.httpserver.HttpsServer;
 
 import api.*;
 import storage.DataStorage;
-import storage.DataStorageSQL;
-import db.ConnectionPool;
-import log.AppLogger;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.security.KeyStore;
-import java.sql.SQLException;
 import java.util.concurrent.Executors;
-
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
 
 /**
  * Servidor Web principal - APP Trainer
@@ -41,12 +29,6 @@ public class WebServer {
         // Configuração de porta
         String portEnv = System.getenv("PORT");
         int port = (portEnv != null && portEnv.matches("\\d+")) ? Integer.parseInt(portEnv) : 8081;
-        String httpsPortEnv = System.getenv("HTTPS_PORT");
-        int httpsPort = (httpsPortEnv != null && httpsPortEnv.matches("\\d+")) ? Integer.parseInt(httpsPortEnv) : 8443;
-        boolean httpsEnabled = "true".equalsIgnoreCase(System.getenv("HTTPS_ENABLED"));
-        String keystorePath = System.getenv("TLS_KEYSTORE_PATH");
-        String keystorePassword = System.getenv("TLS_KEYSTORE_PASSWORD");
-        String keystoreType = System.getenv("TLS_KEYSTORE_TYPE");
         
         // Diretórios - detectar automaticamente baseado na localização de execução
         Path currentDir = Path.of(".").toAbsolutePath().normalize();
@@ -84,36 +66,10 @@ public class WebServer {
         // Storage compartilhado
         DataStorage storage = new DataStorage(dataDir);
         
-        // ✅ Inicializar Logger Centralizado
-        final AppLogger logger = AppLogger.getInstance(Path.of("logs"));
-        logger.info("APP Trainer iniciado - Version " + VERSION, "WebServer");
-        logger.info("Web Directory: " + webDir.toAbsolutePath(), "WebServer");
-        
-        // ✅ Inicializar PostgreSQL Connection Pool (opcional - use quando DB estiver pronto)
-        final DataStorageSQL[] storageSQLHolder = {null};
-        String dbUrl = System.getenv("DB_URL");
-        String dbUser = System.getenv("DB_USER");
-        String dbPassword = System.getenv("DB_PASSWORD");
-        
-        if (dbUrl != null && dbUser != null && dbPassword != null) {
-            try {
-                ConnectionPool pool = ConnectionPool.getInstance(dbUrl, dbUser, dbPassword);
-                storageSQLHolder[0] = new DataStorageSQL(pool);
-                logger.info("PostgreSQL Connection Pool initialized: " + pool.getStatus(), "WebServer");
-            } catch (SQLException e) {
-                logger.warn("PostgreSQL não disponível - usando CSV storage: " + e.getMessage(), "WebServer");
-            }
-        } else {
-            logger.info("PostgreSQL não configurado - usando CSV storage", "WebServer");
-        }
-        
-        // Cria servidor (HTTP ou HTTPS) com thread pool para melhor performance
+        // Cria servidor com thread pool para melhor performance
         // Bind em 0.0.0.0 para aceitar conexões de qualquer interface de rede
-        HttpServer server = createServer(httpsEnabled, keystorePath, keystorePassword, keystoreType, port, httpsPort, logger);
+        HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0", port), 0);
         server.setExecutor(Executors.newFixedThreadPool(10));
-        boolean usingHttps = server instanceof HttpsServer;
-        int effectivePort = usingHttps ? httpsPort : port;
-        String scheme = usingHttps ? "https" : "http";
         
         // ==================== ENDPOINTS ESTÁTICOS ====================
         server.createContext("/", new StaticHandler(webDir));
@@ -121,35 +77,28 @@ public class WebServer {
         // ==================== API REST ====================
         
         // Autenticação
-        AuthHandler authHandler = new AuthHandler(storage, storageSQLHolder[0], logger);
-        server.createContext("/auth/login", authHandler);
-        server.createContext("/auth/registro", authHandler);
-        server.createContext("/auth/refresh", authHandler);
-        server.createContext("/auth/verificar", authHandler);
+        AuthHandler authHandler = new AuthHandler(storage);
+        server.createContext("/auth/login", new CORSHandler(authHandler));
+        server.createContext("/auth/registro", new CORSHandler(authHandler));
+        server.createContext("/auth/verificar", new CORSHandler(authHandler));
         
         // Alunos - CRUD completo
         AlunoHandler alunoHandler = new AlunoHandler(storage);
-        server.createContext("/api/alunos", alunoHandler);
+        server.createContext("/api/alunos", new CORSHandler(alunoHandler));
         
         // Professores - CRUD completo  
         ProfessorHandler profHandler = new ProfessorHandler(storage);
-        server.createContext("/api/professores", profHandler);
-        server.createContext("/api/profs", profHandler); // Alias para compatibilidade
+        server.createContext("/api/professores", new CORSHandler(profHandler));
+        server.createContext("/api/profs", new CORSHandler(profHandler)); // Alias para compatibilidade
         
         // Coach Virtual IA
         CoachHandler coachHandler = new CoachHandler(storage);
-        server.createContext("/api/coach", coachHandler);
+        server.createContext("/api/coach", new CORSHandler(coachHandler));
         
         // Sugestão de Treino
         SugestaoHandler sugestaoHandler = new SugestaoHandler(storage);
-        server.createContext("/api/sugestao", sugestaoHandler);
+        server.createContext("/api/sugestao", new CORSHandler(sugestaoHandler));
         server.createContext("/api/treino/gerar", sugestaoHandler);
-        
-        // ML Service Integration - Direct Python Service
-        MLServiceHandler mlHandler = new MLServiceHandler();
-        server.createContext("/ml/coach", mlHandler);
-        server.createContext("/ml/suggest", mlHandler);
-        server.createContext("/ml/health", mlHandler);
         
         // Health check e info
         server.createContext("/api/health", ex -> {
@@ -157,7 +106,7 @@ public class WebServer {
             sendJson(ex, 200, json);
         });
         
-        // Proxy para serviço ML Python (opcional - deprecated, usar /ml/ direto)
+        // Proxy para serviço ML Python (opcional)
         server.createContext("/api/sugestao-ml", ex -> Proxy.forward(ex, "http://localhost:8001/suggest"));
         server.createContext("/api/coach-ml", ex -> Proxy.forward(ex, "http://localhost:8001/coach"));
 
@@ -167,45 +116,24 @@ public class WebServer {
         System.out.println("╔════════════════════════════════════════════════════╗");
         System.out.println("║         APP TRAINER - Servidor Web v" + VERSION + "        ║");
         System.out.println("╠════════════════════════════════════════════════════╣");
-        System.out.println("║  🌐 Web (Local):    " + scheme + "://localhost:" + effectivePort + "          ║");
-        System.out.println("║  📱 Web (Rede):     " + scheme + "://" + localIP + ":" + effectivePort + "      ║");
-        System.out.println("║  📱 API:            " + scheme + "://" + localIP + ":" + effectivePort + "/api  ║");
-        System.out.println("║  🤖 Coach:          " + scheme + "://localhost:" + effectivePort + "/api/coach        ║");
-        System.out.println("║  💪 Treino:         " + scheme + "://localhost:" + effectivePort + "/api/sugestao     ║");
+        System.out.println("║  🌐 Web (Local):    http://localhost:" + port + "          ║");
+        System.out.println("║  📱 Web (Rede):     http://" + localIP + ":" + port + "      ║");
+        System.out.println("║  📱 API:            http://" + localIP + ":" + port + "/api  ║");
+        System.out.println("║  🤖 Coach:          http://localhost:" + port + "/api/coach        ║");
+        System.out.println("║  💪 Treino:         http://localhost:" + port + "/api/sugestao     ║");
         System.out.println("╠════════════════════════════════════════════════════╣");
         System.out.println("║  Endpoints disponíveis:                            ║");
         System.out.println("║  • POST       /auth/login                          ║");
         System.out.println("║  • POST       /auth/registro                       ║");
-        System.out.println("║  • POST       /auth/refresh                        ║");
         System.out.println("║  • GET        /auth/verificar/{user_id}            ║");
         System.out.println("║  • GET/POST   /api/alunos                          ║");
         System.out.println("║  • GET/POST   /api/professores                     ║");
         System.out.println("║  • GET/POST   /api/coach?q=pergunta                ║");
         System.out.println("║  • GET/POST   /api/sugestao?objetivo=&nivel=       ║");
-        System.out.println("║  • GET        /ml/coach?q=&nome=&objetivo=&nivel=  ║");
-        System.out.println("║  • GET        /ml/suggest?objetivo=&nivel=&dias=   ║");
-        System.out.println("║  • GET        /ml/health                           ║");
         System.out.println("║  • GET        /api/health                          ║");
-        System.out.println("║                                                    ║");
-        System.out.println("║  🔐 Security: JWT, PBKDF2, Rate Limiting           ║");
-        System.out.println("║  📊 Storage: " + (storageSQLHolder[0] != null ? "PostgreSQL" : "CSV") + "                              ║");
-        System.out.println("║  📝 Logging: " + "Enabled" + "                                ║");
-        System.out.println("║  🤖 ML Service: Python FastAPI (port 8001)         ║");
         System.out.println("╚════════════════════════════════════════════════════╝");
         
         server.start();
-        logger.info("Server started on port " + effectivePort + " (" + (usingHttps ? "HTTPS" : "HTTP") + ")", "WebServer");
-        
-        // ✅ Graceful shutdown hook
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            logger.warn("Shutting down server...", "WebServer");
-            server.stop(5);
-            if (storageSQLHolder[0] != null) {
-                storageSQLHolder[0].close();
-            }
-            logger.info("Server stopped", "WebServer");
-            logger.close(); // Flush remaining logs
-        }));
         
         // Mantém servidor rodando - loop infinito
         Thread keepAlive = new Thread(() -> {
@@ -219,54 +147,6 @@ public class WebServer {
         });
         keepAlive.setDaemon(false);
         keepAlive.start();
-    }
-
-    private static HttpServer createServer(boolean httpsEnabled, String keystorePath, String keystorePassword, String keystoreType, int httpPort, int httpsPort, AppLogger logger) throws Exception {
-        if (httpsEnabled) {
-            if (keystorePath == null || keystorePath.isBlank() || keystorePassword == null || keystorePassword.isBlank()) {
-                throw new IllegalStateException("HTTPS_ENABLED=true, mas TLS_KEYSTORE_PATH ou TLS_KEYSTORE_PASSWORD não configurados.");
-            }
-            Path ksPath = Path.of(keystorePath);
-            if (!Files.exists(ksPath)) {
-                throw new IllegalStateException("Keystore não encontrado em " + ksPath.toAbsolutePath());
-            }
-
-            SSLContext sslContext = createSSLContext(keystorePath, keystorePassword, keystoreType);
-            HttpsServer httpsServer = HttpsServer.create(new InetSocketAddress("0.0.0.0", httpsPort), 0);
-            httpsServer.setHttpsConfigurator(new HttpsConfigurator(sslContext));
-            logger.info("HTTPS habilitado na porta " + httpsPort + " usando keystore: " + keystorePath, "WebServer");
-            return httpsServer;
-        }
-
-        HttpServer httpServer = HttpServer.create(new InetSocketAddress("0.0.0.0", httpPort), 0);
-        logger.info("HTTP habilitado na porta " + httpPort, "WebServer");
-        return httpServer;
-    }
-
-    private static SSLContext createSSLContext(String keystorePath, String keystorePassword, String keystoreType) throws Exception {
-        String resolvedType = (keystoreType != null && !keystoreType.isBlank()) ? keystoreType : guessKeyStoreType(keystorePath);
-        KeyStore ks = KeyStore.getInstance(resolvedType);
-        try (InputStream is = Files.newInputStream(Path.of(keystorePath))) {
-            ks.load(is, keystorePassword.toCharArray());
-        }
-
-        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-        kmf.init(ks, keystorePassword.toCharArray());
-
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-        tmf.init(ks);
-
-        SSLContext sslContext = SSLContext.getInstance("TLS");
-        sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
-        return sslContext;
-    }
-
-    private static String guessKeyStoreType(String keystorePath) {
-        String lower = keystorePath.toLowerCase();
-        if (lower.endsWith(".p12") || lower.endsWith(".pfx")) {
-            return "PKCS12";
-        }
-        return "JKS";
     }
 
     /**

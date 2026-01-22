@@ -15,22 +15,9 @@ import java.util.Base64;
  */
 public class JWTManager {
     
-    // ✅ SECRET_KEY vem exclusivamente de variável de ambiente (sem fallback em produção)
-    private static final String SECRET_KEY = getSecretKey();
+    private static final String SECRET_KEY = "shaipados-secret-key-very-secure-please-change-in-production";
     private static final int ACCESS_TOKEN_EXPIRY_MINUTES = 15;
     private static final int REFRESH_TOKEN_EXPIRY_DAYS = 7;
-    
-    /**
-     * Obtém a chave secreta de variável de ambiente
-     * Fallback para desenvolvimento local apenas
-     */
-    private static String getSecretKey() {
-        String envKey = System.getenv("JWT_SECRET_KEY");
-        if (envKey == null || envKey.trim().isEmpty()) {
-            throw new IllegalStateException("JWT_SECRET_KEY não configurada. Defina a variável de ambiente JWT_SECRET_KEY antes de iniciar o servidor.");
-        }
-        return envKey;
-    }
     
     public static class TokenPair {
         public String accessToken;
@@ -50,13 +37,11 @@ public class JWTManager {
         public long issuedAt;
         public long expiresAt;
         public String tokenType; // "access" ou "refresh"
-        public String type; // Alias para tokenType (compatibilidade)
         
         public TokenPayload(String userId, String email, String tokenType, long expiryMs) {
             this.userId = userId;
             this.email = email;
             this.tokenType = tokenType;
-            this.type = tokenType; // Sincronizar
             this.issuedAt = System.currentTimeMillis();
             this.expiresAt = this.issuedAt + expiryMs;
         }
@@ -77,15 +62,6 @@ public class JWTManager {
         String refreshToken = generateToken(userId, email, "refresh", refreshExpiryMs);
         
         return new TokenPair(accessToken, refreshToken, accessExpiryMs / 1000);
-    }
-    
-    /**
-     * Gera apenas um novo access token (usado no refresh)
-     */
-    public static String generateAccessToken(String userId, String email) {
-        long nowMs = System.currentTimeMillis();
-        long accessExpiryMs = nowMs + (ACCESS_TOKEN_EXPIRY_MINUTES * 60 * 1000);
-        return generateToken(userId, email, "access", accessExpiryMs);
     }
     
     /**
