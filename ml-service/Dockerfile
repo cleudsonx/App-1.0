@@ -20,4 +20,4 @@ COPY security/ ./security/
 RUN mkdir -p data/users data/auth logs
 
 EXPOSE 8001
-CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]
+CMD ["sh", "-c", "python -m uvicorn main:app --host 0.0.0.0 --port $PORT"]
