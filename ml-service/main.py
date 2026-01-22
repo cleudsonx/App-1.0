@@ -640,8 +640,6 @@ def gerar_treino(objetivo: str, nivel: str, dias: int = 4, restricoes: str = "",
     
     from fastapi.responses import RedirectResponse
     return {
-        "titulo": f"Treino de {objetivo.capitalize()} - Nível {nivel.capitalize()}",
-        "objetivo": objetivo,
         "nivel": nivel,
         "frequencia": f"{dias}x por semana",
         "treinos": treinos,
