@@ -33,6 +33,9 @@ services:
     name: ml-service
     env: docker
     dockerfilePath: ml-service/Dockerfile
+          - key: NEW_VAR
+            value: new_value
+
     autoDeploy: true
     healthCheckPath: /ml/health
     envVars:
@@ -44,4 +47,5 @@ services:
 databases:
   - name: app-trainer-db
 databases:
+
   - name: app-trainer-db
