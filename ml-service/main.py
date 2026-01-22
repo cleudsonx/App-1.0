@@ -1,3 +1,8 @@
+import os
+
+# Porta e chave JWT vindas do Render
+PORT = int(os.getenv("PORT", "8001"))
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "default_secret_key")
 def send_confirmation_email(email: str, token: str, user_id: str):
     # Função de envio de email de confirmação
     # Implemente aqui o envio real de email
@@ -726,4 +731,4 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    uvicorn.run(app, host="0.0.0.0", port=PORT)
