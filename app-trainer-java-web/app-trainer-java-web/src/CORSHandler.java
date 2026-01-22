@@ -9,7 +9,10 @@ import java.io.IOException;
 public class CORSHandler implements HttpHandler {
     
     private final HttpHandler delegate;
-    private static final String ALLOWED_ORIGIN = "shaipados.com";
+    private static final String[] ALLOWED_ORIGINS = {
+        "shaipados.com",
+        "cleudsonx.github.io"
+    };
     
     public CORSHandler(HttpHandler delegate) {
         this.delegate = delegate;
@@ -19,14 +22,20 @@ public class CORSHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         String origin = exchange.getRequestHeaders().getFirst("Origin");
         
-        // Validar origem (permitir localhost, 192.168.x.x, e shaipados.com)
+        // Validar origem (permitir localhost, 192.168.x.x, shaipados.com, shaipados..com, cleudsonx.github.io)
         boolean isAllowed = false;
         if (origin != null) {
             isAllowed = origin.contains("localhost") || 
                        origin.contains("127.0.0.1") ||
-                       origin.contains("192.168") ||
-                       origin.contains(ALLOWED_ORIGIN) ||
-                       origin.contains("shaipados.com");
+                       origin.contains("192.168");
+            if (!isAllowed) {
+                for (String allowed : ALLOWED_ORIGINS) {
+                    if (origin.contains(allowed)) {
+                        isAllowed = true;
+                        break;
+                    }
+                }
+            }
         }
         
         // Adicionar headers CORS
