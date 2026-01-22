@@ -34,7 +34,6 @@ public class AuthHandler extends BaseHandler {
     
     public AuthHandler(DataStorage storage) {
         this.storage = storage;
-        this.storageSQL = null;
         this.logger = null;
     }
     
