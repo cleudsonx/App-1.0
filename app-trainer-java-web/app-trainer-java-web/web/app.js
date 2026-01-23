@@ -21,10 +21,9 @@ window.addEventListener('unhandledrejection', (event) => {
 // CONFIGURAÇÃO & ESTADO
 // =====================================================
 // Altere para a URL do backend Java em produção
-// Fallback automático: local ou produção
-const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const API_BASE = isLocal ? 'http://localhost:8081' : 'https://app-trainer-java.onrender.com';
-const ML_SERVICE = isLocal ? 'http://localhost:8001' : 'https://app-1-0-python.onrender.com';
+// Gateway Java sempre como base
+const BASE_URL = 'https://app-1-0-java.onrender.com';
+const ML_SERVICE = 'https://app-1-0-python.onrender.com';
 
 const AppState = {
     user: null,
