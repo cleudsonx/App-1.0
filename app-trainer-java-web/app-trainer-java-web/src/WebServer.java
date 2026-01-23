@@ -29,12 +29,12 @@ public class WebServer {
         // Configuração de porta
         String portEnv = System.getenv("PORT");
         int port = (portEnv != null && portEnv.matches("\\d+")) ? Integer.parseInt(portEnv) : 8081;
-        
+
         // Diretórios - detectar automaticamente baseado na localização de execução
         Path currentDir = Path.of(".").toAbsolutePath().normalize();
         Path webDir;
         Path dataDir;
-        
+
         // Se estamos em src/, voltar um nível
         if (currentDir.endsWith("src")) {
             webDir = currentDir.getParent().resolve("web");
@@ -52,22 +52,21 @@ public class WebServer {
             webDir = Path.of("../web");
             dataDir = Path.of("../data");
         }
-        
+
         System.out.println("[Config] webDir: " + webDir.toAbsolutePath());
         System.out.println("[Config] dataDir: " + dataDir.toAbsolutePath());
-        
+
         // Verificar se webDir existe
         if (!Files.exists(webDir)) {
             System.err.println("[ERRO] Diretório web não encontrado: " + webDir.toAbsolutePath());
             System.err.println("[ERRO] Execute o servidor do diretório correto ou verifique a estrutura de pastas.");
             return;
         }
-        
+
         // Storage compartilhado
         DataStorage storage = new DataStorage(dataDir);
-        
-        // Cria servidor com thread pool para melhor performance
-        // Bind em 0.0.0.0 para aceitar conexões de qualquer interface de rede
+
+        // Usa HTTP padrão para desenvolvimento e produção
         HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0", port), 0);
         server.setExecutor(Executors.newFixedThreadPool(10));
         
