@@ -15,11 +15,6 @@ venv/
 env/
 
 # Logs
-logs/
-ml-service/logs/
-app-trainer-java-web/app-trainer-java-web/logs/
-*.log
-
 
 # IDE/editor
 .vscode/
