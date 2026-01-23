@@ -22,7 +22,7 @@ window.addEventListener('unhandledrejection', (event) => {
 // =====================================================
 // Altere para a URL do backend Java em produção
 // Gateway Java sempre como base
-const BASE_URL = 'https://app-1-0-java.onrender.com';
+const BASE_URL = 'https://app-trainer-java.onrender.com';
 const ML_SERVICE = 'https://app-1-0-python.onrender.com';
 
 const AppState = {
@@ -584,12 +584,16 @@ async function api(endpoint, options = {}) {
     }
     
     try {
-        const response = await fetch(endpoint, {
+        // Se endpoint não for absoluto, prefixa com BASE_URL
+        let url = endpoint;
+        if (!/^https?:\/\//.test(endpoint)) {
+            url = BASE_URL + (endpoint.startsWith('/') ? endpoint : '/' + endpoint);
+        }
+        const response = await fetch(url, {
             headers: { 'Content-Type': 'application/json', ...options.headers },
             ...options
         });
         const text = await response.text();
-        
         // Se receber 401, tenta refresh e retry uma vez
         if (response.status === 401 && AppState.refreshToken && !options._retried) {
             console.log('🔄 Token inválido (401), tentando refresh...');
@@ -600,7 +604,6 @@ async function api(endpoint, options = {}) {
                 return api(endpoint, options); // Retry com novo token
             }
         }
-        
         const data = JSON.parse(text);
         if (!response.ok) throw new Error(data.error || data.detail || `HTTP ${response.status}`);
         return data;
@@ -683,7 +686,7 @@ const Auth = {
         try {
             showLoading(true, 'Entrando...');
             let response;
-            try { response = await api(`${API_BASE}/auth/login`, { method: 'POST', body: JSON.stringify({ email, senha }) }); }
+            try { response = await api('/auth/login', { method: 'POST', body: JSON.stringify({ email, senha }) }); }
             catch (e) { response = await api(`${ML_SERVICE}/auth/login`, { method: 'POST', body: JSON.stringify({ email, senha }) }); }
             
             if (response.user_id || response.success) {
