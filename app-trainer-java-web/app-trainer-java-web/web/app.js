@@ -20,8 +20,9 @@ window.addEventListener('unhandledrejection', (event) => {
 // =====================================================
 // CONFIGURAÇÃO & ESTADO
 // =====================================================
-const API_BASE = '';
-const ML_SERVICE = 'http://localhost:8001';
+// Altere para a URL do backend Java em produção
+const API_BASE = 'https://app-trainer-java.onrender.com';
+const ML_SERVICE = 'https://app-1-0-python.onrender.com';
 
 const AppState = {
     user: null,
