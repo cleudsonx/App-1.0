@@ -654,11 +654,6 @@ def gerar_treino(objetivo: str, nivel: str, dias: int = 4, restricoes: str = "",
         "treinos": treinos,
         "observacoes": observacoes.get(objetivo.lower(), "Mantenha consistência e progrida gradualmente.")
     }
-
-
-                if not user_data.get("email_confirmed"):
-                    logger.auth_attempt(request.email, success=False, reason="EMAIL_NOT_CONFIRMED")
-                    raise HTTPException(status_code=403, detail="Email não confirmado. Verifique sua caixa de entrada.")
 # ============ ENDPOINTS ============
 
 class CoachResponse(BaseModel):
