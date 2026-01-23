@@ -42,7 +42,12 @@ public class CORSHandler implements HttpHandler {
         
         // Adicionar headers CORS
         if (isAllowed) {
-            exchange.getResponseHeaders().set("Access-Control-Allow-Origin", origin != null ? origin : "shaipados.com");
+            // Sempre libera explicitamente shaipados.com
+            if (origin != null && origin.contains("shaipados.com")) {
+                exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "https://shaipados.com");
+            } else {
+                exchange.getResponseHeaders().set("Access-Control-Allow-Origin", origin != null ? origin : "shaipados.com");
+            }
         }
         
         exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
