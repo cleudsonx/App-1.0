@@ -6,6 +6,7 @@ import java.io.IOException;
  * Wrapper para adicionar CORS headers
  * Restrito a: shaipados.com, localhost, 192.168.x.x
  */
+
 public class CORSHandler implements HttpHandler {
     
     private final HttpHandler delegate;
