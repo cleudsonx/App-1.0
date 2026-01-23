@@ -684,7 +684,7 @@ const Auth = {
         try {
             showLoading(true, 'Entrando...');
             let response;
-            try { response = await api('/auth/login', { method: 'POST', body: JSON.stringify({ email, senha }) }); }
+            try { response = await api(`${API_BASE}/auth/login`, { method: 'POST', body: JSON.stringify({ email, senha }) }); }
             catch (e) { response = await api(`${ML_SERVICE}/auth/login`, { method: 'POST', body: JSON.stringify({ email, senha }) }); }
             
             if (response.user_id || response.success) {
