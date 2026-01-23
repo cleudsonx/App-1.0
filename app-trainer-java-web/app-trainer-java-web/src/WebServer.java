@@ -98,20 +98,13 @@ public class WebServer {
         // Sugestão de Treino
         SugestaoHandler sugestaoHandler = new SugestaoHandler(storage);
         server.createContext("/api/sugestao", new CORSHandler(sugestaoHandler));
-        server.createContext("/api/treino/gerar", sugestaoHandler);
+        server.createContext("/api/treino/gerar", new CORSHandler(sugestaoHandler));
         
         // Health check e info
-        server.createContext("/api/health", ex -> {
-            ex.getResponseHeaders().add("Access-Control-Allow-Origin", "https://shaipados.com");
-            ex.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-            ex.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type, Authorization");
-            if ("OPTIONS".equals(ex.getRequestMethod())) {
-                ex.sendResponseHeaders(200, -1);
-                return;
-            }
+        server.createContext("/api/health", new CORSHandler(ex -> {
             String json = "{\"status\":\"ok\",\"version\":\"" + VERSION + "\"}";
             sendJson(ex, 200, json);
-        });
+        }));
         
         // Proxy para serviço ML Python (opcional)
             // Proxy para serviço ML Python usando variável de ambiente
@@ -122,8 +115,8 @@ public class WebServer {
             } else {
                 mlServiceUrlFinal = mlServiceUrlTmp;
             }
-            server.createContext("/api/sugestao-ml", ex -> Proxy.forward(ex, mlServiceUrlFinal + "/suggest"));   
-            server.createContext("/api/coach-ml", ex -> Proxy.forward(ex, mlServiceUrlFinal + "/coach"));        
+            server.createContext("/api/sugestao-ml", new CORSHandler(ex -> Proxy.forward(ex, mlServiceUrlFinal + "/suggest")));
+            server.createContext("/api/coach-ml", new CORSHandler(ex -> Proxy.forward(ex, mlServiceUrlFinal + "/coach")));
 
         // Obtém IP local para exibição
         String localIP = getLocalIPAddress();
