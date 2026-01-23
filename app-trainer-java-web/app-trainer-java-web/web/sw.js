@@ -47,6 +47,11 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
+    // Ignora chamadas de API e autenticação
+    if (event.request.url.includes('/api/') || event.request.url.includes('/auth/')) {
+        return;
+    }
+
     event.respondWith(
         caches.match(event.request)
             .then(cachedResponse => {
