@@ -2,6 +2,31 @@
 
 Este documento descreve o fluxo recomendado para testar e validar o sistema antes de subir para produção.
 
+## Configuração da variável JWT_SECRET_KEY
+
+Para evitar erros de execução, defina JWT_SECRET_KEY conforme o ambiente:
+
+- **Local/dev:**
+	- Crie um arquivo `.env` na raiz do projeto e adicione:
+		JWT_SECRET_KEY=sua_chave_secreta
+	- Ou exporte no terminal antes de rodar:
+		export JWT_SECRET_KEY=sua_chave_secreta
+
+- **Docker:**
+	- Adicione no Dockerfile:
+		ENV JWT_SECRET_KEY=sua_chave_secreta
+	- Ou no docker-compose:
+		environment:
+			- JWT_SECRET_KEY=sua_chave_secreta
+
+- **Render.com:**
+	- No arquivo `render.yaml`, inclua em `envVars`:
+		- key: JWT_SECRET_KEY
+			value: sua_chave_secreta
+	- Ou configure pelo painel web do Render.
+
+> Para desenvolvimento, o código possui fallback para `dev_secret_key` caso a variável não esteja definida. Nunca use esse valor em produção!
+
 ## 1. Ambiente Isolado (Local/Dev)
 - Utilize Docker Compose para subir todos os serviços (Java, Python, banco de dados) localmente.
 - Configure variáveis de ambiente específicas para desenvolvimento usando arquivos `.env`.

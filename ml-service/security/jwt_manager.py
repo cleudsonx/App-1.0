@@ -1,8 +1,9 @@
 import os
 import jwt
-from datetime import datetime, timedelta
 
-# Leitura segura da chave secreta JWT
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev_secret_key")
+if not JWT_SECRET_KEY:
+	raise RuntimeError("JWT_SECRET_KEY não definida no ambiente!")
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 if not JWT_SECRET_KEY:
 	raise RuntimeError("JWT_SECRET_KEY não definida no ambiente!")

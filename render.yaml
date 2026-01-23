@@ -28,6 +28,13 @@ services:
         fromDatabase:
           name: app-trainer-db
           property: password
+# JWT para integração segura
+      - key: JWT_SECRET_KEY
+        value: sua_chave_secreta
+# Para definir JWT_SECRET_KEY no Render:
+# Adicione em envVars:
+#   - key: JWT_SECRET_KEY
+#     value: sua_chave_secreta
 
   - type: web
     name: ml-service
