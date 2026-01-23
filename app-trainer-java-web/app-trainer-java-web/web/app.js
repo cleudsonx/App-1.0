@@ -7435,7 +7435,10 @@ const WorkoutTemplates = {
 document.addEventListener('DOMContentLoaded', () => {
     console.log('[Shaipados] Iniciando v6.0...');
     Toast.init();
-    fetch('/api/health').then(r => r.json()).then(() => console.log('✅ API Java OK')).catch(() => console.warn('⚠️ API Java offline'));
+    fetch(BASE_URL + '/api/health')
+        .then(r => r.json())
+        .then(() => console.log('✅ API Java OK'))
+        .catch(() => console.warn('⚠️ API Java offline'));
     Auth.init();
     NutritionSystem.load();
     PWAInstaller.init();
