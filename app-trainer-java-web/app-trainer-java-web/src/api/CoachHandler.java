@@ -65,5 +65,6 @@ public class CoachHandler extends BaseHandler {
         CoachIA.Resposta resposta = coach.responder(pergunta, ctx);
 
         sendJson(ex, 200, resposta.toJSON());
+        
     }
 }
