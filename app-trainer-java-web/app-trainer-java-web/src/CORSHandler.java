@@ -13,15 +13,22 @@ public class CORSHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         String origin = exchange.getRequestHeaders().getFirst("Origin");
 
-        // Lista de origens permitidas
-        String allowedOrigin = "*"; // fallback
+        // Permitir apenas origens específicas (shaipados.com, subdomínios e localhost)
+        String allowedOrigin = null;
         if (origin != null) {
-            if (origin.equals("https://shaipados.com") || origin.startsWith("http://localhost")) {
+            if (origin.equals("https://shaipados.com") ||
+                origin.equals("https://www.shaipados.com") ||
+                origin.matches("https://([a-zA-Z0-9-]+\\.)?shaipados\\.com") ||
+                origin.startsWith("http://localhost") ||
+                origin.startsWith("http://127.0.0.1")
+            ) {
                 allowedOrigin = origin;
             }
         }
-
-        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", allowedOrigin);
+        if (allowedOrigin != null) {
+            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", allowedOrigin);
+        }
+        // Não adiciona header se origem não for permitida
         exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
         exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
