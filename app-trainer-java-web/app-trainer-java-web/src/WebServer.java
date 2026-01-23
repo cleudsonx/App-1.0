@@ -170,20 +170,20 @@ public class WebServer {
         public void handle(HttpExchange ex) throws IOException {
             // CORS para acesso de apps externos
             ex.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-            
+
             String path = ex.getRequestURI().getPath();
             if (path.equals("/")) path = "/index.html";
-            
+
             // Previne path traversal
             Path file = webRoot.resolve(path.substring(1)).normalize();
             if (!file.startsWith(webRoot) || !Files.exists(file)) {
                 send404(ex);
                 return;
             }
-            
+
             // Determina MIME type
             String mime = getMimeType(path);
-            
+
             // Cache headers para assets - DESENVOLVIMENTO: sem cache para JS/CSS
             if (path.endsWith(".png") || path.endsWith(".jpg") || path.endsWith(".svg")) {
                 ex.getResponseHeaders().add("Cache-Control", "public, max-age=86400");
@@ -193,12 +193,16 @@ public class WebServer {
                 ex.getResponseHeaders().add("Pragma", "no-cache");
                 ex.getResponseHeaders().add("Expires", "0");
             }
-            
+
             byte[] bytes = Files.readAllBytes(file);
             ex.getResponseHeaders().add("Content-Type", mime);
-            ex.sendResponseHeaders(200, bytes.length);
-            try (OutputStream os = ex.getResponseBody()) { 
-                os.write(bytes); 
+            if ("HEAD".equalsIgnoreCase(ex.getRequestMethod())) {
+                ex.sendResponseHeaders(200, -1); // Só headers, sem corpo
+            } else {
+                ex.sendResponseHeaders(200, bytes.length);
+                try (OutputStream os = ex.getResponseBody()) { 
+                    os.write(bytes); 
+                }
             }
         }
         
@@ -233,9 +237,13 @@ public class WebServer {
         ex.getResponseHeaders().add("Content-Type", "application/json; charset=utf-8");
         ex.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
         byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
-        ex.sendResponseHeaders(status, bytes.length);
-        try (OutputStream os = ex.getResponseBody()) {
-            os.write(bytes);
+        if ("HEAD".equalsIgnoreCase(ex.getRequestMethod())) {
+            ex.sendResponseHeaders(status, -1);
+        } else {
+            ex.sendResponseHeaders(status, bytes.length);
+            try (OutputStream os = ex.getResponseBody()) {
+                os.write(bytes);
+            }
         }
     }
     
