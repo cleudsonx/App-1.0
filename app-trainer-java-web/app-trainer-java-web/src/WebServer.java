@@ -102,6 +102,13 @@ public class WebServer {
         
         // Health check e info
         server.createContext("/api/health", ex -> {
+            ex.getResponseHeaders().add("Access-Control-Allow-Origin", "https://shaipados.com");
+            ex.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+            ex.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type, Authorization");
+            if ("OPTIONS".equals(ex.getRequestMethod())) {
+                ex.sendResponseHeaders(200, -1);
+                return;
+            }
             String json = "{\"status\":\"ok\",\"version\":\"" + VERSION + "\"}";
             sendJson(ex, 200, json);
         });
