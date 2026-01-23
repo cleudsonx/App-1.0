@@ -21,8 +21,10 @@ public class CORSHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         String origin = exchange.getRequestHeaders().getFirst("Origin");
-        
-        // Validar origem (permitir localhost, 192.168.x.x, shaipados.com, shaipados..com, cleudsonx.github.io)
+        String method = exchange.getRequestMethod();
+        System.out.println("[CORS] Origem: " + origin + " | Método: " + method + " | Path: " + exchange.getRequestURI());
+
+        // Validar origem (permitir localhost, 192.168.x.x, shaipados.com, cleudsonx.github.io)
         boolean isAllowed = false;
         if (origin != null) {
             isAllowed = origin.contains("localhost") || 
