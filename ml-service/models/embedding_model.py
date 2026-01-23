@@ -10,7 +10,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 from typing import List, Dict, Tuple, Optional
 import json
 import os
-
 class EmbeddingModel:
     """
     Modelo de embeddings usando Sentence-BERT multilingual
