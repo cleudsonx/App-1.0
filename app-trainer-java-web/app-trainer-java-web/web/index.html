@@ -59,65 +59,6 @@
   </div>
 
   <!-- ====== SCRIPTS DE INTEGRAÇÃO ====== -->
-  <script>
-    const BASE_URL = "https://app-trainer-java.onrender.com";
-
-    // ===== LOGIN =====
-    document.getElementById("login-form").addEventListener("submit", async e => {
-      e.preventDefault();
-      const email = document.getElementById("login-email").value;
-      const senha = document.getElementById("login-senha").value;
-
-      const res = await fetch(`${BASE_URL}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, senha })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        document.getElementById("auth-screen").style.display = "none";
-        document.getElementById("app").style.display = "block";
-      } else {
-        alert("Erro: " + data.message);
-      }
-    });
-
-    // ===== REGISTRO =====
-    document.getElementById("register-form").addEventListener("submit", async e => {
-      e.preventDefault();
-      const nome = document.getElementById("register-nome").value;
-      const email = document.getElementById("register-email").value;
-      const senha = document.getElementById("register-senha").value;
-
-      const res = await fetch(`${BASE_URL}/auth/registro`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nome, email, senha })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        alert("Conta criada com sucesso!");
-      } else {
-        alert("Erro: " + data.message);
-      }
-    });
-
-    // ===== COACH =====
-    document.getElementById("chat-form").addEventListener("submit", async e => {
-      e.preventDefault();
-      const pergunta = document.getElementById("chat-input").value;
-      const res = await fetch(`${BASE_URL}/api/coach-ml?q=${encodeURIComponent(pergunta)}&nome=Cleudson&objetivo=hipertrofia&nivel=iniciante`);
-      const data = await res.json();
-      const chat = document.getElementById("chat-messages");
-      chat.innerHTML += `<div class="message bot"><p>${data.answer}</p></div>`;
-    });
-
-    // ===== TREINO =====
-    document.getElementById("btn-treino").addEventListener("click", async () => {
-      const res = await fetch(`${BASE_URL}/api/sugestao-ml?objetivo=hipertrofia&nivel=iniciante&diasSemana=4`);
-      const data = await res.json();
-      document.getElementById("treino-content").textContent = JSON.stringify(data, null, 2);
-    });
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>
