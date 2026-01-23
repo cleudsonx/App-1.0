@@ -718,6 +718,9 @@ async def health():
 async def ml_health():
     return {"status": "ok"}
 
+@app.get("/api/health")
+def health_check():
+    return {"status": "ok", "service": "APP Trainer ML Service"}
 
 @app.get("/")
 async def root():
