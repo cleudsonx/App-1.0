@@ -22,7 +22,7 @@ window.addEventListener('unhandledrejection', (event) => {
 // =====================================================
 // Altere para a URL do backend Java em produção
 // Gateway Java sempre como base
-const BASE_URL = 'https://app-trainer-java.onrender.com';
+const BASE_URL = 'https://app-1-0-java.onrender.com';
 const ML_SERVICE = 'https://app-1-0-python.onrender.com';
 
 const AppState = {
