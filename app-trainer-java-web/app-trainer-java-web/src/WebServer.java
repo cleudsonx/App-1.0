@@ -170,7 +170,7 @@ public class WebServer {
         public void handle(HttpExchange ex) throws IOException {
             // CORS para acesso de apps externos
             ex.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
-}
+            }
 
 
             String path = ex.getRequestURI().getPath();
