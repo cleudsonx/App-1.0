@@ -169,7 +169,9 @@ public class WebServer {
         @Override 
         public void handle(HttpExchange ex) throws IOException {
             // CORS para acesso de apps externos
-            ex.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+            if (!ex.getResponseHeaders().containsKey("Access-Control-Allow-Origin")) {
+                ex.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+}
 
             String path = ex.getRequestURI().getPath();
             if (path.equals("/")) path = "/index.html";
