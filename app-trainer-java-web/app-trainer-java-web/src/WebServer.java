@@ -80,6 +80,7 @@ public class WebServer {
         server.createContext("/auth/login", new CORSHandler(authHandler));
         server.createContext("/auth/registro", new CORSHandler(authHandler));
         server.createContext("/auth/verificar", new CORSHandler(authHandler));
+        server.createContext("/auth/refresh", new CORSHandler(new RefreshHandler()));
         
         // Alunos - CRUD completo
         AlunoHandler alunoHandler = new AlunoHandler(storage);
