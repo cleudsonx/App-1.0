@@ -20,7 +20,6 @@ public abstract class BaseHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange ex) throws IOException {
         // Adiciona headers CORS para acesso cross-origin (mobile/desktop apps)
-        ex.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
         ex.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         ex.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
         ex.getResponseHeaders().add("Access-Control-Max-Age", "86400");

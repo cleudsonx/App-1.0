@@ -44,7 +44,6 @@ public class MLServiceHandler implements HttpHandler {
         logger.info("Request: " + method + " " + path, "MLServiceHandler");
 
         // CORS
-        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
         exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
         exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
