@@ -173,6 +173,7 @@ public class WebServer {
                 ex.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
 }
 
+
             String path = ex.getRequestURI().getPath();
             if (path.equals("/")) path = "/index.html";
 
