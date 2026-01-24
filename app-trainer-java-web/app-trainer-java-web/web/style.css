@@ -1,4 +1,8 @@
-﻿/* =====================================================
+﻿/* Oculta scrollbar em navegadores baseados em Webkit (Chrome, Safari) */
+::-webkit-scrollbar {
+    display: none;
+/* fim do bloco corrigido */
+/* =====================================================
    APP TRAINER v2 - DESIGN SYSTEM MODERNO
    Inspirado em: Hevy, Strong, FitBod, MyFitnessPal
    ===================================================== */
@@ -960,12 +964,10 @@ input, select, textarea {
     align-items: center;
     gap: 6px;
     background: rgba(255,255,255,0.2);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
-    padding: 4px 12px;
-    border-radius: var(--radius-full);
-    font-size: 11px;
-    font-weight: 600;
-    margin-bottom: var(--space-3);
+}
+/* As propriedades acima estavam fora de bloco, mova para o bloco correto se necessário */
 }
 
 .pulse-dot {
@@ -1490,7 +1492,6 @@ input, select, textarea {
     gap: var(--space-2);
     overflow-x: auto;
     padding-bottom: var(--space-1);
-    -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
 }
 
@@ -1550,7 +1551,6 @@ input, select, textarea {
     gap: var(--space-2);
     overflow-x: auto;
     padding-bottom: var(--space-2);
-    -webkit-overflow-scrolling: touch;
 }
 
 .split-preview::-webkit-scrollbar {
@@ -1646,6 +1646,9 @@ input, select, textarea {
 .chat-input {
     display: flex;
     gap: var(--space-2);
+        -webkit-user-select: none;
+        user-select: none;
+        
     padding: var(--space-3);
     background: var(--bg-secondary);
     border-top: 1px solid var(--border-color);
@@ -2565,7 +2568,6 @@ input, select, textarea {
         margin: auto;
         border-radius: var(--radius-xl);
         box-shadow: var(--shadow-lg);
-        min-height: auto;
     }
     
     .onboarding-container {
@@ -2965,6 +2967,7 @@ input, select, textarea {
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.8);
+    -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
     display: none;
     align-items: center;
@@ -5256,6 +5259,8 @@ input, select, textarea {
     font-weight: 700;
     letter-spacing: 0.5px;
 }
+/* CORREÇÃO: bloco sem seletor, adicione um seletor válido, exemplo .badge-custom: */
+.badge-custom {
     justify-content: center;
     padding: var(--space-4);
     text-align: center;
@@ -6159,7 +6164,7 @@ input, select, textarea {
     gap: 8px;
     overflow-x: auto;
     padding-bottom: 4px;
-    -webkit-overflow-scrolling: touch;
+
 }
 
 .templates-filter-bar::-webkit-scrollbar {
@@ -6704,6 +6709,7 @@ input, select, textarea {
     height: 32px;
     border-radius: 50%;
     background: rgba(0,0,0,0.3);
+    -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
     border: none;
     display: flex;
@@ -8390,6 +8396,7 @@ input, select, textarea {
 
 .card-hero .btn-card-action {
     background: rgba(255, 255, 255, 0.2);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.3);
     color: white;
@@ -8876,7 +8883,7 @@ input, select, textarea {
     gap: var(--space-3);
     overflow-x: auto;
     padding: var(--space-2) 0;
-    -webkit-overflow-scrolling: touch;
+
     scrollbar-width: none;
 }
 
@@ -9590,6 +9597,7 @@ input, select, textarea {
 
 .aw-input[type=number] {
     -moz-appearance: textfield;
+    appearance: textfield;
 }
 
 /* =====================================================
@@ -9686,7 +9694,7 @@ input, select, textarea {
     padding: 12px;
     overflow-y: auto;
     flex: 1;
-    -webkit-overflow-scrolling: touch;
+
 }
 
 @media (min-width: 500px) {
@@ -9752,6 +9760,7 @@ input, select, textarea {
     line-height: 1.2;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -10266,7 +10275,7 @@ input, select, textarea {
 
 /* Factors Grid */
 .factors-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
-.factor-checkbox { display: flex; align-items: center; gap: 6px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 8px; cursor: pointer; user-select: none; }
+.factor-checkbox { display: flex; align-items: center; gap: 6px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 8px; cursor: pointer; -webkit-user-select: none; user-select: none; }
 .factor-checkbox:hover { background: #f9fafb; }
 .factor-checkbox input { cursor: pointer; }
 
