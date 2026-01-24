@@ -234,7 +234,6 @@ public class WebServer {
     
     private static void sendJson(HttpExchange ex, int status, String json) throws IOException {
         ex.getResponseHeaders().add("Content-Type", "application/json; charset=utf-8");
-        ex.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
         byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
         if ("HEAD".equalsIgnoreCase(ex.getRequestMethod())) {
             ex.sendResponseHeaders(status, -1);
