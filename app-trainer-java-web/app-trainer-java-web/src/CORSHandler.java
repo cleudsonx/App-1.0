@@ -26,7 +26,7 @@ public class CORSHandler implements HttpHandler {
             }
         }
         if (allowedOrigin != null) {
-            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", allowedOrigin);
+            exchange.getResponseHeaders().set("Access-Control-Allow-Origin", allowedOrigin);
         }
         // Não adiciona header se origem não for permitida
         exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
