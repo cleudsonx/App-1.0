@@ -1,3 +1,40 @@
+    // === Métodos de usuário (aluno) ===
+    public Aluno getAlunoByEmail(String email) throws SQLException {
+        String sql = "SELECT id, nome, email, senha_hash FROM java_app.usuarios WHERE email = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int id = rs.getInt("id");
+                    String nome = rs.getString("nome");
+                    String emailDb = rs.getString("email");
+                    String senhaHash = rs.getString("senha_hash");
+                    // Adapte conforme o construtor de Aluno
+                    return new Aluno(id, nome, 0, "", "", 0, 0, "", "", null, emailDb, senhaHash, "{}");
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Adiciona aluno com senha já hasheada (PBKDF2)
+     */
+    public Aluno addAlunoWithHash(String nome, String email, String senhaHash) throws SQLException {
+        String sql = "INSERT INTO java_app.usuarios (nome, email, senha_hash) VALUES (?, ?, ?) RETURNING id";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, nome);
+            ps.setString(2, email);
+            ps.setString(3, senhaHash);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int id = rs.getInt("id");
+                    return new Aluno(id, nome, 0, "", "", 0, 0, "", "", null, email, senhaHash, "{}");
+                }
+            }
+        }
+        return null;
+    }
 package storage;
 
 import java.sql.*;
