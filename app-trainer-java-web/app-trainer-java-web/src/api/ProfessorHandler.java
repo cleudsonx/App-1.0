@@ -2,6 +2,7 @@ package api;
 
 import com.sun.net.httpserver.HttpExchange;
 import storage.Storage;
+import storage.StorageUtils;
 
 import java.io.IOException;
 import java.util.Map;
@@ -42,7 +43,7 @@ public class ProfessorHandler extends BaseHandler {
                 } else {
                     String especialidade = query.get("especialidade");
                     var profs = storage.listProfessores(especialidade);
-                    sendJson(ex, 200, DataStorage.toJSONArrayProfessores(profs));
+                    sendJson(ex, 200, StorageUtils.toJSONArrayProfessores(profs));
                 }
                 break;
 

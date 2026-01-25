@@ -1,3 +1,31 @@
+    // Métodos obrigatórios da interface Storage (stubs para não implementados)
+    public Aluno getAlunoById(int id) throws Exception {
+        throw new UnsupportedOperationException("getAlunoById não implementado em DataStorageSQL");
+    }
+    public java.util.List<Aluno> listAlunos(String objetivo, String nivel) throws Exception {
+        throw new UnsupportedOperationException("listAlunos não implementado em DataStorageSQL");
+    }
+    public Aluno addAluno(String nome, int idade, String objetivo, String nivel, double pesoKg, double alturaCm, String restricoes, String equipamentos, Integer rpe) throws Exception {
+        throw new UnsupportedOperationException("addAluno não implementado em DataStorageSQL");
+    }
+    public Aluno updateAluno(int id, java.util.Map<String, String> updates) throws Exception {
+        throw new UnsupportedOperationException("updateAluno não implementado em DataStorageSQL");
+    }
+    public boolean deleteAluno(int id) throws Exception {
+        throw new UnsupportedOperationException("deleteAluno não implementado em DataStorageSQL");
+    }
+    public Professor addProfessor(String nome, String especialidade) throws Exception {
+        throw new UnsupportedOperationException("addProfessor não implementado em DataStorageSQL");
+    }
+    public Professor getProfessorById(int id) throws Exception {
+        throw new UnsupportedOperationException("getProfessorById não implementado em DataStorageSQL");
+    }
+    public java.util.List<Professor> listProfessores(String especialidade) throws Exception {
+        throw new UnsupportedOperationException("listProfessores não implementado em DataStorageSQL");
+    }
+    public boolean deleteProfessor(int id) throws Exception {
+        throw new UnsupportedOperationException("deleteProfessor não implementado em DataStorageSQL");
+    }
 package storage;
 
 import java.sql.*;

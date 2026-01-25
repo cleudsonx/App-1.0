@@ -2,6 +2,7 @@ package api;
 
 import com.sun.net.httpserver.HttpExchange;
 import storage.Storage;
+import storage.StorageUtils;
 
 import java.io.IOException;
 import java.util.Map;
@@ -49,7 +50,7 @@ public class AlunoHandler extends BaseHandler {
                     String objetivo = query.get("objetivo");
                     String nivel = query.get("nivel");
                     var alunos = storage.listAlunos(objetivo, nivel);
-                    sendJson(ex, 200, DataStorage.toJSONArrayAlunos(alunos));
+                    sendJson(ex, 200, StorageUtils.toJSONArrayAlunos(alunos));
                 }
                 break;
 
