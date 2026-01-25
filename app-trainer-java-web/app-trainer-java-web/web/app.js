@@ -850,9 +850,29 @@ const Auth = {
     showWelcomeModal() {
         const modal = $('#modal-welcome');
         if (modal) {
+            // Personaliza o nome do usuário
+            const nome = AppState.user?.nome?.split(' ')[0] || 'Campeão';
+            const welcomeName = $('#welcome-username');
+            if (welcomeName) welcomeName.textContent = nome;
+            // Reinicia animação
+            const content = modal.querySelector('.modal-welcome-content');
+            if (content) {
+                content.classList.remove('animate-welcome');
+                void content.offsetWidth; // força reflow
+                content.classList.add('animate-welcome');
+            }
             modal.style.display = 'flex';
-            $('#btn-welcome-start')?.addEventListener('click', () => { modal.style.display = 'none'; Onboarding.show(); });
-            $('#btn-welcome-skip')?.addEventListener('click', () => { modal.style.display = 'none'; this.showOnboardingReminder(); Toast.info('Configure seu perfil quando quiser'); });
+            // Remove listeners antigos para evitar múltiplos
+            const btnStart = $('#btn-welcome-start');
+            const btnSkip = $('#btn-welcome-skip');
+            if (btnStart) {
+                btnStart.replaceWith(btnStart.cloneNode(true));
+                modal.querySelector('#btn-welcome-start').addEventListener('click', () => { modal.style.display = 'none'; Onboarding.show(); });
+            }
+            if (btnSkip) {
+                btnSkip.replaceWith(btnSkip.cloneNode(true));
+                modal.querySelector('#btn-welcome-skip').addEventListener('click', () => { modal.style.display = 'none'; this.showOnboardingReminder(); Toast.info('Configure seu perfil quando quiser'); });
+            }
         } else Onboarding.show();
     },
 
