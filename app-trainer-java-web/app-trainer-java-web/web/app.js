@@ -1015,7 +1015,38 @@ const App = {
         if (this.initialized) return;
         this.initialized = true;
         console.log('[App] Inicializando...');
-        
+
+        // Ativa avatar glow animado
+        setTimeout(() => {
+            const avatar = document.querySelector('.user-avatar');
+            if (avatar) avatar.classList.add('glow');
+        }, 400);
+
+        // Frases motivacionais rotativas
+        const frases = [
+            'A consistência vence o talento! 💪',
+            'Cada treino é um passo a mais para o seu objetivo.',
+            'Você é mais forte do que imagina!',
+            'Disciplina é a ponte entre metas e conquistas.',
+            'Treine hoje, supere-se amanhã.',
+            'O impossível é só questão de opinião.',
+            'Seu esforço de hoje é o resultado de amanhã.',
+            'Foco, força e fé!'
+        ];
+        let fraseIdx = Math.floor(Math.random() * frases.length);
+        function exibeFrase() {
+            const banner = document.getElementById('motivational-banner');
+            if (banner) {
+                banner.textContent = frases[fraseIdx];
+                banner.style.display = 'block';
+            }
+        }
+        exibeFrase();
+        setInterval(() => {
+            fraseIdx = (fraseIdx + 1) % frases.length;
+            exibeFrase();
+        }, 9000);
+
         DashboardWidgets.init();
         this.setupNavigation();
         this.setupHeader();
