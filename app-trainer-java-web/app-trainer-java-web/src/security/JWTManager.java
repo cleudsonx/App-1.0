@@ -22,12 +22,14 @@ public class JWTManager {
     public static class TokenPair {
         public String accessToken;
         public String refreshToken;
-        public long expiresIn;
-        
-        public TokenPair(String accessToken, String refreshToken, long expiresIn) {
+        public long expiresIn; // segundos do access token
+        public long refreshTokenExpiraEm; // epoch millis do refresh token
+
+        public TokenPair(String accessToken, String refreshToken, long expiresIn, long refreshTokenExpiraEm) {
             this.accessToken = accessToken;
             this.refreshToken = refreshToken;
             this.expiresIn = expiresIn;
+            this.refreshTokenExpiraEm = refreshTokenExpiraEm;
         }
     }
     
@@ -57,11 +59,12 @@ public class JWTManager {
     public static TokenPair generateTokens(String userId, String email) {
         long accessExpiryMs = ACCESS_TOKEN_EXPIRY_MINUTES * 60 * 1000;
         long refreshExpiryMs = REFRESH_TOKEN_EXPIRY_DAYS * 24 * 60 * 60 * 1000;
-        
+
         String accessToken = generateToken(userId, email, "access", accessExpiryMs);
         String refreshToken = generateToken(userId, email, "refresh", refreshExpiryMs);
-        
-        return new TokenPair(accessToken, refreshToken, accessExpiryMs / 1000);
+
+        long refreshTokenExpiraEm = System.currentTimeMillis() + refreshExpiryMs;
+        return new TokenPair(accessToken, refreshToken, accessExpiryMs / 1000, refreshTokenExpiraEm);
     }
     
     /**
