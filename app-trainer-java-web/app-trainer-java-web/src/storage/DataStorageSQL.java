@@ -1,3 +1,15 @@
+package storage;
+
+import java.sql.*;
+import java.time.Instant;
+
+public class DataStorageSQL implements Storage {
+    private final Connection conn;
+
+    public DataStorageSQL(Connection conn) {
+        this.conn = conn;
+    }
+
     // === Métodos de usuário (aluno) ===
     public Aluno getAlunoByEmail(String email) throws SQLException {
         String sql = "SELECT id, nome, email, senha_hash FROM java_app.usuarios WHERE email = ?";
@@ -34,17 +46,6 @@
             }
         }
         return null;
-    }
-package storage;
-
-import java.sql.*;
-import java.time.Instant;
-
-public class DataStorageSQL implements Storage {
-    private final Connection conn;
-
-    public DataStorageSQL(Connection conn) {
-        this.conn = conn;
     }
 
     public boolean isRefreshTokenValido(int userId, String token) throws SQLException {
