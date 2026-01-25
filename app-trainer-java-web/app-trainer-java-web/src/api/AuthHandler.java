@@ -1,6 +1,9 @@
 package api;
 
 import com.sun.net.httpserver.HttpExchange;
+import java.net.URL;
+import java.net.HttpURLConnection;
+import java.io.OutputStream;
 import storage.DataStorage;
 import storage.Aluno;
 import security.PasswordHasher;
