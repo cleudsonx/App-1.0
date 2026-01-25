@@ -791,25 +791,33 @@ const Auth = {
             console.log('❌ Sem refresh token disponível');
             return false;
         }
-        
         try {
             console.log('🔄 Tentando refresh do access token...');
             const response = await api('/auth/refresh', {
                 method: 'POST',
                 body: JSON.stringify({ refresh_token: AppState.refreshToken })
             });
-            
-            if (response.access_token) {
-                console.log('✅ Token refreshed com sucesso');
+            // Atualiza access e refresh token se vierem na resposta
+            if (response.access_token && response.refresh_token) {
+                console.log('✅ Token refreshed com sucesso (access + refresh)');
+                AppState.token = response.access_token;
+                AppState.refreshToken = response.refresh_token;
+                AppState.tokenExpiry = Date.now() + (response.expires_in * 1000);
+                // Atualiza localStorage
+                const stored = JSON.parse(localStorage.getItem('shaipados_auth') || '{}');
+                stored.token = AppState.token;
+                stored.refreshToken = AppState.refreshToken;
+                stored.tokenExpiry = AppState.tokenExpiry;
+                localStorage.setItem('shaipados_auth', JSON.stringify(stored));
+                return true;
+            } else if (response.access_token) {
+                // Suporte legado: só access token
                 AppState.token = response.access_token;
                 AppState.tokenExpiry = Date.now() + (response.expires_in * 1000);
-                
-                // Atualiza localStorage
                 const stored = JSON.parse(localStorage.getItem('shaipados_auth') || '{}');
                 stored.token = AppState.token;
                 stored.tokenExpiry = AppState.tokenExpiry;
                 localStorage.setItem('shaipados_auth', JSON.stringify(stored));
-                
                 return true;
             }
             return false;
