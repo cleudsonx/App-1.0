@@ -4,7 +4,9 @@ import com.sun.net.httpserver.HttpHandler;
 import auth.RefreshHandler;
 
 import api.*;
-import storage.DataStorage;
+import storage.DataStorageSQL;
+import java.sql.Connection;
+import java.sql.DriverManager;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -64,8 +66,16 @@ public class WebServer {
             return;
         }
 
-        // Storage compartilhado
-        DataStorage storage = new DataStorage(dataDir);
+
+        // Storage SQL (PostgreSQL)
+        String dbUrl = System.getenv("JDBC_DATABASE_URL");
+        String dbUser = System.getenv("JDBC_DATABASE_USER");
+        String dbPass = System.getenv("JDBC_DATABASE_PASSWORD");
+        if (dbUrl == null) dbUrl = "jdbc:postgresql://localhost:5432/seubanco";
+        if (dbUser == null) dbUser = "seuusuario";
+        if (dbPass == null) dbPass = "suasenha";
+        Connection conn = DriverManager.getConnection(dbUrl, dbUser, dbPass);
+        DataStorageSQL storage = new DataStorageSQL(conn);
 
         // Usa HTTP padrão para desenvolvimento e produção
         HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0", port), 0);
