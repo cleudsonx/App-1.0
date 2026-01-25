@@ -11,7 +11,22 @@ import java.util.stream.Collectors;
 /**
  * Camada de persistência melhorada com cache e operações thread-safe
  */
+import java.util.HashMap;
+import java.util.Map;
+
 public class DataStorage {
+    // Armazenamento simples em memória para refresh tokens (userId -> token)
+    private final Map<Integer, String> refreshTokens = new HashMap<>();
+        // === Métodos de refresh token (mínimo viável) ===
+        public boolean isRefreshTokenValido(int userId, String token) {
+            return token != null && token.equals(refreshTokens.get(userId));
+        }
+        public void invalidarRefreshToken(int userId, String token) {
+            refreshTokens.remove(userId);
+        }
+        public void salvarRefreshToken(int userId, String token, long expiraEm) {
+            refreshTokens.put(userId, token);
+        }
     private final Path dataDir;
     private final Path alunosCSV;
     private final Path profsCSV;
