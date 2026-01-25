@@ -16,7 +16,8 @@ CREATE TABLE IF NOT EXISTS java_app.autenticacao (
     id_usuario INTEGER REFERENCES java_app.usuarios(id) ON DELETE CASCADE,
     token VARCHAR(255) NOT NULL,
     refresh_token VARCHAR(255),
-    criado_em TIMESTAMP DEFAULT NOW()
+    criado_em TIMESTAMP DEFAULT NOW(),
+    expira_em TIMESTAMP
 );
 
 -- Tabela de logs de acesso
