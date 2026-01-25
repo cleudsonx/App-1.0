@@ -9,7 +9,7 @@ COPY lib ./lib
 # Compilar os .java para bin/
 RUN mkdir -p bin \
  && find src -name "*.java" > sources.txt \
- && javac -encoding UTF-8 --release 17 -d bin -cp "lib/postgresql.jar" @sources.txt
+ && javac -encoding UTF-8 --release 17 -d bin -cp "lib/postgresql.jar:lib/json.jar" @sources.txt
 
 # Stage 2: runtime
 FROM eclipse-temurin:17-jre
