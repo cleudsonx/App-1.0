@@ -274,13 +274,12 @@ public class AuthHandler extends BaseHandler {
         try {
             Map<String, String> data = parseSimpleJSON(body);
             String refreshToken = data.get("refresh_token");
-
             if (refreshToken == null || refreshToken.trim().isEmpty()) {
                 sendError(ex, 400, "refresh_token é obrigatório");
                 return;
             }
 
-            // 🔐 VALIDAR REFRESH TOKEN
+            // 1. Validar e decodificar o refresh token
             JWTManager.TokenPayload payload;
             try {
                 payload = JWTManager.verifyToken(refreshToken);
@@ -288,32 +287,47 @@ public class AuthHandler extends BaseHandler {
                 sendError(ex, 401, "Refresh token inválido ou expirado");
                 return;
             }
-
-            // Verificar se é realmente um refresh token (não um access token)
             if (!"refresh".equals(payload.tokenType)) {
                 sendError(ex, 401, "Token fornecido não é um refresh token");
                 return;
             }
 
-            // Verificar se usuário ainda existe
+            // 2. Buscar usuário
             var aluno = storage.getAlunoByEmail(payload.email);
             if (aluno == null) {
                 sendError(ex, 401, "Usuário não encontrado");
                 return;
             }
 
-            // ✅ Gerar novo access token (15 minutos)
-            JWTManager.TokenPair tokens = JWTManager.generateTokens(payload.userId, payload.email);
-            String newAccessToken = tokens.accessToken;
-            
+            // 3. Verificar se o refresh token está registrado e válido no banco
+            boolean tokenValido = storage.isRefreshTokenValido(aluno.getId(), refreshToken);
+            if (!tokenValido) {
+                sendError(ex, 401, "Refresh token inválido ou já utilizado");
+                return;
+            }
+
+            // 4. Invalidar o refresh token antigo (remoção/expiração)
+            storage.invalidarRefreshToken(aluno.getId(), refreshToken);
+
+            // 5. Gerar novo par de tokens (access + refresh)
+            JWTManager.TokenPair tokens = JWTManager.generateTokens(String.valueOf(aluno.getId()), aluno.getEmail());
+
+            // 6. Salvar novo refresh token no banco
+            storage.salvarRefreshToken(aluno.getId(), tokens.refreshToken, tokens.refreshTokenExpiraEm);
+
+            // 7. Responder com ambos tokens
             String response = "{" +
-                "\"access_token\":\"" + newAccessToken + "\"," +
-                "\"expires_in\":900," +
-                "\"token_type\":\"Bearer\"" +
+                "\"success\":true," +
+                "\"user_id\":" + aluno.getId() + "," +
+                "\"access_token\":\"" + tokens.accessToken + "\"," +
+                "\"refresh_token\":\"" + tokens.refreshToken + "\"," +
+                "\"expires_in\":" + tokens.expiresIn + "," +
+                "\"token_type\":\"Bearer\"," +
+                "\"nome\":\"" + jsonEsc(aluno.getNome()) + "\"," +
+                "\"email\":\"" + jsonEsc(aluno.getEmail()) + "\"," +
+                "\"perfil\":" + (aluno.getPerfil() != null ? aluno.getPerfil() : "{}") +
                 "}";
-
             sendJson(ex, 200, response);
-
         } catch (Exception e) {
             sendError(ex, 400, "Dados inválidos: " + e.getMessage());
         }
