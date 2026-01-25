@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DataStorage {
+public class DataStorage implements Storage {
     // Armazenamento simples em memória para refresh tokens (userId -> token)
     private final Map<Integer, String> refreshTokens = new HashMap<>();
         // === Métodos de refresh token (mínimo viável) ===

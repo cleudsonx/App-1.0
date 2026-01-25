@@ -2,7 +2,7 @@ package api;
 
 import com.sun.net.httpserver.HttpExchange;
 import coach.CoachIA;
-import storage.DataStorage;
+import storage.Storage;
 
 import java.io.IOException;
 import java.util.Map;
@@ -12,10 +12,10 @@ import java.util.Map;
  * Processa linguagem natural para dúvidas sobre treino
  */
 public class CoachHandler extends BaseHandler {
-    private final DataStorage storage;
+    private final Storage storage;
     private final CoachIA coach;
 
-    public CoachHandler(DataStorage storage) {
+    public CoachHandler(Storage storage) {
         this.storage = storage;
         this.coach = new CoachIA();
     }

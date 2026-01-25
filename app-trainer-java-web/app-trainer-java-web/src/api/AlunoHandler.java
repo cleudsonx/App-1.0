@@ -1,7 +1,7 @@
 package api;
 
 import com.sun.net.httpserver.HttpExchange;
-import storage.DataStorage;
+import storage.Storage;
 
 import java.io.IOException;
 import java.util.Map;
@@ -15,9 +15,9 @@ import java.util.Map;
  * DELETE /api/alunos/{id} - remove
  */
 public class AlunoHandler extends BaseHandler {
-    private final DataStorage storage;
+    private final Storage storage;
 
-    public AlunoHandler(DataStorage storage) {
+    public AlunoHandler(Storage storage) {
         this.storage = storage;
     }
 

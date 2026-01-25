@@ -2,7 +2,7 @@ package api;
 
 import com.sun.net.httpserver.HttpExchange;
 import coach.GeradorTreino;
-import storage.DataStorage;
+import storage.Storage;
 
 import java.io.IOException;
 import java.util.Map;
@@ -11,10 +11,10 @@ import java.util.Map;
  * Handler para geração de sugestões de treino
  */
 public class SugestaoHandler extends BaseHandler {
-    private final DataStorage storage;
+    private final Storage storage;
     private final GeradorTreino gerador;
 
-    public SugestaoHandler(DataStorage storage) {
+    public SugestaoHandler(Storage storage) {
         this.storage = storage;
         this.gerador = new GeradorTreino();
     }

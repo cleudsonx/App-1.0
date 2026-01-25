@@ -40,7 +40,7 @@ package storage;
 import java.sql.*;
 import java.time.Instant;
 
-public class DataStorageSQL {
+public class DataStorageSQL implements Storage {
     private final Connection conn;
 
     public DataStorageSQL(Connection conn) {

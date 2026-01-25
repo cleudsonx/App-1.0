@@ -4,7 +4,7 @@ import com.sun.net.httpserver.HttpExchange;
 import java.net.URL;
 import java.net.HttpURLConnection;
 import java.io.OutputStream;
-import storage.DataStorage;
+import storage.Storage;
 import storage.Aluno;
 import security.PasswordHasher;
 import security.JWTManager;
@@ -31,11 +31,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  * - Centralized error handling
  */
 public class AuthHandler extends BaseHandler {
-    private final DataStorage storage;
+    private final Storage storage;
     private AppLogger logger;
     private static final AtomicInteger userIdCounter = new AtomicInteger(1000);
     
-    public AuthHandler(DataStorage storage) {
+    public AuthHandler(Storage storage) {
         this.storage = storage;
         this.logger = null;
     }

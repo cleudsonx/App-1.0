@@ -5,6 +5,7 @@ import auth.RefreshHandler;
 
 import api.*;
 import storage.DataStorageSQL;
+import storage.Storage;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
@@ -75,7 +76,7 @@ public class WebServer {
         if (dbUser == null) dbUser = "seuusuario";
         if (dbPass == null) dbPass = "suasenha";
         Connection conn = DriverManager.getConnection(dbUrl, dbUser, dbPass);
-        DataStorageSQL storage = new DataStorageSQL(conn);
+        Storage storage = new DataStorageSQL(conn);
 
         // Usa HTTP padrão para desenvolvimento e produção
         HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0", port), 0);

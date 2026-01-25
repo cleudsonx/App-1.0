@@ -1,7 +1,7 @@
 package api;
 
 import com.sun.net.httpserver.HttpExchange;
-import storage.DataStorage;
+import storage.Storage;
 
 import java.io.IOException;
 import java.util.Map;
@@ -10,9 +10,9 @@ import java.util.Map;
  * Handler para endpoints de Professores
  */
 public class ProfessorHandler extends BaseHandler {
-    private final DataStorage storage;
+    private final Storage storage;
 
-    public ProfessorHandler(DataStorage storage) {
+    public ProfessorHandler(Storage storage) {
         this.storage = storage;
     }
 
