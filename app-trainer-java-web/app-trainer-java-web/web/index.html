@@ -78,6 +78,63 @@
     </div>
   </div>
 
+  <!-- ====== ONBOARDING ====== -->
+  <div id="onboarding" class="onboarding" style="display:none;">
+    <div class="onboarding-container">
+      <div id="onboarding-progress-bar" class="onboarding-progress-bar"></div>
+      <div id="step-indicator" class="onboarding-step-indicator"></div>
+      <div class="onboarding-step onboarding-step-1">
+        <!-- Conteúdo do passo 1: dados pessoais -->
+        <h3>Vamos começar!</h3>
+        <input id="onb-idade" type="number" placeholder="Idade" min="10" max="99" />
+        <input id="onb-peso" type="number" placeholder="Peso (kg)" min="30" max="300" />
+        <input id="onb-altura" type="number" placeholder="Altura (cm)" min="120" max="230" />
+        <div>
+          <span class="pill" data-value="M">Masculino</span>
+          <span class="pill" data-value="F">Feminino</span>
+        </div>
+      </div>
+      <div class="onboarding-step onboarding-step-2">
+        <!-- Conteúdo do passo 2: objetivo -->
+        <h3>Qual seu objetivo?</h3>
+        <div class="goal-card" data-value="hipertrofia">Hipertrofia</div>
+        <div class="goal-card" data-value="emagrecimento">Emagrecimento</div>
+        <div class="goal-card" data-value="saude">Saúde</div>
+      </div>
+      <div class="onboarding-step onboarding-step-3">
+        <!-- Conteúdo do passo 3: nível -->
+        <h3>Qual seu nível?</h3>
+        <div class="level-card" data-value="iniciante">Iniciante</div>
+        <div class="level-card" data-value="intermediario">Intermediário</div>
+        <div class="level-card" data-value="avancado">Avançado</div>
+      </div>
+      <div class="onboarding-step onboarding-step-4">
+        <!-- Conteúdo do passo 4: dias e duração -->
+        <h3>Quantos dias por semana?</h3>
+        <div>
+          <button class="day-btn" data-value="3">3</button>
+          <button class="day-btn" data-value="4">4</button>
+          <button class="day-btn" data-value="5">5</button>
+        </div>
+        <h3>Duração do treino</h3>
+        <span class="pill" data-value="45">45 min</span>
+        <span class="pill" data-value="60">60 min</span>
+        <span class="pill" data-value="75">75 min</span>
+      </div>
+      <div class="onboarding-step onboarding-step-5">
+        <!-- Conteúdo do passo 5: local -->
+        <h3>Onde vai treinar?</h3>
+        <div class="location-card" data-value="academia">Academia</div>
+        <div class="location-card" data-value="casa">Casa</div>
+      </div>
+      <div class="onboarding-actions">
+        <button id="btn-onboarding-back">Voltar</button>
+        <button id="btn-onboarding-next"><span>Continuar</span></button>
+        <button id="btn-onboarding-skip">Pular</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ====== SCRIPTS DE INTEGRAÇÃO ====== -->
   <script src="app.js"></script>
 </body>
