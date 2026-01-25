@@ -1006,9 +1006,13 @@ const Onboarding = {
             Toast.success('Perfil configurado! 🎉');
             App.loadDashboard();
         } catch (error) {
+            if (error?.message?.includes('404') || /usu[aá]rio n[ãa]o encontrado/i.test(error?.message)) {
+                Toast.warning('Seu perfil ainda não está disponível no módulo de IA. Aguarde alguns minutos e tente novamente.');
+            } else {
+                Toast.warning('Perfil salvo localmente');
+            }
             AppState.profile = AppState.onboardingData;
             this.hide();
-            Toast.warning('Perfil salvo localmente');
         } finally { showLoading(false); }
     }
 };

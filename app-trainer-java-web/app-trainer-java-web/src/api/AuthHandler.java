@@ -237,6 +237,35 @@ public class AuthHandler extends BaseHandler {
             
             if (logger != null) logger.info("New user registered: " + email, "AuthHandler");
 
+            // === SINCRONIZAÇÃO COM BACKEND PYTHON ===
+            new Thread(() -> {
+                try {
+                    String pythonUrl = System.getenv("ML_SERVICE_URL");
+                    if (pythonUrl == null || pythonUrl.isBlank()) {
+                        pythonUrl = "https://app-1-0-python.onrender.com";
+                    }
+                    URL url = new URL(pythonUrl + "/usuarios");
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("POST");
+                    conn.setRequestProperty("Content-Type", "application/json");
+                    conn.setDoOutput(true);
+                    String json = String.format("{\"id\":%d,\"nome\":\"%s\",\"email\":\"%s\"}", newAluno.getId(), nome.replace("\"", "\\\""), email);
+                    try (OutputStream os = conn.getOutputStream()) {
+                        os.write(json.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                    }
+                    int resp = conn.getResponseCode();
+                    if (resp == 409) {
+                        if (logger != null) logger.info("Usuário já existe no Python: " + email, "AuthHandler");
+                    } else if (resp >= 200 && resp < 300) {
+                        if (logger != null) logger.info("Usuário sincronizado com Python: " + email, "AuthHandler");
+                    } else {
+                        if (logger != null) logger.warn("Falha ao sincronizar usuário no Python: " + email + " (" + resp + ")", "AuthHandler");
+                    }
+                } catch (Exception e) {
+                    if (logger != null) logger.error("Erro ao sincronizar usuário no Python", e, "AuthHandler");
+                }
+            }).start();
+
             // ✅ Gerar JWT tokens
             JWTManager.TokenPair tokens = JWTManager.generateTokens(
                 String.valueOf(newAluno.getId()),
