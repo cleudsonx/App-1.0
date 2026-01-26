@@ -1,4 +1,17 @@
-﻿/* Mensagem de erro para login/registro */
+﻿/* ======= MELHORIAS DE PERFORMANCE: LCP & CLS ======= */
+#treino-content {
+    min-height: 180px; /* espaço reservado para evitar shift */
+    display: block;
+}
+.tab-content {
+    min-height: 220px; /* previne jumps ao trocar abas */
+    transition: opacity var(--duration-normal) var(--ease-out), transform var(--duration-normal) var(--ease-out);
+    /* nunca transicione height/width para evitar CLS */
+}
+.dashboard-grid, .home-dashboard {
+    min-height: 220px; /* previne jumps no dashboard */
+}
+/* Mensagem de erro para login/registro */
 .error-message {
     color: #e53e3e;
     font-size: 13px;
