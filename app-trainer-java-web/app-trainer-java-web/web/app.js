@@ -715,22 +715,32 @@ const Auth = {
         if (errorEl) errorEl.textContent = '';
         if (!nome || !email || !senha) { if (errorEl) errorEl.textContent = 'Preencha todos os campos'; return; }
         if (senha.length < 6) { if (errorEl) errorEl.textContent = 'Senha: mínimo 6 caracteres'; return; }
-        
+
         try {
             showLoading(true, 'Criando conta...');
             let response;
             try { response = await api('/auth/registro', { method: 'POST', body: JSON.stringify({ nome, email, senha }) }); }
             catch (e) { response = await api(`${ML_SERVICE}/auth/registro`, { method: 'POST', body: JSON.stringify({ nome, email, senha }) }); }
-            
+
             if (response.user_id || response.success) {
                 this.saveSession(response);
                 Toast.success(`Conta criada! Bem-vindo, ${response.nome}! 🎉`);
+                // Força recarregamento do CSS do dashboard
+                const css = document.querySelector('link[href*="style.css"]');
+                if (css) { css.href = 'style.css?v=' + Date.now(); }
                 this.enterApp(false, true);
             } else {
-                if (errorEl) errorEl.textContent = response.detail || 'Erro ao criar conta';
+                if (errorEl) errorEl.textContent = response.detail || response.error || 'Erro ao criar conta';
             }
         } catch (error) {
-            if (errorEl) errorEl.textContent = error.message?.includes('409') ? 'Email já cadastrado' : (error.message || 'Erro');
+            let msg = error.message || 'Erro';
+            if (/duplicate key|email.*existe|already exists|409/.test(msg)) {
+                msg = 'Email já cadastrado. Use outro ou recupere a senha.';
+            } else if (/Failed to fetch|ERR_CONNECTION_REFUSED|NetworkError/.test(msg)) {
+                msg = 'Não foi possível conectar ao servidor. Tente novamente mais tarde.';
+            }
+            if (errorEl) errorEl.textContent = msg;
+            Toast.error(msg);
         } finally { showLoading(false); }
     },
 
