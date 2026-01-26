@@ -1,3 +1,15 @@
+package storage;
+
+import java.sql.*;
+import java.time.Instant;
+
+public class DataStorageSQL implements Storage {
+    private final Connection conn;
+
+    public DataStorageSQL(Connection conn) {
+        this.conn = conn;
+    }
+
     // Métodos obrigatórios da interface Storage (stubs para não implementados)
     public Aluno getAlunoById(int id) throws Exception {
         throw new UnsupportedOperationException("getAlunoById não implementado em DataStorageSQL");
