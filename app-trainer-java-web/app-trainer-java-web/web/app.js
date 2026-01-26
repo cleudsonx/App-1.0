@@ -128,6 +128,13 @@ const DashboardWidgets = {
     },
 
     getVisibleWidgets() {
+        // Se não houver configuração ou perfil, retorna todos os widgets padrão visíveis
+        if (!this.currentConfig || this.currentConfig.length === 0 || !isProfileComplete()) {
+            return this.defaultConfig
+                .filter(w => w.visible && this.definitions[w.id])
+                .sort((a, b) => a.order - b.order)
+                .map(w => ({ ...this.definitions[w.id], ...w }));
+        }
         return this.currentConfig
             .filter(w => w.visible && this.definitions[w.id])
             .sort((a, b) => a.order - b.order)
