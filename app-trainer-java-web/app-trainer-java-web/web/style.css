@@ -11,8 +11,8 @@
 }
 .onboarding-container {
     background: rgba(40,48,80,0.7);
-    backdrop-filter: blur(16px) saturate(1.2);
     -webkit-backdrop-filter: blur(16px) saturate(1.2);
+    backdrop-filter: blur(16px) saturate(1.2);
     border-radius: var(--radius-xl);
     box-shadow: 0 8px 40px rgba(99,102,241,0.18), 0 2px 8px rgba(0,0,0,0.18);
     padding: 36px 28px 28px 28px;
@@ -149,8 +149,8 @@
 /* ========== GLASSMORPHISM NOS CARDS ========== */
 .dashboard-card, .dashboard-widget, .dashboard-hero {
     background: rgba(40, 48, 80, 0.55);
-    backdrop-filter: blur(12px) saturate(1.2);
     -webkit-backdrop-filter: blur(12px) saturate(1.2);
+    backdrop-filter: blur(12px) saturate(1.2);
     border: 1.5px solid rgba(255,255,255,0.08);
     box-shadow: 0 4px 32px rgba(99,102,241,0.10), 0 1.5px 8px rgba(0,0,0,0.10);
 }
@@ -1773,6 +1773,7 @@ input, select, textarea {
     gap: var(--space-2);
     overflow-x: auto;
     padding-bottom: var(--space-1);
+    /* scrollbar-width: none;  Não suportado em Chrome < 121, Safari, iOS, Samsung Internet */
     scrollbar-width: none;
 }
 
@@ -4155,6 +4156,7 @@ input, select, textarea {
     padding: var(--space-3) var(--space-4);
     border-bottom: 1px solid var(--border-color);
     overflow-x: auto;
+    /* scrollbar-width: none;  Não suportado em Chrome < 121, Safari, iOS, Samsung Internet */
     scrollbar-width: none;
 }
 
@@ -8678,6 +8680,7 @@ input, select, textarea {
 .card-hero .btn-card-action {
     background: rgba(255, 255, 255, 0.2);
     -webkit-backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.3);
     color: white;
@@ -9165,6 +9168,7 @@ input, select, textarea {
     overflow-x: auto;
     padding: var(--space-2) 0;
 
+    /* scrollbar-width: none;  Não suportado em Chrome < 121, Safari, iOS, Samsung Internet */
     scrollbar-width: none;
 }
 
