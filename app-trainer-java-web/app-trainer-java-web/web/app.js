@@ -589,7 +589,7 @@ async function api(endpoint, options = {}) {
             ...options
         });
         const text = await response.text();
-        
+
         // Se receber 401, tenta refresh e retry uma vez
         if (response.status === 401 && AppState.refreshToken && !options._retried) {
             console.log('🔄 Token inválido (401), tentando refresh...');
@@ -601,8 +601,15 @@ async function api(endpoint, options = {}) {
                 return api(endpoint, options); // Retry com novo token
             }
         }
-        
-        const data = JSON.parse(text);
+
+        // Verifica se a resposta é JSON antes de tentar parsear
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            // Se não for JSON, retorna erro amigável
+            throw new Error(`Erro de rede ou resposta inválida do servidor (${response.status}): ${text.slice(0, 80)}...`);
+        }
         if (!response.ok) throw new Error(data.error || data.detail || `HTTP ${response.status}`);
         return data;
     } catch (error) {
