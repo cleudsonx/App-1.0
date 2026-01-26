@@ -856,9 +856,10 @@ const Auth = {
     showWelcomeModal() {
         const modal = $('#modal-welcome');
         if (modal) {
+            modal.classList.remove('d-none');
             modal.style.display = 'flex';
-            $('#btn-welcome-start')?.addEventListener('click', () => { modal.style.display = 'none'; Onboarding.show(); });
-            $('#btn-welcome-skip')?.addEventListener('click', () => { modal.style.display = 'none'; this.showOnboardingReminder(); Toast.info('Configure seu perfil quando quiser'); });
+            $('#btn-welcome-start')?.addEventListener('click', () => { modal.style.display = 'none'; modal.classList.add('d-none'); Onboarding.show(); });
+            $('#btn-welcome-skip')?.addEventListener('click', () => { modal.style.display = 'none'; modal.classList.add('d-none'); this.showOnboardingReminder(); Toast.info('Configure seu perfil quando quiser'); });
         } else Onboarding.show();
     },
 
