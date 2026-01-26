@@ -3,6 +3,12 @@
    Paleta de cores e elementos visuais da marca
    ===================================================== */
 
+
+/*
+ * ATENÇÃO: Este arquivo depende das variáveis globais definidas em style.css.
+ * Importe SEMPRE style.css antes de brand.css no HTML.
+ */
+
 :root {
     /* Shaipados Brand Colors */
     --brand-primary: #FF6B35;      /* Laranja dinâmico - energia */
