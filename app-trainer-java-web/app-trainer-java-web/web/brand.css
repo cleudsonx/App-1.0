@@ -1,3 +1,30 @@
+/* ========== RESPONSIVIDADE DE MARCA ========== */
+@media (max-width: 600px) {
+    .brand-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: var(--space-2);
+        gap: var(--space-2);
+    }
+    .brand-logo {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+        margin-bottom: 4px;
+    }
+    .brand-title h2 {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 400px) {
+    .brand-header {
+        padding: var(--space-1);
+    }
+    .brand-title h2 {
+        font-size: 11px;
+    }
+}
 /* =====================================================
    SHAIPADOS BRAND INTEGRATION
    Paleta de cores e elementos visuais da marca
