@@ -1,4 +1,13 @@
-﻿/* ========== MODAL EDITOR DE TREINO ========== */
+﻿.btn-danger {
+    background: #e53e3e;
+    color: #fff;
+    border: 1px solid #e53e3e;
+}
+.btn-danger:hover {
+    background: #b91c1c;
+    border-color: #b91c1c;
+}
+/* ========== MODAL EDITOR DE TREINO ========== */
 .modal-overlay {
     position: fixed;
     inset: 0;

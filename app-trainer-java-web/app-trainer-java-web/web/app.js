@@ -1,3 +1,17 @@
+// Excluir treino
+function deleteTreino() {
+    if (confirm('Deseja realmente excluir o treino atual?')) {
+        localStorage.removeItem('treino_atual');
+        Toast.success('Treino excluído!');
+        closeEditTreinoModal();
+        if (typeof App?.loadDashboard === 'function') App.loadDashboard();
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const btnDelete = document.getElementById('btn-delete-treino');
+    if (btnDelete) btnDelete.addEventListener('click', deleteTreino);
+});
 // ========== EDITOR DE TREINO ==========
 function openEditTreinoModal(treino = null) {
     const modal = document.getElementById('modal-edit-treino');
