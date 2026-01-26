@@ -51,12 +51,19 @@ public class CoachHandler extends BaseHandler {
 
         // Se tem alunoId, busca dados completos
         if (alunoId > 0) {
-            var aluno = storage.getAlunoById(alunoId);
-            if (aluno != null) {
-                nome = aluno.nome;
-                objetivo = aluno.objetivo;
-                nivel = aluno.nivel;
-                restricoes = aluno.restricoes;
+            try {
+                var aluno = storage.getAlunoById(alunoId);
+                if (aluno != null) {
+                    nome = aluno.nome;
+                    objetivo = aluno.objetivo;
+                    nivel = aluno.nivel;
+                    restricoes = aluno.restricoes;
+                }
+            } catch (Exception e) {
+                // Loga e ignora, segue com os parâmetros default
+                if (storage instanceof log.AppLogger logger) {
+                    logger.warn("Erro ao buscar aluno por ID: " + alunoId + ": " + e.getMessage(), "CoachHandler");
+                }
             }
         }
 

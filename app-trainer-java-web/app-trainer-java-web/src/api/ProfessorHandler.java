@@ -33,17 +33,21 @@ public class ProfessorHandler extends BaseHandler {
 
         switch (method) {
             case "GET":
-                if (id != null) {
-                    var prof = storage.getProfessorById(id);
-                    if (prof != null) {
-                        sendJson(ex, 200, prof.toJSON());
+                try {
+                    if (id != null) {
+                        var prof = storage.getProfessorById(id);
+                        if (prof != null) {
+                            sendJson(ex, 200, prof.toJSON());
+                        } else {
+                            sendError(ex, 404, "Professor não encontrado");
+                        }
                     } else {
-                        sendError(ex, 404, "Professor não encontrado");
+                        String especialidade = query.get("especialidade");
+                        var profs = storage.listProfessores(especialidade);
+                        sendJson(ex, 200, StorageUtils.toJSONArrayProfessores(profs));
                     }
-                } else {
-                    String especialidade = query.get("especialidade");
-                    var profs = storage.listProfessores(especialidade);
-                    sendJson(ex, 200, StorageUtils.toJSONArrayProfessores(profs));
+                } catch (Exception e) {
+                    sendError(ex, 500, "Erro ao acessar dados do professor: " + e.getMessage());
                 }
                 break;
 
@@ -53,10 +57,14 @@ public class ProfessorHandler extends BaseHandler {
 
             case "DELETE":
                 if (id != null) {
-                    if (storage.deleteProfessor(id)) {
-                        sendSuccess(ex, "Professor removido");
-                    } else {
-                        sendError(ex, 404, "Professor não encontrado");
+                    try {
+                        if (storage.deleteProfessor(id)) {
+                            sendSuccess(ex, "Professor removido");
+                        } else {
+                            sendError(ex, 404, "Professor não encontrado");
+                        }
+                    } catch (Exception e) {
+                        sendError(ex, 500, "Erro ao remover professor: " + e.getMessage());
                     }
                 } else {
                     sendError(ex, 400, "ID é obrigatório");
@@ -87,7 +95,11 @@ public class ProfessorHandler extends BaseHandler {
         }
 
         String especialidade = params.getOrDefault("especialidade", "musculacao");
-        var prof = storage.addProfessor(nome, especialidade);
-        sendJson(ex, 201, prof.toJSON());
+        try {
+            var prof = storage.addProfessor(nome, especialidade);
+            sendJson(ex, 201, prof.toJSON());
+        } catch (Exception e) {
+            sendError(ex, 500, "Erro ao criar professor: " + e.getMessage());
+        }
     }
 }

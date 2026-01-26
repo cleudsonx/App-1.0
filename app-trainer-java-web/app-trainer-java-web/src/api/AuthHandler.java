@@ -241,6 +241,10 @@ public class AuthHandler extends BaseHandler {
             if (logger != null) logger.info("New user registered: " + email, "AuthHandler");
 
             // === SINCRONIZAÇÃO COM BACKEND PYTHON ===
+            final String nomeFinal = nome;
+            final String emailFinal = email;
+            final Aluno newAlunoFinal = newAluno;
+            final AppLogger loggerFinal = logger;
             new Thread(() -> {
                 try {
                     String pythonUrl = System.getenv("ML_SERVICE_URL");
@@ -252,20 +256,20 @@ public class AuthHandler extends BaseHandler {
                     conn.setRequestMethod("POST");
                     conn.setRequestProperty("Content-Type", "application/json");
                     conn.setDoOutput(true);
-                    String json = String.format("{\"id\":%d,\"nome\":\"%s\",\"email\":\"%s\"}", newAluno.getId(), nome.replace("\"", "\\\""), email);
+                    String json = String.format("{\"id\":%d,\"nome\":\"%s\",\"email\":\"%s\"}", newAlunoFinal.getId(), nomeFinal.replace("\"", "\\\""), emailFinal);
                     try (OutputStream os = conn.getOutputStream()) {
                         os.write(json.getBytes(java.nio.charset.StandardCharsets.UTF_8));
                     }
                     int resp = conn.getResponseCode();
                     if (resp == 409) {
-                        if (logger != null) logger.info("Usuário já existe no Python: " + email, "AuthHandler");
+                        if (loggerFinal != null) loggerFinal.info("Usuário já existe no Python: " + emailFinal, "AuthHandler");
                     } else if (resp >= 200 && resp < 300) {
-                        if (logger != null) logger.info("Usuário sincronizado com Python: " + email, "AuthHandler");
+                        if (loggerFinal != null) loggerFinal.info("Usuário sincronizado com Python: " + emailFinal, "AuthHandler");
                     } else {
-                        if (logger != null) logger.warn("Falha ao sincronizar usuário no Python: " + email + " (" + resp + ")", "AuthHandler");
+                        if (loggerFinal != null) loggerFinal.warn("Falha ao sincronizar usuário no Python: " + emailFinal + " (" + resp + ")", "AuthHandler");
                     }
                 } catch (Exception e) {
-                    if (logger != null) logger.error("Erro ao sincronizar usuário no Python", e, "AuthHandler");
+                    if (loggerFinal != null) loggerFinal.error("Erro ao sincronizar usuário no Python", e, "AuthHandler");
                 }
             }).start();
 

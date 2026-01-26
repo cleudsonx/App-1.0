@@ -38,19 +38,23 @@ public class AlunoHandler extends BaseHandler {
 
         switch (method) {
             case "GET":
-                if (id != null) {
-                    var aluno = storage.getAlunoById(id);
-                    if (aluno != null) {
-                        sendJson(ex, 200, aluno.toJSON());
+                try {
+                    if (id != null) {
+                        var aluno = storage.getAlunoById(id);
+                        if (aluno != null) {
+                            sendJson(ex, 200, aluno.toJSON());
+                        } else {
+                            sendError(ex, 404, "Aluno não encontrado");
+                        }
                     } else {
-                        sendError(ex, 404, "Aluno não encontrado");
+                        // Lista com filtros opcionais
+                        String objetivo = query.get("objetivo");
+                        String nivel = query.get("nivel");
+                        var alunos = storage.listAlunos(objetivo, nivel);
+                        sendJson(ex, 200, StorageUtils.toJSONArrayAlunos(alunos));
                     }
-                } else {
-                    // Lista com filtros opcionais
-                    String objetivo = query.get("objetivo");
-                    String nivel = query.get("nivel");
-                    var alunos = storage.listAlunos(objetivo, nivel);
-                    sendJson(ex, 200, StorageUtils.toJSONArrayAlunos(alunos));
+                } catch (Exception e) {
+                    sendError(ex, 500, "Erro ao acessar dados do aluno: " + e.getMessage());
                 }
                 break;
 
@@ -68,10 +72,14 @@ public class AlunoHandler extends BaseHandler {
 
             case "DELETE":
                 if (id != null) {
-                    if (storage.deleteAluno(id)) {
-                        sendSuccess(ex, "Aluno removido");
-                    } else {
-                        sendError(ex, 404, "Aluno não encontrado");
+                    try {
+                        if (storage.deleteAluno(id)) {
+                            sendSuccess(ex, "Aluno removido");
+                        } else {
+                            sendError(ex, 404, "Aluno não encontrado");
+                        }
+                    } catch (Exception e) {
+                        sendError(ex, 500, "Erro ao remover aluno: " + e.getMessage());
                     }
                 } else {
                     sendError(ex, 400, "ID do aluno é obrigatório");
@@ -114,8 +122,12 @@ public class AlunoHandler extends BaseHandler {
         String rpeStr = params.get("rpe");
         Integer rpe = (rpeStr == null || rpeStr.isEmpty()) ? null : parseIntSafe(rpeStr, 0);
 
-        var aluno = storage.addAluno(nome, idade, objetivo, nivel, pesoKg, alturaCm, restricoes, equipamentos, rpe);
-        sendJson(ex, 201, aluno.toJSON());
+        try {
+            var aluno = storage.addAluno(nome, idade, objetivo, nivel, pesoKg, alturaCm, restricoes, equipamentos, rpe);
+            sendJson(ex, 201, aluno.toJSON());
+        } catch (Exception e) {
+            sendError(ex, 500, "Erro ao criar aluno: " + e.getMessage());
+        }
     }
 
     private void updateAluno(HttpExchange ex, int id) throws IOException {
@@ -127,11 +139,15 @@ public class AlunoHandler extends BaseHandler {
             params = parseQuery(readBody(ex));
         }
 
-        var updated = storage.updateAluno(id, params);
-        if (updated != null) {
-            sendJson(ex, 200, updated.toJSON());
-        } else {
-            sendError(ex, 404, "Aluno não encontrado");
+        try {
+            var updated = storage.updateAluno(id, params);
+            if (updated != null) {
+                sendJson(ex, 200, updated.toJSON());
+            } else {
+                sendError(ex, 404, "Aluno não encontrado");
+            }
+        } catch (Exception e) {
+            sendError(ex, 500, "Erro ao atualizar aluno: " + e.getMessage());
         }
     }
 }

@@ -42,12 +42,19 @@ public class SugestaoHandler extends BaseHandler {
         // Se tem alunoId, usa dados do aluno
         int alunoId = parseIntSafe(params.get("alunoId"), -1);
         if (alunoId > 0) {
-            var aluno = storage.getAlunoById(alunoId);
-            if (aluno != null) {
-                objetivo = aluno.objetivo;
-                nivel = aluno.nivel;
-                restricoes = aluno.restricoes;
-                equipamentos = aluno.equipamentos;
+            try {
+                var aluno = storage.getAlunoById(alunoId);
+                if (aluno != null) {
+                    objetivo = aluno.objetivo;
+                    nivel = aluno.nivel;
+                    restricoes = aluno.restricoes;
+                    equipamentos = aluno.equipamentos;
+                }
+            } catch (Exception e) {
+                // Loga e ignora, segue com os parâmetros default
+                if (storage instanceof log.AppLogger logger) {
+                    logger.warn("Erro ao buscar aluno por ID: " + alunoId + ": " + e.getMessage(), "SugestaoHandler");
+                }
             }
         }
 
