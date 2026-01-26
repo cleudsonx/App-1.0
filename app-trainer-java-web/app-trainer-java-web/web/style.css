@@ -121,8 +121,10 @@ button {
     cursor: pointer;
     border: none;
     background: none;
-    /* Correção para logo-circle inline removido */
-    .gradient-shadow {
+}
+
+/* Correção para logo-circle inline removido */
+.gradient-shadow {
     color: inherit;
 }
 
