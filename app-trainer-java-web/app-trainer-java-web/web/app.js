@@ -597,6 +597,7 @@ async function api(endpoint, options = {}) {
             if (refreshed) {
                 console.log('✅ Retry após refresh');
                 options._retried = true;
+                options.skipRefreshCheck = true; // Evita nova verificação de expiração no retry
                 return api(endpoint, options); // Retry com novo token
             }
         }
