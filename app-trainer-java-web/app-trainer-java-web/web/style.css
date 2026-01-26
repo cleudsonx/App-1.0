@@ -1274,6 +1274,7 @@ input, select, textarea {
     background: rgba(255,255,255,0.2);
     -webkit-backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
 }
 /* As propriedades acima estavam fora de bloco, mova para o bloco correto se necessário */
