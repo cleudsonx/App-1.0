@@ -715,6 +715,8 @@ const Auth = {
         if (errorEl) errorEl.textContent = '';
         if (!nome || !email || !senha) { if (errorEl) errorEl.textContent = 'Preencha todos os campos'; return; }
         if (senha.length < 6) { if (errorEl) errorEl.textContent = 'Senha: mínimo 6 caracteres'; return; }
+        if (!/[A-Z]/.test(senha)) { if (errorEl) errorEl.textContent = 'Senha deve conter pelo menos 1 letra maiúscula'; return; }
+        if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(senha)) { if (errorEl) errorEl.textContent = 'Senha deve conter pelo menos 1 caractere especial'; return; }
 
         try {
             showLoading(true, 'Criando conta...');
@@ -730,10 +732,16 @@ const Auth = {
                 if (css) { css.href = 'style.css?v=' + Date.now(); }
                 this.enterApp(false, true);
             } else {
-                if (errorEl) errorEl.textContent = response.detail || response.error || 'Erro ao criar conta';
+                let msg = response.detail || response.error || 'Erro ao criar conta';
+                if (/ma[ií]scula/i.test(msg)) msg = 'Senha deve conter pelo menos 1 letra maiúscula';
+                if (/especial/i.test(msg)) msg = 'Senha deve conter pelo menos 1 caractere especial';
+                if (errorEl) errorEl.textContent = msg;
+                Toast.error(msg);
             }
         } catch (error) {
             let msg = error.message || 'Erro';
+            if (/ma[ií]scula/i.test(msg)) msg = 'Senha deve conter pelo menos 1 letra maiúscula';
+            if (/especial/i.test(msg)) msg = 'Senha deve conter pelo menos 1 caractere especial';
             if (/duplicate key|email.*existe|already exists|409/.test(msg)) {
                 msg = 'Email já cadastrado. Use outro ou recupere a senha.';
             } else if (/Failed to fetch|ERR_CONNECTION_REFUSED|NetworkError/.test(msg)) {
