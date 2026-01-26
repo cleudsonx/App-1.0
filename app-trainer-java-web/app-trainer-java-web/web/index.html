@@ -1,237 +1,1231 @@
-    <!-- ====== MODAL CUSTOMIZAÇÃO DE DASHBOARD ====== -->
-    <div id="modal-dashboard-customizer" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-label="Personalizar Dashboard">
-      <div class="modal-content" style="max-width:420px;">
-        <h2>Personalizar Dashboard</h2>
-        <p>Ative/desative widgets e organize a ordem do seu dashboard.</p>
-        <div id="customizer-widgets-list"></div>
-        <div class="modal-actions">
-          <button id="btn-save-dashboard" class="btn">Salvar</button>
-          <button id="btn-reset-dashboard" class="btn btn-secondary">Restaurar padrão</button>
-          <button type="button" class="btn btn-secondary" onclick="document.getElementById('modal-dashboard-customizer').classList.add('hidden');document.body.style.overflow='';">Fechar</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Botão flutuante para abrir customizador -->
-    <button id="btn-customize-floating" class="btn" style="position:fixed;bottom:24px;right:24px;z-index:10001;display:flex;align-items:center;gap:8px;padding:12px 18px;font-size:1rem;box-shadow:0 2px 8px #0002;">
-      <span>⚙️</span> Personalizar
-    </button>
-  <!-- ====== MODAL EDITOR DE TREINO ====== -->
-  <div id="modal-edit-treino" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-label="Editor de Treino">
-    <div class="modal-content">
-      <h2>Edição de Treino</h2>
-      <form id="form-edit-treino">
-        <div class="input-group">
-          <label for="edit-treino-nome">Nome do treino</label>
-          <input type="text" id="edit-treino-nome" required />
-        </div>
-        <div class="input-group">
-          <label for="edit-treino-dias">Dias por semana</label>
-          <input type="number" id="edit-treino-dias" min="1" max="7" required />
-        </div>
-        <div class="input-group">
-          <label for="edit-treino-exercicios">Exercícios (um por linha)</label>
-          <textarea id="edit-treino-exercicios" rows="5" required></textarea>
-        </div>
-        <div class="modal-actions">
-          <button type="submit" class="btn">Salvar</button>
-          <button type="button" class="btn btn-secondary" id="btn-cancel-edit-treino">Cancelar</button>
-          <button type="button" class="btn btn-danger" id="btn-delete-treino" style="margin-left:auto;">Excluir</button>
-        </div>
-      </form>
-    </div>
-  </div>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <!-- Performance: Preconnect e Preload -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="description" content="Shaipados - Coach Virtual de Musculação">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Shaipados">
+    
+    <title>Shaipados</title>
+    
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="assets/icon-180.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" href="/style.css" as="style">
-    <link rel="preload" href="/brand.css" as="style">
-    <link rel="preload" href="/app.js" as="script">
-    <!-- Imagem já está com loading="lazy" para otimização -->
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="Coach Virtual de Musculação com IA, dashboard interativo, onboarding personalizado e acompanhamento de treinos.">
-  <meta name="theme-color" content="#6366f1">
-  <link rel="manifest" href="/manifest.webmanifest">
-  <link rel="icon" href="/favicon.ico">
-  <title>Shaipados - Coach Virtual</title>
-  <link rel="stylesheet" href="/style.css">
-  <link rel="stylesheet" href="/brand.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="brand.css">
 </head>
 <body>
-  <!-- ====== LOGIN/REGISTRO ====== -->
-  <div class="auth-screen" id="auth-screen" role="main" aria-label="Tela de autenticação">
-    <div class="auth-background">
-      <div class="auth-gradient"></div>
-    </div>
-    <div class="auth-content">
-      <div class="auth-logo">
-        <div class="logo-circle">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#6366F1"/><text x="12" y="16" text-anchor="middle" font-size="12" fill="#fff">S</text></svg>
+    <!-- ========== TELA DE LOGIN/REGISTRO ========== -->
+    <div class="auth-screen" id="auth-screen">
+        <div class="auth-background">
+            <div class="auth-gradient"></div>
         </div>
-        <h1>Shaipados</h1>
-        <p>Coach Virtual de Musculação</p>
-      </div>
-      <div class="auth-card">
-        <div class="auth-tabs">
-          <button type="button" class="auth-tab active" id="tab-login" aria-label="Entrar" role="tab">Entrar</button>
-          <button type="button" class="auth-tab" id="tab-register" aria-label="Criar conta" role="tab">Criar conta</button>
+        
+        <div class="auth-content">
+            <div class="auth-logo">
+                <div class="logo-circle" style="background: linear-gradient(135deg, #FF6B35, #ff8c42); box-shadow: 0 0 20px rgba(255, 107, 53, 0.4);">
+                    <span style="font-size: 36px; font-weight: 800;">S</span>
+                </div>
+                <h1 style="background: linear-gradient(135deg, #FF6B35, #FFD700); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">SHAIPADOS</h1>
+                <p>Seu coach virtual de musculação hardcore</p>
+            </div>
+            
+            <div class="auth-card">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login">Entrar</button>
+                    <button class="auth-tab" data-tab="register">Criar conta</button>
+                </div>
+                
+                <!-- Login Form -->
+                <form class="auth-form active" id="login-form">
+                    <div class="input-group">
+                        <label>Email</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                <path d="m22 6-10 7L2 6"/>
+                            </svg>
+                            <input type="email" id="login-email" placeholder="seu@email.com" required>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Senha</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                            <input type="password" id="login-senha" placeholder="••••••••" minlength="6" required>
+                        </div>
+                    </div>
+                    
+                    <div class="auth-error" id="login-error"></div>
+                    
+                    <button type="submit" class="btn-auth">
+                        <span>Entrar</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+                </form>
+                
+                <!-- Register Form -->
+                <form class="auth-form" id="register-form">
+                    <div class="input-group">
+                        <label>Nome completo</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="7" r="4"/>
+                                <path d="M5.5 21a8.5 8.5 0 0 1 13 0"/>
+                            </svg>
+                            <input type="text" id="register-nome" placeholder="Seu nome" required>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Email</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                <path d="m22 6-10 7L2 6"/>
+                            </svg>
+                            <input type="email" id="register-email" placeholder="seu@email.com" required>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Senha</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                            <input type="password" id="register-senha" placeholder="Mínimo 6 caracteres" minlength="6" required>
+                        </div>
+                    </div>
+                    
+                    <div class="auth-error" id="register-error"></div>
+                    
+                    <button type="submit" class="btn-auth">
+                        <span>Criar conta</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
         </div>
-        <form id="login-form" class="auth-form active">
-          <div class="input-group">
-            <label for="login-email">Email</label>
-            <div class="input-wrapper">
-              <input type="email" id="login-email" placeholder="Email" required>
-            </div>
-          </div>
-          <div class="input-group">
-            <label for="login-senha">Senha</label>
-            <div class="input-wrapper">
-              <input type="password" id="login-senha" placeholder="Senha" required>
-            </div>
-          </div>
-          <div id="login-error" class="error-message"></div>
-          <button type="submit" aria-label="Entrar na conta" role="button">Entrar</button>
-        </form>
-        <form id="register-form" class="auth-form">
-          <div class="input-group">
-            <label for="register-nome">Nome completo</label>
-            <div class="input-wrapper">
-              <input type="text" id="register-nome" placeholder="Nome completo" required>
-            </div>
-          </div>
-          <div class="input-group">
-            <label for="register-email">Email</label>
-            <div class="input-wrapper">
-              <input type="email" id="register-email" placeholder="Email" required>
-            </div>
-          </div>
-          <div class="input-group">
-            <label for="register-senha">Senha</label>
-            <div class="input-wrapper">
-              <input type="password" id="register-senha" placeholder="Senha" required>
-            </div>
-          </div>
-          <div id="register-error" class="error-message"></div>
-          <button type="submit" aria-label="Criar nova conta" role="button">Criar conta</button>
-        </form>
-      </div>
     </div>
-  </div>
 
+    <!-- ========== APP PRINCIPAL ========== -->
+    <div class="app" id="app" style="display: none;">
+        
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="user-avatar" id="user-avatar">J</div>
+                <div class="header-greeting">
+                    <span class="greeting-time" id="greeting-time">Bom dia</span>
+                    <span class="greeting-name" id="greeting-name">João</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="header-btn" id="btn-notifications">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                </button>
+                <button class="header-btn" id="btn-settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
 
-  <!-- ====== APP PRINCIPAL ====== -->
-  <div class="app hidden" id="app">
-    <div class="container">
-      <!-- Header -->
-      <header class="app-header">
-        <h1 tabindex="0">Shaipados</h1>
-      </header>
+        <!-- Main Content Area -->
+        <main class="app-main" id="app-main">
+            
+            <!-- ===== TAB: HOME/DASHBOARD ===== -->
+            <section class="tab-content active" id="tab-home">
+                
+                <!-- Banner Onboarding Incompleto (oculto por padrão) -->
+                <div class="onboarding-reminder" id="onboarding-reminder" style="display: none;">
+                    <div class="reminder-content">
+                        <div class="reminder-icon">⚡</div>
+                        <div class="reminder-text">
+                            <strong>Perfil incompleto:</strong>
+                            <button type="button" class="reminder-inline-action" id="btn-complete-onboarding">COMPLETAR</button>
+                            <p>Desbloqueie treinos personalizados</p>
+                        </div>
+                    </div>
+                    <button class="btn-reminder-dismiss" id="btn-dismiss-reminder">✕</button>
+                </div>
 
-      <!-- Motivational Banner -->
-      <div id="motivational-banner" class="motivational-banner hidden"></div>
+                <!-- Dashboard Header with Customize Button -->
+                <div class="dashboard-header">
+                    <div class="dashboard-title">
+                        <h2>Meu Dashboard</h2>
+                    </div>
+                    <button class="btn-customize-dashboard" id="btn-customize-dashboard" onclick="App.openDashboardCustomizer()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                            <rect x="3" y="3" width="7" height="7" rx="1"/>
+                            <rect x="14" y="3" width="7" height="7" rx="1"/>
+                            <rect x="3" y="14" width="7" height="7" rx="1"/>
+                            <rect x="14" y="14" width="7" height="7" rx="1"/>
+                        </svg>
+                        <span>Personalizar</span>
+                    </button>
+                </div>
 
-      <!-- Tabs -->
-      <main class="app-main">
-        <!-- DASHBOARD PRINCIPAL -->
-        <div class="home-dashboard" role="region" aria-label="Dashboard principal">
-          <div class="dashboard-grid" id="dashboard-widgets" role="list">
-            <!-- Os widgets/cards do dashboard são renderizados dinamicamente pelo JS -->
-          </div>
+                <!-- Dashboard Grid - Modern App Style with Drag & Drop -->
+                <div class="home-dashboard" id="home-dashboard">
+                    <!-- Cards serão renderizados dinamicamente pelo JS -->
+                </div>
+
+                <!-- Botão Flutuante para Personalizar Dashboard -->
+                <button class="btn-customize-floating" id="btn-customize-floating" onclick="App.openDashboardCustomizer()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"/>
+                        <path d="M16 3v4"/>
+                        <path d="M8 3v4"/>
+                        <path d="M12 11v6"/>
+                        <path d="M9 14h6"/>
+                    </svg>
+                    <span>Editar</span>
+                </button>
+            </section>
+
+            <!-- ===== TAB: TREINO ===== -->
+            <section class="tab-content" id="tab-treino">
+                <div id="treino-content">
+                    <!-- Treino content will be dynamically rendered -->
+                </div>
+            </section>
+
+            <!-- ===== TAB: COACH ===== -->
+            <section class="tab-content" id="tab-coach">
+                <div class="chat-container">
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="message bot">
+                            <div class="message-avatar">🤖</div>
+                            <div class="message-content">
+                                <p>Olá! Sou seu Coach Virtual de Musculação. Como posso ajudar você hoje?</p>
+                                <div class="quick-questions">
+                                    <button class="quick-q" data-q="Como ganhar massa muscular?">💪 Ganhar massa</button>
+                                    <button class="quick-q" data-q="Quantas séries devo fazer?">📊 Volume ideal</button>
+                                    <button class="quick-q" data-q="Melhor dieta para hipertrofia?">🥗 Nutrição</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form class="chat-input" id="chat-form">
+                        <input type="text" id="chat-input" placeholder="Digite sua dúvida...">
+                        <button type="submit" class="btn-send">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- ===== TAB: PERFIL/AVALIAÇÃO ===== -->
+            <section class="tab-content" id="tab-perfil">
+                <div class="page-header">
+                    <h1>Meu Perfil</h1>
+                    <button class="btn-icon-text" id="btn-logout">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                            <polyline points="16 17 21 12 16 7"/>
+                            <line x1="21" y1="12" x2="9" y2="12"/>
+                        </svg>
+                        <span>Sair</span>
+                    </button>
+                </div>
+
+                <!-- Alerta de Perfil Incompleto -->
+                <div class="profile-incomplete-alert" id="profile-incomplete-alert" style="display: none;">
+                    <div class="alert-content">
+                        <div class="alert-icon">⚠️</div>
+                        <div class="alert-text">
+                            <strong>Perfil incompleto</strong>
+                            <p>Complete seu perfil para desbloquear treinos personalizados</p>
+                        </div>
+                        <button class="btn-alert-action" id="btn-complete-profile">Completar</button>
+                    </div>
+                </div>
+
+                <!-- Profile Summary -->
+                <div class="profile-card" id="profile-summary">
+                    <div class="profile-avatar-large">
+                        <span id="profile-avatar-letter">J</span>
+                    </div>
+                    <div class="profile-info">
+                        <h2 id="profile-name">João Silva</h2>
+                        <p id="profile-goal">Objetivo: Hipertrofia</p>
+                        <span class="profile-status" id="profile-status"></span>
+                    </div>
+                    <button class="btn-edit" id="btn-edit-profile">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Profile Stats -->
+                <div class="profile-stats">
+                    <div class="profile-stat">
+                        <span class="stat-number" id="stat-peso">--</span>
+                        <span class="stat-unit">kg</span>
+                        <span class="stat-name">Peso</span>
+                    </div>
+                    <div class="profile-stat">
+                        <span class="stat-number" id="stat-altura">--</span>
+                        <span class="stat-unit">cm</span>
+                        <span class="stat-name">Altura</span>
+                    </div>
+                    <div class="profile-stat">
+                        <span class="stat-number" id="stat-idade">30</span>
+                        <span class="stat-unit">anos</span>
+                        <span class="stat-name">Idade</span>
+                    </div>
+                    <div class="profile-stat">
+                        <span class="stat-number" id="stat-imc">24.5</span>
+                        <span class="stat-unit">IMC</span>
+                        <span class="stat-name">Normal</span>
+                    </div>
+                </div>
+
+                <!-- Profile Menu -->
+                <div class="profile-menu">
+                    <button class="menu-item" data-section="dados">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="7" r="4"/>
+                            <path d="M5.5 21a8.5 8.5 0 0 1 13 0"/>
+                        </svg>
+                        <span>Dados Pessoais</span>
+                        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
+                    </button>
+                    
+                    <button class="menu-item" data-section="objetivos">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <circle cx="12" cy="12" r="6"/>
+                            <circle cx="12" cy="12" r="2"/>
+                        </svg>
+                        <span>Objetivos</span>
+                        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
+                    </button>
+                    
+                    <button class="menu-item" data-section="restricoes">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                        <span>Restrições</span>
+                        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
+                    </button>
+                    
+                    <button class="menu-item" data-section="equipamentos">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6.5 6.5h11M4 12h16M6.5 17.5h11"/>
+                            <circle cx="4.5" cy="6.5" r="1.5"/>
+                            <circle cx="19.5" cy="6.5" r="1.5"/>
+                            <circle cx="4.5" cy="17.5" r="1.5"/>
+                            <circle cx="19.5" cy="17.5" r="1.5"/>
+                        </svg>
+                        <span>Equipamentos</span>
+                        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
+                    </button>
+                    
+                    <button class="menu-item highlight" id="btn-restart-onboarding">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                            <path d="M3 3v5h5"/>
+                            <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+                            <path d="M16 16h5v5"/>
+                        </svg>
+                        <span>Refazer Configuração Inicial</span>
+                        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Configurações do Timer -->
+                <div class="settings-section">
+                    <h3 class="settings-title">⏱️ Configurações do Timer</h3>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Timer Automático</span>
+                            <span class="setting-desc">Inicia timer ao completar série</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="setting-auto-timer" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Som</span>
+                            <span class="setting-desc">Alerta sonoro ao terminar</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="setting-sound" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Vibração</span>
+                            <span class="setting-desc">Vibrar ao terminar descanso</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="setting-vibration" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Tempo Padrão</span>
+                            <span class="setting-desc">Descanso padrão entre séries</span>
+                        </div>
+                        <select id="setting-default-time" class="setting-select">
+                            <option value="30">30 seg</option>
+                            <option value="60">1 min</option>
+                            <option value="90" selected>1:30 min</option>
+                            <option value="120">2 min</option>
+                            <option value="180">3 min</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="danger-zone">
+                    <h3>Zona de Perigo</h3>
+                    <button class="btn-danger-outline" id="btn-excluir-conta">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                            <line x1="10" y1="11" x2="10" y2="17"/>
+                            <line x1="14" y1="11" x2="14" y2="17"/>
+                        </svg>
+                        <span>Excluir Minha Conta</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- ===== TAB: PROGRESSO ===== -->
+            <section class="tab-content" id="tab-progresso">
+                <div class="page-header">
+                    <h1>Meu Progresso</h1>
+                    <p>Acompanhe sua evolução</p>
+                </div>
+
+                <!-- Resumo Geral -->
+                <div class="progress-summary">
+                    <div class="summary-card">
+                        <div class="summary-icon">📅</div>
+                        <div class="summary-info">
+                            <span class="summary-value" id="total-treinos">0</span>
+                            <span class="summary-label">Treinos</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon">⏱️</div>
+                        <div class="summary-info">
+                            <span class="summary-value" id="total-horas">0h</span>
+                            <span class="summary-label">Tempo Total</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon">🔥</div>
+                        <div class="summary-info">
+                            <span class="summary-value" id="streak-dias">0</span>
+                            <span class="summary-label">Dias Seguidos</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráfico de Frequência -->
+                <div class="section-header">
+                    <h2>Frequência Semanal</h2>
+                </div>
+                <div class="frequency-chart" id="frequency-chart">
+                    <div class="chart-bar">
+                        <div class="bar-fill" style="height: 60%"></div>
+                        <span class="bar-label">Seg</span>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="bar-fill" style="height: 80%"></div>
+                        <span class="bar-label">Ter</span>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="bar-fill" style="height: 40%"></div>
+                        <span class="bar-label">Qua</span>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="bar-fill" style="height: 100%"></div>
+                        <span class="bar-label">Qui</span>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="bar-fill" style="height: 70%"></div>
+                        <span class="bar-label">Sex</span>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="bar-fill" style="height: 20%"></div>
+                        <span class="bar-label">Sab</span>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="bar-fill" style="height: 10%"></div>
+                        <span class="bar-label">Dom</span>
+                    </div>
+                </div>
+
+                <!-- Medidas Corporais -->
+                <div class="section-header">
+                    <h2>Evolução Corporal</h2>
+                    <button class="btn-text" id="btn-add-medida">+ Adicionar</button>
+                </div>
+                <div class="measurements-grid" id="measurements-grid">
+                    <div class="measurement-card">
+                        <span class="measurement-label">Peso</span>
+                        <span class="measurement-value" id="medida-peso">--</span>
+                        <span class="measurement-change positive">--</span>
+                    </div>
+                    <div class="measurement-card">
+                        <span class="measurement-label">Braço</span>
+                        <span class="measurement-value" id="medida-braco">--</span>
+                        <span class="measurement-change positive">--</span>
+                    </div>
+                    <div class="measurement-card">
+                        <span class="measurement-label">Peito</span>
+                        <span class="measurement-value" id="medida-peito">--</span>
+                        <span class="measurement-change positive">--</span>
+                    </div>
+                    <div class="measurement-card">
+                        <span class="measurement-label">Cintura</span>
+                        <span class="measurement-value" id="medida-cintura">--</span>
+                        <span class="measurement-change negative">--</span>
+                    </div>
+                </div>
+
+                <!-- Histórico Recente -->
+                <div class="section-header">
+                    <h2>Últimos Treinos</h2>
+                </div>
+                <div class="history-list" id="history-list">
+                    <div class="history-empty">
+                        <span>📊</span>
+                        <p>Nenhum treino registrado ainda</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav" id="bottom-nav">
+            <button class="nav-item active" data-tab="home">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+                <span>Início</span>
+            </button>
+            
+            <button class="nav-item" data-tab="treino">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6.5 6.5h11M4 12h16M6.5 17.5h11"/>
+                    <circle cx="4.5" cy="6.5" r="1.5"/>
+                    <circle cx="19.5" cy="6.5" r="1.5"/>
+                    <circle cx="4.5" cy="17.5" r="1.5"/>
+                    <circle cx="19.5" cy="17.5" r="1.5"/>
+                </svg>
+                <span>Treino</span>
+            </button>
+            
+            <button class="nav-item nav-center" data-tab="coach">
+                <div class="nav-center-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                </div>
+                <span>Coach</span>
+            </button>
+            
+            <button class="nav-item" data-tab="progresso">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="20" x2="18" y2="10"/>
+                    <line x1="12" y1="20" x2="12" y2="4"/>
+                    <line x1="6" y1="20" x2="6" y2="14"/>
+                </svg>
+                <span>Progresso</span>
+            </button>
+            
+            <button class="nav-item" data-tab="perfil">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="7" r="4"/>
+                    <path d="M5.5 21a8.5 8.5 0 0 1 13 0"/>
+                </svg>
+                <span>Perfil</span>
+            </button>
+        </nav>
+
+    </div>
+
+    <!-- ========== ONBOARDING WIZARD ========== -->
+    <div class="onboarding-overlay" id="onboarding" style="display: none;">
+        <div class="onboarding-container">
+            <!-- Progress Bar -->
+            <div class="onboarding-progress">
+                <div class="progress-bar" id="onboarding-progress-bar" style="width: 20%;"></div>
+            </div>
+            
+            <!-- Header -->
+            <div class="onboarding-header">
+                <button class="btn-back" id="btn-onboarding-back">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"/>
+                    </svg>
+                </button>
+                <span class="step-indicator" id="step-indicator">1 de 5</span>
+                <button class="btn-skip" id="btn-onboarding-skip">Pular</button>
+            </div>
+
+            <!-- Steps -->
+            <div class="onboarding-steps" id="onboarding-steps">
+                
+                <!-- Step 1: Dados Básicos -->
+                <div class="onboarding-step active" id="step-1" data-step="1">
+                    <div class="step-icon">👤</div>
+                    <h2>Vamos começar!</h2>
+                    <p>Primeiro, conte um pouco sobre você</p>
+                    
+                    <div class="step-form">
+                        <div class="input-group">
+                            <label>Idade</label>
+                            <input type="number" id="onb-idade" min="14" max="100" placeholder="30">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Sexo</label>
+                            <div class="pill-select">
+                                <button type="button" class="pill" data-value="M">Masculino</button>
+                                <button type="button" class="pill" data-value="F">Feminino</button>
+                            </div>
+                            <input type="hidden" id="onb-sexo">
+                        </div>
+                        
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Peso (kg)</label>
+                                <input type="number" id="onb-peso" min="30" max="300" step="0.1" placeholder="75">
+                            </div>
+                            <div class="input-group">
+                                <label>Altura (cm)</label>
+                                <input type="number" id="onb-altura" min="100" max="250" placeholder="175">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Objetivo -->
+                <div class="onboarding-step" data-step="2">
+                    <div class="step-icon">🎯</div>
+                    <h2>Qual seu objetivo?</h2>
+                    <p>Selecione o que mais combina com você</p>
+                    
+                    <div class="goal-cards" id="goal-cards">
+                        <button type="button" class="goal-card" data-value="hipertrofia">
+                            <span class="goal-emoji">💪</span>
+                            <span class="goal-title">Ganhar Massa</span>
+                            <span class="goal-desc">Hipertrofia muscular</span>
+                        </button>
+                        
+                        <button type="button" class="goal-card" data-value="forca">
+                            <span class="goal-emoji">🏆</span>
+                            <span class="goal-title">Ficar Forte</span>
+                            <span class="goal-desc">Força máxima</span>
+                        </button>
+                        
+                        <button type="button" class="goal-card" data-value="emagrecimento">
+                            <span class="goal-emoji">🔥</span>
+                            <span class="goal-title">Emagrecer</span>
+                            <span class="goal-desc">Perda de gordura</span>
+                        </button>
+                        
+                        <button type="button" class="goal-card" data-value="condicionamento">
+                            <span class="goal-emoji">❤️</span>
+                            <span class="goal-title">Saúde</span>
+                            <span class="goal-desc">Bem-estar geral</span>
+                        </button>
+                    </div>
+                    <input type="hidden" id="onb-objetivo">
+                </div>
+
+                <!-- Step 3: Experiência -->
+                <div class="onboarding-step" data-step="3">
+                    <div class="step-icon">📈</div>
+                    <h2>Sua experiência</h2>
+                    <p>Há quanto tempo você treina?</p>
+                    
+                    <div class="level-cards" id="level-cards">
+                        <button type="button" class="level-card" data-value="iniciante">
+                            <span class="level-icon">🌱</span>
+                            <span class="level-title">Iniciante</span>
+                            <span class="level-desc">0 a 6 meses</span>
+                        </button>
+                        
+                        <button type="button" class="level-card" data-value="intermediario">
+                            <span class="level-icon">📊</span>
+                            <span class="level-title">Intermediário</span>
+                            <span class="level-desc">6 meses a 2 anos</span>
+                        </button>
+                        
+                        <button type="button" class="level-card" data-value="avancado">
+                            <span class="level-icon">🏅</span>
+                            <span class="level-title">Avançado</span>
+                            <span class="level-desc">Mais de 2 anos</span>
+                        </button>
+                    </div>
+                    <input type="hidden" id="onb-nivel">
+                </div>
+
+                <!-- Step 4: Disponibilidade -->
+                <div class="onboarding-step" id="step-4" data-step="4">
+                    <div class="step-icon">📅</div>
+                    <h2>Disponibilidade</h2>
+                    <p>Quantos dias por semana você pode treinar?</p>
+                    
+                    <div class="days-selector" id="days-selector">
+                        <button type="button" class="day-btn" data-value="2">2</button>
+                        <button type="button" class="day-btn" data-value="3">3</button>
+                        <button type="button" class="day-btn active" data-value="4">4</button>
+                        <button type="button" class="day-btn" data-value="5">5</button>
+                        <button type="button" class="day-btn" data-value="6">6</button>
+                        <button type="button" class="day-btn" data-value="7">7</button>
+                    </div>
+                    <p class="days-label" id="days-label">4 dias por semana</p>
+                    <input type="hidden" id="onb-dias" value="4">
+                    
+                    <div class="input-group" style="margin-top: 24px;">
+                        <label>Tempo por treino</label>
+                        <div class="pill-select">
+                            <button type="button" class="pill" data-value="45">45min</button>
+                            <button type="button" class="pill active" data-value="60">1h</button>
+                            <button type="button" class="pill" data-value="90">1h30</button>
+                            <button type="button" class="pill" data-value="120">2h</button>
+                        </div>
+                        <input type="hidden" id="onb-duracao" value="60">
+                    </div>
+                </div>
+
+                <!-- Step 5: Local/Equipamentos -->
+                <div class="onboarding-step" data-step="5">
+                    <div class="step-icon">🏋️</div>
+                    <h2>Onde você treina?</h2>
+                    <p>Selecione o local do seu treino</p>
+                    
+                    <div class="location-cards" id="location-cards">
+                        <button type="button" class="location-card active" data-value="academia">
+                            <span class="loc-icon">🏢</span>
+                            <span class="loc-title">Academia</span>
+                        </button>
+                        
+                        <button type="button" class="location-card" data-value="casa">
+                            <span class="loc-icon">🏠</span>
+                            <span class="loc-title">Em Casa</span>
+                        </button>
+                        
+                        <button type="button" class="location-card" data-value="hibrido">
+                            <span class="loc-icon">🔄</span>
+                            <span class="loc-title">Híbrido</span>
+                        </button>
+                    </div>
+                    <input type="hidden" id="onb-local" value="academia">
+                </div>
+
+            </div>
+
+            <!-- Footer Actions -->
+            <div class="onboarding-footer">
+                <button class="btn-next" id="btn-onboarding-next">
+                    <span>Continuar</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </button>
+            </div>
         </div>
-
-        <!-- Treino Tab -->
-        <section class="tab-content" id="tab-treino">
-          <button id="btn-treino" aria-label="Gerar treino" role="button" tabindex="0">Gerar treino</button>
-          <pre id="treino-content"></pre>
-        </section>
-
-        <!-- Perfil Tab -->
-        <section class="tab-content" id="tab-perfil">
-          <h2 tabindex="0">Meu Perfil</h2>
-          <div id="profile-summary"></div>
-        </section>
-      </main>
     </div>
-  </div>
 
-  <!-- ====== MODAL DE BOAS-VINDAS PERSONALIZADO ====== -->
-  <div id="modal-welcome" class="modal-welcome hidden">
-    <div class="modal-welcome-content animate-welcome" role="dialog" aria-modal="true" aria-label="Boas-vindas">
-      <div class="modal-welcome-hero">
-        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" aria-hidden="true"><circle cx="32" cy="32" r="32" fill="#6366f1"/><text x="32" y="40" text-anchor="middle" font-size="32" fill="#fff" font-family="Arial" font-weight="bold">💪</text></svg>
-      </div>
-      <h2>Bem-vindo(a), <span id="welcome-username">Campeão</span>!</h2>
-      <p class="welcome-message">Você acaba de entrar para a comunidade Shaipados!<br>Prepare-se para transformar seus treinos com inteligência artificial, motivação e resultados reais.<br><b>Vamos começar sua jornada?</b></p>
-      <div class="modal-welcome-actions">
-        <button id="btn-welcome-start" class="btn-welcome-start" aria-label="Começar agora" role="button">Começar agora</button>
-        <button id="btn-welcome-skip" class="btn-welcome-skip" aria-label="Pular por enquanto" role="button">Pular por enquanto</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ====== ONBOARDING ====== -->
-  <div id="onboarding" class="onboarding hidden">
-    <div class="onboarding-container" role="dialog" aria-modal="true" aria-label="Onboarding">
-      <div id="onboarding-progress-bar" class="onboarding-progress-bar"></div>
-      <div id="step-indicator" class="onboarding-step-indicator"></div>
-      <div class="onboarding-step onboarding-step-1">
-        <h3>👤 Sobre você</h3>
-        <input id="onb-idade" name="idade" type="number" placeholder="Idade (anos)" min="10" max="99" />
-        <input id="onb-peso" name="peso" type="number" placeholder="Peso (kg)" min="30" max="300" />
-        <input id="onb-altura" name="altura" type="number" placeholder="Altura (cm)" min="120" max="230" />
-        <div>
-          <span class="pill" data-value="M" tabindex="0">♂ Masculino</span>
-          <span class="pill" data-value="F" tabindex="0">♀ Feminino</span>
+    <!-- ========== MODAL BOAS-VINDAS (Novo Usuário) ========== -->
+    <div class="modal-overlay" id="modal-welcome" style="display: none;">
+        <div class="modal-container modal-welcome">
+            <div class="welcome-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+            </div>
+            <h2>Bem-vindo ao Shaipados! 💪</h2>
+            <p class="welcome-text">
+                Para criar seu treino personalizado, precisamos conhecer você melhor.
+                Leva apenas <strong>2 minutos</strong> para configurar seu perfil!
+            </p>
+            <div class="welcome-features">
+                <div class="feature-item">
+                    <span class="feature-icon">📋</span>
+                    <span>Treino personalizado para seu objetivo</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">🤖</span>
+                    <span>Coach IA disponível 24h</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">📊</span>
+                    <span>Acompanhe seu progresso</span>
+                </div>
+            </div>
+            <div class="welcome-actions">
+                <button class="btn-primary btn-welcome-start" id="btn-welcome-start">
+                    <span>Configurar Agora</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </button>
+                <button class="btn-secondary btn-welcome-skip" id="btn-welcome-skip">
+                    Explorar primeiro, configurar depois
+                </button>
+            </div>
         </div>
-        <small>Esses dados ajudam a personalizar seu treino.</small>
-      </div>
-      <div class="onboarding-step onboarding-step-2">
-        <h3>🎯 Seu objetivo principal</h3>
-        <div class="goal-card" data-value="hipertrofia" tabindex="0">💪 Hipertrofia</div>
-        <div class="goal-card" data-value="emagrecimento" tabindex="0">🔥 Emagrecimento</div>
-        <div class="goal-card" data-value="saude" tabindex="0">💚 Saúde</div>
-        <small>Escolha o foco do seu plano.</small>
-      </div>
-      <div class="onboarding-step onboarding-step-3">
-        <h3>🏆 Seu nível atual</h3>
-        <div class="level-card" data-value="iniciante" tabindex="0">🌱 Iniciante</div>
-        <div class="level-card" data-value="intermediario" tabindex="0">💪 Intermediário</div>
-        <div class="level-card" data-value="avancado" tabindex="0">🔥 Avançado</div>
-        <small>Assim ajustamos a intensidade ideal.</small>
-      </div>
-      <div class="onboarding-step onboarding-step-4">
-        <h3>📅 Quantos dias por semana?</h3>
-        <div>
-          <button class="day-btn" data-value="3" tabindex="0">3 dias</button>
-          <button class="day-btn" data-value="4" tabindex="0">4 dias</button>
-          <button class="day-btn" data-value="5" tabindex="0">5 dias</button>
-        </div>
-        <h3>⏱️ Duração do treino</h3>
-        <span class="pill" data-value="45" tabindex="0">45 min</span>
-        <span class="pill" data-value="60" tabindex="0">60 min</span>
-        <span class="pill" data-value="75" tabindex="0">75 min</span>
-        <small>Monte sua rotina ideal.</small>
-      </div>
-      <div class="onboarding-step onboarding-step-5">
-        <h3>🏠 Onde vai treinar?</h3>
-        <div class="location-card" data-value="academia" tabindex="0">🏋️ Academia</div>
-        <div class="location-card" data-value="casa" tabindex="0">🏠 Casa</div>
-        <small>Seu plano será adaptado ao local.</small>
-      </div>
-      <div class="onboarding-actions">
-        <button id="btn-onboarding-back">Voltar</button>
-        <button id="btn-onboarding-next"><span>Continuar</span></button>
-        <button id="btn-onboarding-skip">Pular</button>
-      </div>
     </div>
-  </div>
 
-  <!-- ====== SCRIPTS DE INTEGRAÇÃO ====== -->
-  <script src="app.js"></script>
+    <!-- ========== MODAIS DE EDIÇÃO ========== -->
+    
+    <!-- Modal: Dados Pessoais -->
+    <div class="modal-overlay" id="modal-dados" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2>Dados Pessoais</h2>
+                <button class="btn-close-modal" data-close="modal-dados">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label>Nome</label>
+                    <input type="text" id="edit-nome" placeholder="Seu nome">
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="edit-email" placeholder="seu@email.com" readonly>
+                </div>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Idade</label>
+                        <input type="number" id="edit-idade" placeholder="25" min="14" max="100">
+                    </div>
+                    <div class="input-group">
+                        <label>Sexo</label>
+                        <select id="edit-sexo">
+                            <option value="M">Masculino</option>
+                            <option value="F">Feminino</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Peso (kg)</label>
+                        <input type="number" id="edit-peso" placeholder="70" min="30" max="300" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Altura (cm)</label>
+                        <input type="number" id="edit-altura" placeholder="175" min="100" max="250">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" data-close="modal-dados">Cancelar</button>
+                <button class="btn-primary" id="btn-salvar-dados">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Objetivos -->
+    <div class="modal-overlay" id="modal-objetivos" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2>Objetivos</h2>
+                <button class="btn-close-modal" data-close="modal-objetivos">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label>Objetivo Principal</label>
+                    <select id="edit-objetivo">
+                        <option value="hipertrofia">💪 Hipertrofia - Ganho de massa muscular</option>
+                        <option value="forca">🏋️ Força - Aumentar força máxima</option>
+                        <option value="emagrecimento">🔥 Emagrecimento - Perder gordura</option>
+                        <option value="resistencia">❤️ Resistência - Condicionamento</option>
+                        <option value="condicionamento">🏃 Condicionamento Geral</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Nível de Experiência</label>
+                    <select id="edit-nivel">
+                        <option value="iniciante">Iniciante (0-6 meses)</option>
+                        <option value="intermediario">Intermediário (6 meses - 2 anos)</option>
+                        <option value="avancado">Avançado (2+ anos)</option>
+                    </select>
+                </div>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Dias por Semana</label>
+                        <select id="edit-dias">
+                            <option value="2">2 dias</option>
+                            <option value="3">3 dias</option>
+                            <option value="4">4 dias</option>
+                            <option value="5">5 dias</option>
+                            <option value="6">6 dias</option>
+                            <option value="7">7 dias</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Tempo por Treino</label>
+                        <select id="edit-duracao">
+                            <option value="45">45 min</option>
+                            <option value="60">1 hora</option>
+                            <option value="90">1h30</option>
+                            <option value="120">2 horas</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" data-close="modal-objetivos">Cancelar</button>
+                <button class="btn-primary" id="btn-salvar-objetivos">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Restrições -->
+    <div class="modal-overlay" id="modal-restricoes" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2>Restrições e Limitações</h2>
+                <button class="btn-close-modal" data-close="modal-restricoes">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-info">Selecione as restrições que se aplicam a você:</p>
+                <div class="checkbox-grid" id="restricoes-grid">
+                    <label class="checkbox-item">
+                        <input type="checkbox" value="joelho">
+                        <span>🦵 Problema no Joelho</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" value="coluna">
+                        <span>🔙 Problema na Coluna</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" value="ombro">
+                        <span>💪 Problema no Ombro</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" value="quadril">
+                        <span>🦴 Problema no Quadril</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" value="punho">
+                        <span>✋ Problema no Punho</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" value="tornozelo">
+                        <span>🦶 Problema no Tornozelo</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" value="cardiaco">
+                        <span>❤️ Problema Cardíaco</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" value="respiratorio">
+                        <span>🫁 Problema Respiratório</span>
+                    </label>
+                </div>
+                <div class="input-group" style="margin-top: 1rem;">
+                    <label>Outras Observações</label>
+                    <textarea id="edit-outras-restricoes" rows="3" placeholder="Descreva outras restrições..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-danger-outline" id="btn-limpar-restricoes">Limpar Todas</button>
+                <button class="btn-secondary" data-close="modal-restricoes">Cancelar</button>
+                <button class="btn-primary" id="btn-salvar-restricoes">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Equipamentos -->
+    <div class="modal-overlay" id="modal-equipamentos" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2>Equipamentos Disponíveis</h2>
+                <button class="btn-close-modal" data-close="modal-equipamentos">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label>Local de Treino</label>
+                    <select id="edit-local">
+                        <option value="academia">🏋️ Academia</option>
+                        <option value="casa">🏠 Casa</option>
+                        <option value="ar_livre">🌳 Ar Livre</option>
+                        <option value="hibrido">🔄 Híbrido</option>
+                    </select>
+                </div>
+                <p class="modal-info">Selecione os equipamentos disponíveis:</p>
+                <div class="checkbox-grid" id="equipamentos-grid">
+                    <label class="checkbox-item">
+                        <input type="checkbox" value="halteres">
+                        <span>🏋️ Halteres</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" value="barras">
+                        <span>🪵 Barras</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" value="maquinas">
+                        <span>⚙️ Máquinas</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" value="cabos">
+                        <span>🔗 Cabos/Polias</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" value="banco">
+                        <span>🪑 Banco</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" value="barra_fixa">
+                        <span>📏 Barra Fixa</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" value="kettlebell">
+                        <span>🔔 Kettlebell</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" value="elasticos">
+                        <span>🎗️ Elásticos</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" value="peso_corporal">
+                        <span>🤸 Peso Corporal</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" value="anilhas">
+                        <span>⚫ Anilhas</span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" data-close="modal-equipamentos">Cancelar</button>
+                <button class="btn-primary" id="btn-salvar-equipamentos">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Excluir Conta -->
+    <div class="modal-overlay" id="modal-excluir" style="display: none;">
+        <div class="modal-container modal-danger">
+            <div class="modal-header">
+                <h2>⚠️ Excluir Conta</h2>
+                <button class="btn-close-modal" data-close="modal-excluir">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="danger-warning">
+                    <p><strong>Esta ação é irreversível!</strong></p>
+                    <p>Ao excluir sua conta, todos os seus dados serão permanentemente removidos:</p>
+                    <ul>
+                        <li>Dados pessoais e preferências</li>
+                        <li>Histórico de treinos</li>
+                        <li>Progresso e estatísticas</li>
+                        <li>Conversas com o Coach</li>
+                    </ul>
+                </div>
+                <div class="input-group">
+                    <label>Digite "EXCLUIR" para confirmar:</label>
+                    <input type="text" id="confirm-delete" placeholder="EXCLUIR">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" data-close="modal-excluir">Cancelar</button>
+                <button class="btn-danger" id="btn-confirmar-excluir" disabled>Excluir Permanentemente</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Adicionar Medidas Corporais -->
+    <div class="modal-overlay" id="modal-medidas" style="display: none;">
+        <div class="modal-container modal-measurements">
+            <div class="modal-header">
+                <h2>📏 Atualizar Medidas</h2>
+                <button class="btn-close-modal" data-close="modal-medidas">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-info">Registre suas medidas para acompanhar sua evolução:</p>
+                <div class="measurements-form">
+                    <div class="measurement-input-group">
+                        <span class="measurement-icon">⚖️</span>
+                        <div class="measurement-input-info">
+                            <label>Peso</label>
+                            <input type="number" id="medida-input-peso" step="0.1" min="30" max="300" placeholder="75.5">
+                        </div>
+                        <span class="measurement-unit">kg</span>
+                    </div>
+                    <div class="measurement-input-group">
+                        <span class="measurement-icon">💪</span>
+                        <div class="measurement-input-info">
+                            <label>Braço (bíceps)</label>
+                            <input type="number" id="medida-input-braco" step="0.1" min="15" max="60" placeholder="35.0">
+                        </div>
+                        <span class="measurement-unit">cm</span>
+                    </div>
+                    <div class="measurement-input-group">
+                        <span class="measurement-icon">👕</span>
+                        <div class="measurement-input-info">
+                            <label>Peito (peitoral)</label>
+                            <input type="number" id="medida-input-peito" step="0.1" min="50" max="150" placeholder="100.0">
+                        </div>
+                        <span class="measurement-unit">cm</span>
+                    </div>
+                    <div class="measurement-input-group">
+                        <span class="measurement-icon">📐</span>
+                        <div class="measurement-input-info">
+                            <label>Cintura</label>
+                            <input type="number" id="medida-input-cintura" step="0.1" min="40" max="150" placeholder="80.0">
+                        </div>
+                        <span class="measurement-unit">cm</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" data-close="modal-medidas">Cancelar</button>
+                <button class="btn-primary" id="btn-salvar-medidas">Salvar Medidas</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p>Carregando...</p>
+    </div>
+
+    <!-- Modal: Dashboard Customizer -->
+    <div class="modal-overlay" id="modal-dashboard-customizer">
+        <div class="modal-container modal-lg">
+            <div class="modal-header">
+                <h2>Personalizar Dashboard</h2>
+                <button class="modal-close" data-close="modal-dashboard-customizer">✕</button>
+            </div>
+            <div class="modal-body">
+                <p class="customizer-hint">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="16" x2="12" y2="12"/>
+                        <line x1="12" y1="8" x2="12" y2="8"/>
+                    </svg>
+                    Arraste para reordenar. Toggle para mostrar/ocultar.
+                </p>
+                <div class="customizer-widgets" id="customizer-widgets-list">
+                    <!-- Widgets serão renderizados dinamicamente -->
+                </div>
+                <div class="customizer-add-section">
+                    <h3>Widgets Disponíveis</h3>
+                    <div class="available-widgets" id="available-widgets-list">
+                        <!-- Widgets não ativos -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="btn-reset-dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                        <polyline points="1 4 1 10 7 10"/>
+                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                    </svg>
+                    Restaurar Padrão
+                </button>
+                <button class="btn-primary" id="btn-save-dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    Salvar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p>Carregando...</p>
+    </div>
+
+    <script src="app.js"></script>
 </body>
 </html>
