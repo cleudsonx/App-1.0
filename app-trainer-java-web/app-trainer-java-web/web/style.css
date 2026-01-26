@@ -1,4 +1,23 @@
-﻿/* ================= AJUSTES FINOS DE RESPONSIVIDADE ================= */
+﻿/* ================= ACESSIBILIDADE: FOCO VISÍVEL E CONTRASTE ================= */
+button:focus, .btn:focus, [tabindex]:focus, input:focus, select:focus, textarea:focus {
+    outline: 3px solid #1976d2;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #1976d2;
+    z-index: 2;
+}
+
+/* Contraste reforçado para textos importantes */
+.error-message, .motivational-banner, .dashboard-widget h3, .dashboard-widget .feature-info {
+    color: #222 !important;
+    text-shadow: 0 1px 2px #fff8, 0 0 1px #fff4;
+}
+
+/* Ajuste para botões em fundo escuro */
+.btn-welcome-start:focus, .btn-welcome-skip:focus {
+    outline: 3px solid #FFD700;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #FFD700;
+}
+/* ================= AJUSTES FINOS DE RESPONSIVIDADE ================= */
 @media (max-width: 600px) {
     .container {
         padding: 0 4px;
