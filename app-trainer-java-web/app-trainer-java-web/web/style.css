@@ -1,4 +1,8 @@
-﻿/* ========== ONBOARDING PREMIUM ========== */
+﻿/* Utilitário para esconder elementos via classe */
+.hidden {
+    display: none !important;
+}
+/* ========== ONBOARDING PREMIUM ========== */
 .onboarding {
     position: fixed;
     inset: 0;
