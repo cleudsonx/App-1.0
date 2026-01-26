@@ -295,7 +295,7 @@ const DashboardWidgets = {
                         <div class="ficha-icon-container" id="ficha-icon-wrapper">${treino.icon?.includes('<svg') ? treino.icon : `<span class="ficha-icon-text">${treino.icon || '📋'}</span>`}</div>
                         <div class="ficha-text">
                             <h3>${treino.nome || 'Treino Personalizado'}</h3>
-                            <span class="ficha-subtitle">${treino.subtitle || `${treino.dias?.length || 0}x/semana`}</span>
+                            <span class="ficha-subtitle">${treino.subtitle || `${treino.dias?.length || treino.dias || 0}x/semana`}</span>
                             <div class="ficha-level">
                                 ${(() => {
                                     const nivel = treino.level || treino.nivel || 'personalizado';
@@ -307,7 +307,9 @@ const DashboardWidgets = {
                         </div>
                     </div>
                 </div>
-                <div class="ficha-action">→</div>
+                <div class="ficha-action">
+                  <button class="btn-secondary" type="button" aria-label="Editar treino" onclick="openEditTreinoModal(App.getTreinoAtual()); event.stopPropagation();">✏️ Editar</button>
+                </div>
             </div>
         `;
     },
