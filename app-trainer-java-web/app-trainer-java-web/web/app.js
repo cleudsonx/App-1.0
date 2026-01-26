@@ -1,210 +1,3 @@
-// ========== CUSTOMIZAÇÃO DE DASHBOARD ==========
-function openDashboardCustomizer() {
-    const modal = document.getElementById('modal-dashboard-customizer');
-    if (!modal) return;
-    renderDashboardCustomizerList();
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeDashboardCustomizer() {
-    const modal = document.getElementById('modal-dashboard-customizer');
-    if (!modal) return;
-    modal.classList.add('hidden');
-    document.body.style.overflow = '';
-}
-
-function renderDashboardCustomizerList() {
-    const list = document.getElementById('customizer-widgets-list');
-    if (!list) return;
-    const config = DashboardWidgets.currentConfig.slice().sort((a, b) => a.order - b.order);
-    list.innerHTML = '';
-    config.forEach((w, idx) => {
-        const def = DashboardWidgets.definitions[w.id];
-        if (!def) return;
-        const item = document.createElement('div');
-        item.className = 'customizer-widget-item' + (w.visible ? ' active' : ' available');
-        item.setAttribute('data-widget-id', w.id);
-        item.setAttribute('draggable', def.required ? 'false' : 'true');
-        item.innerHTML = `
-            <span class="widget-item-icon">${def.icon}</span>
-            <div class="widget-item-info">
-                <strong>${def.name}</strong>
-                ${def.required ? '<span class="widget-required">(fixo)</span>' : ''}
-            </div>
-            ${!def.required ? `<button class="widget-item-remove" title="${w.visible ? 'Ocultar' : 'Ativar'}">${w.visible ? '❌' : '➕'}</button>` : ''}
-        `;
-        // Drag events
-        if (!def.required) {
-            item.addEventListener('dragstart', e => {
-                e.dataTransfer.effectAllowed = 'move';
-                e.dataTransfer.setData('text/plain', idx);
-                item.classList.add('dragging');
-            });
-            item.addEventListener('dragend', () => item.classList.remove('dragging'));
-            item.addEventListener('dragover', e => { e.preventDefault(); item.classList.add('drag-over'); });
-            item.addEventListener('dragleave', () => item.classList.remove('drag-over'));
-            item.addEventListener('drop', e => {
-                e.preventDefault();
-                item.classList.remove('drag-over');
-                const fromIdx = parseInt(e.dataTransfer.getData('text/plain'));
-                DashboardWidgets.reorderWidgets(fromIdx, idx);
-                renderDashboardCustomizerList();
-            });
-        }
-        // Toggle
-        const btn = item.querySelector('.widget-item-remove');
-        if (btn) {
-            btn.onclick = (ev) => {
-                DashboardWidgets.toggleWidget(w.id);
-                renderDashboardCustomizerList();
-            };
-        }
-        list.appendChild(item);
-    });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    const btnFloating = document.getElementById('btn-customize-floating');
-    if (btnFloating) btnFloating.addEventListener('click', openDashboardCustomizer);
-    const btnSave = document.getElementById('btn-save-dashboard');
-    if (btnSave) btnSave.addEventListener('click', () => {
-        DashboardWidgets.saveConfig();
-        closeDashboardCustomizer();
-        if (typeof App?.loadDashboard === 'function') App.loadDashboard();
-        Toast.success('Dashboard atualizado!');
-    });
-    const btnReset = document.getElementById('btn-reset-dashboard');
-    if (btnReset) btnReset.addEventListener('click', () => {
-        DashboardWidgets.resetToDefault();
-        renderDashboardCustomizerList();
-        Toast.info('Configuração restaurada ao padrão.');
-    });
-    // Fechar modal ao clicar fora do conteúdo
-    const modal = document.getElementById('modal-dashboard-customizer');
-    if (modal) {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeDashboardCustomizer();
-        });
-    }
-});
-// Excluir treino
-function deleteTreino() {
-    if (confirm('Deseja realmente excluir o treino atual?')) {
-        localStorage.removeItem('treino_atual');
-        Toast.success('Treino excluído!');
-        closeEditTreinoModal();
-        if (typeof App?.loadDashboard === 'function') App.loadDashboard();
-    }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    const btnDelete = document.getElementById('btn-delete-treino');
-    if (btnDelete) btnDelete.addEventListener('click', deleteTreino);
-});
-// ========== EDITOR DE TREINO ==========
-function openEditTreinoModal(treino = null) {
-    const modal = document.getElementById('modal-edit-treino');
-    if (!modal) return;
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-    // Preenche campos se for edição
-    document.getElementById('edit-treino-nome').value = treino?.nome || '';
-    document.getElementById('edit-treino-dias').value = treino?.dias || 4;
-    document.getElementById('edit-treino-exercicios').value = treino?.exercicios?.join('\n') || '';
-}
-
-function closeEditTreinoModal() {
-    const modal = document.getElementById('modal-edit-treino');
-    if (!modal) return;
-    modal.classList.add('hidden');
-    document.body.style.overflow = '';
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    const btnCancel = document.getElementById('btn-cancel-edit-treino');
-    if (btnCancel) btnCancel.addEventListener('click', closeEditTreinoModal);
-    const form = document.getElementById('form-edit-treino');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const nome = document.getElementById('edit-treino-nome').value.trim();
-            const dias = parseInt(document.getElementById('edit-treino-dias').value);
-            const exercicios = document.getElementById('edit-treino-exercicios').value.split('\n').map(x => x.trim()).filter(Boolean);
-            if (!nome || !dias || exercicios.length === 0) {
-                Toast.warning('Preencha todos os campos!');
-                return;
-            }
-            // Salva treino no localStorage
-            const treino = { nome, dias, exercicios };
-            localStorage.setItem('treino_atual', JSON.stringify(treino));
-            Toast.success('Treino salvo!');
-            closeEditTreinoModal();
-            // Atualiza dashboard se necessário
-            if (typeof App?.loadDashboard === 'function') App.loadDashboard();
-        });
-    }
-});
-
-
-// Inicialização global do App
-document.addEventListener('DOMContentLoaded', () => {
-    // Expor funções globais
-    window.openEditTreinoModal = openEditTreinoModal;
-    // Inicializar App principal
-    if (typeof window.App === 'undefined') {
-        // App pode estar definido mais abaixo, aguardar carregamento
-        setTimeout(() => { if (window.App && typeof window.App.init === 'function') window.App.init(); }, 100);
-    } else if (typeof window.App.init === 'function') {
-        window.App.init();
-    }
-
-    // Login/Cadastro: alternar abas
-    const tabLogin = document.getElementById('tab-login');
-    const tabRegister = document.getElementById('tab-register');
-    const loginForm = document.getElementById('login-form');
-    const registerForm = document.getElementById('register-form');
-    if (tabLogin && tabRegister && loginForm && registerForm) {
-        tabLogin.addEventListener('click', () => {
-            tabLogin.classList.add('active');
-            tabRegister.classList.remove('active');
-            loginForm.classList.add('active');
-            registerForm.classList.remove('active');
-        });
-        tabRegister.addEventListener('click', () => {
-            tabRegister.classList.add('active');
-            tabLogin.classList.remove('active');
-            registerForm.classList.add('active');
-            loginForm.classList.remove('active');
-        });
-    }
-
-    // Botão flutuante personalizar dashboard
-    const btnCustomize = document.getElementById('btn-customize-floating');
-    if (btnCustomize) {
-        btnCustomize.addEventListener('click', () => {
-            if (window.App && typeof window.App.openDashboardCustomizer === 'function') {
-                window.App.openDashboardCustomizer();
-            } else if (typeof openDashboardCustomizer === 'function') {
-                openDashboardCustomizer();
-            }
-        });
-    }
-
-    // Botão gerar treino
-    const btnTreino = document.getElementById('btn-treino');
-    if (btnTreino) {
-        btnTreino.addEventListener('click', () => {
-            if (window.App && typeof window.App.createDefaultTreino === 'function') {
-                const treino = window.App.createDefaultTreino();
-                const pre = document.getElementById('treino-content');
-                if (pre) pre.textContent = JSON.stringify(treino, null, 2);
-                Toast.success('Treino gerado!');
-                if (typeof window.App.loadDashboard === 'function') window.App.loadDashboard();
-            }
-        });
-    }
-});
 /**
  * SHAIPADOS - Coach Virtual de Musculação
  * JavaScript Principal - v6.0 Professional
@@ -227,10 +20,8 @@ window.addEventListener('unhandledrejection', (event) => {
 // =====================================================
 // CONFIGURAÇÃO & ESTADO
 // =====================================================
-// Altere para a URL do backend Java em produção
-// Gateway Java sempre como base
-const BASE_URL = 'https://app-1-0-java.onrender.com';
-const ML_SERVICE = 'https://app-1-0-python.onrender.com';
+const API_BASE = '';
+const ML_SERVICE = 'http://localhost:8001';
 
 const AppState = {
     user: null,
@@ -452,7 +243,7 @@ const DashboardWidgets = {
                         <div class="ficha-icon-container" id="ficha-icon-wrapper">${treino.icon?.includes('<svg') ? treino.icon : `<span class="ficha-icon-text">${treino.icon || '📋'}</span>`}</div>
                         <div class="ficha-text">
                             <h3>${treino.nome || 'Treino Personalizado'}</h3>
-                            <span class="ficha-subtitle">${treino.subtitle || `${treino.dias?.length || treino.dias || 0}x/semana`}</span>
+                            <span class="ficha-subtitle">${treino.subtitle || `${treino.dias?.length || 0}x/semana`}</span>
                             <div class="ficha-level">
                                 ${(() => {
                                     const nivel = treino.level || treino.nivel || 'personalizado';
@@ -464,9 +255,7 @@ const DashboardWidgets = {
                         </div>
                     </div>
                 </div>
-                <div class="ficha-action">
-                  <button class="btn-secondary" type="button" aria-label="Editar treino" onclick="openEditTreinoModal(App.getTreinoAtual()); event.stopPropagation();">✏️ Editar</button>
-                </div>
+                <div class="ficha-action">→</div>
             </div>
         `;
     },
@@ -793,16 +582,12 @@ async function api(endpoint, options = {}) {
     }
     
     try {
-        // Se endpoint não for absoluto, prefixa com BASE_URL
-        let url = endpoint;
-        if (!/^https?:\/\//.test(endpoint)) {
-            url = BASE_URL + (endpoint.startsWith('/') ? endpoint : '/' + endpoint);
-        }
-        const response = await fetch(url, {
+        const response = await fetch(endpoint, {
             headers: { 'Content-Type': 'application/json', ...options.headers },
             ...options
         });
         const text = await response.text();
+        
         // Se receber 401, tenta refresh e retry uma vez
         if (response.status === 401 && AppState.refreshToken && !options._retried) {
             console.log('🔄 Token inválido (401), tentando refresh...');
@@ -813,6 +598,7 @@ async function api(endpoint, options = {}) {
                 return api(endpoint, options); // Retry com novo token
             }
         }
+        
         const data = JSON.parse(text);
         if (!response.ok) throw new Error(data.error || data.detail || `HTTP ${response.status}`);
         return data;
@@ -919,10 +705,6 @@ const Auth = {
         if (errorEl) errorEl.textContent = '';
         if (!nome || !email || !senha) { if (errorEl) errorEl.textContent = 'Preencha todos os campos'; return; }
         if (senha.length < 6) { if (errorEl) errorEl.textContent = 'Senha: mínimo 6 caracteres'; return; }
-        if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/.test(senha)) {
-            if (errorEl) errorEl.textContent = 'A senha deve conter pelo menos 1 símbolo especial (!@#$%^&* etc)';
-            return;
-        }
         
         try {
             showLoading(true, 'Criando conta...');
@@ -938,15 +720,7 @@ const Auth = {
                 if (errorEl) errorEl.textContent = response.detail || 'Erro ao criar conta';
             }
         } catch (error) {
-            if (errorEl) {
-                if (error.message?.includes('409')) {
-                    errorEl.textContent = 'Email já cadastrado';
-                } else if (error.message?.includes('símbolo')) {
-                    errorEl.textContent = 'A senha deve conter pelo menos 1 símbolo especial (!@#$%^&* etc)';
-                } else {
-                    errorEl.textContent = error.message || 'Erro';
-                }
-            }
+            if (errorEl) errorEl.textContent = error.message?.includes('409') ? 'Email já cadastrado' : (error.message || 'Erro');
         } finally { showLoading(false); }
     },
 
@@ -1007,48 +781,30 @@ const Auth = {
         this.showLogin();
     },
 
-    _refreshAttempts: 0,
     async refreshAccessToken() {
-        const MAX_REFRESH_ATTEMPTS = 5;
         if (!AppState.refreshToken) {
             console.log('❌ Sem refresh token disponível');
             return false;
         }
-        if (this._refreshAttempts >= MAX_REFRESH_ATTEMPTS) {
-            console.error('❌ Limite de tentativas de refresh atingido. Faça login novamente.');
-            this._refreshAttempts = 0;
-            this.showLogin();
-            return false;
-        }
-        this._refreshAttempts++;
+        
         try {
             console.log('🔄 Tentando refresh do access token...');
-            const response = await fetch(BASE_URL + '/auth/refresh', {
+            const response = await api('/auth/refresh', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ refresh_token: AppState.refreshToken })
             });
-            const data = await response.json();
-            if (data.access_token && data.refresh_token) {
-                console.log('✅ Token refreshed com sucesso (access + refresh)');
-                AppState.token = data.access_token;
-                AppState.refreshToken = data.refresh_token;
-                AppState.tokenExpiry = Date.now() + (data.expires_in * 1000);
-                const stored = JSON.parse(localStorage.getItem('shaipados_auth') || '{}');
-                stored.token = AppState.token;
-                stored.refreshToken = AppState.refreshToken;
-                stored.tokenExpiry = AppState.tokenExpiry;
-                localStorage.setItem('shaipados_auth', JSON.stringify(stored));
-                this._refreshAttempts = 0;
-                return true;
-            } else if (data.access_token) {
-                AppState.token = data.access_token;
-                AppState.tokenExpiry = Date.now() + (data.expires_in * 1000);
+            
+            if (response.access_token) {
+                console.log('✅ Token refreshed com sucesso');
+                AppState.token = response.access_token;
+                AppState.tokenExpiry = Date.now() + (response.expires_in * 1000);
+                
+                // Atualiza localStorage
                 const stored = JSON.parse(localStorage.getItem('shaipados_auth') || '{}');
                 stored.token = AppState.token;
                 stored.tokenExpiry = AppState.tokenExpiry;
                 localStorage.setItem('shaipados_auth', JSON.stringify(stored));
-                this._refreshAttempts = 0;
+                
                 return true;
             }
             return false;
@@ -1059,17 +815,17 @@ const Auth = {
     },
 
     showLogin() {
-        if ($('#auth-screen')) $('#auth-screen').classList.remove('hidden');
-        if ($('#app')) $('#app').classList.add('hidden');
-        if ($('#onboarding')) $('#onboarding').classList.add('hidden');
-        if ($('#modal-welcome')) $('#modal-welcome').classList.add('hidden');
+        $('#auth-screen') && ($('#auth-screen').style.display = 'flex');
+        $('#app') && ($('#app').style.display = 'none');
+        $('#onboarding') && ($('#onboarding').style.display = 'none');
+        $('#modal-welcome') && ($('#modal-welcome').style.display = 'none');
         localStorage.removeItem('shaipados_auth');
         AppState.user = null; AppState.token = null; AppState.refreshToken = null; AppState.tokenExpiry = null; AppState.profile = null;
     },
 
     enterApp(temPerfil, isNewUser) {
-        if ($('#auth-screen')) $('#auth-screen').classList.add('hidden');
-        if ($('#app')) $('#app').classList.remove('hidden');
+        $('#auth-screen') && ($('#auth-screen').style.display = 'none');
+        $('#app') && ($('#app').style.display = 'flex');
         this.updateHeader();
         App.init();
         if (isNewUser) this.showWelcomeModal();
@@ -1089,29 +845,9 @@ const Auth = {
     showWelcomeModal() {
         const modal = $('#modal-welcome');
         if (modal) {
-            // Personaliza o nome do usuário
-            const nome = AppState.user?.nome?.split(' ')[0] || 'Campeão';
-            const welcomeName = $('#welcome-username');
-            if (welcomeName) welcomeName.textContent = nome;
-            // Reinicia animação
-            const content = modal.querySelector('.modal-welcome-content');
-            if (content) {
-                content.classList.remove('animate-welcome');
-                void content.offsetWidth; // força reflow
-                content.classList.add('animate-welcome');
-            }
             modal.style.display = 'flex';
-            // Remove listeners antigos para evitar múltiplos
-            const btnStart = $('#btn-welcome-start');
-            const btnSkip = $('#btn-welcome-skip');
-            if (btnStart) {
-                btnStart.replaceWith(btnStart.cloneNode(true));
-                modal.querySelector('#btn-welcome-start').addEventListener('pointerup', () => { modal.style.display = 'none'; Onboarding.show(); });
-            }
-            if (btnSkip) {
-                btnSkip.replaceWith(btnSkip.cloneNode(true));
-                modal.querySelector('#btn-welcome-skip').addEventListener('pointerup', () => { modal.style.display = 'none'; this.showOnboardingReminder(); Toast.info('Configure seu perfil quando quiser'); });
-            }
+            $('#btn-welcome-start')?.addEventListener('click', () => { modal.style.display = 'none'; Onboarding.show(); });
+            $('#btn-welcome-skip')?.addEventListener('click', () => { modal.style.display = 'none'; this.showOnboardingReminder(); Toast.info('Configure seu perfil quando quiser'); });
         } else Onboarding.show();
     },
 
@@ -1181,16 +917,16 @@ const Onboarding = {
     },
 
     setupListeners() {
-        $('#btn-onboarding-back')?.addEventListener('pointerup', () => this.prevStep());
-        $('#btn-onboarding-next')?.addEventListener('pointerup', () => this.nextStep());
-        $('#btn-onboarding-skip')?.addEventListener('pointerup', () => this.skip());
+        $('#btn-onboarding-back')?.addEventListener('click', () => this.prevStep());
+        $('#btn-onboarding-next')?.addEventListener('click', () => this.nextStep());
+        $('#btn-onboarding-skip')?.addEventListener('click', () => this.skip());
         
-        $$('#step-1 .pill').forEach(p => p.addEventListener('pointerup', () => { $$('#step-1 .pill').forEach(x => x.classList.remove('active')); p.classList.add('active'); AppState.onboardingData.sexo = p.dataset.value; }));
-        $$('.goal-card').forEach(c => c.addEventListener('pointerup', () => { $$('.goal-card').forEach(x => x.classList.remove('active')); c.classList.add('active'); AppState.onboardingData.objetivo = c.dataset.value; }));
-        $$('.level-card').forEach(c => c.addEventListener('pointerup', () => { $$('.level-card').forEach(x => x.classList.remove('active')); c.classList.add('active'); AppState.onboardingData.nivel = c.dataset.value; }));
-        $$('.day-btn').forEach(b => b.addEventListener('pointerup', () => { $$('.day-btn').forEach(x => x.classList.remove('active')); b.classList.add('active'); AppState.onboardingData.dias = parseInt(b.dataset.value); }));
-        $$('#step-4 .pill').forEach(p => p.addEventListener('pointerup', () => { $$('#step-4 .pill').forEach(x => x.classList.remove('active')); p.classList.add('active'); AppState.onboardingData.duracao = parseInt(p.dataset.value); }));
-        $$('.location-card').forEach(c => c.addEventListener('pointerup', () => { $$('.location-card').forEach(x => x.classList.remove('active')); c.classList.add('active'); AppState.onboardingData.local = c.dataset.value; }));
+        $$('#step-1 .pill').forEach(p => p.addEventListener('click', () => { $$('#step-1 .pill').forEach(x => x.classList.remove('active')); p.classList.add('active'); AppState.onboardingData.sexo = p.dataset.value; }));
+        $$('.goal-card').forEach(c => c.addEventListener('click', () => { $$('.goal-card').forEach(x => x.classList.remove('active')); c.classList.add('active'); AppState.onboardingData.objetivo = c.dataset.value; }));
+        $$('.level-card').forEach(c => c.addEventListener('click', () => { $$('.level-card').forEach(x => x.classList.remove('active')); c.classList.add('active'); AppState.onboardingData.nivel = c.dataset.value; }));
+        $$('.day-btn').forEach(b => b.addEventListener('click', () => { $$('.day-btn').forEach(x => x.classList.remove('active')); b.classList.add('active'); AppState.onboardingData.dias = parseInt(b.dataset.value); }));
+        $$('#step-4 .pill').forEach(p => p.addEventListener('click', () => { $$('#step-4 .pill').forEach(x => x.classList.remove('active')); p.classList.add('active'); AppState.onboardingData.duracao = parseInt(p.dataset.value); }));
+        $$('.location-card').forEach(c => c.addEventListener('click', () => { $$('.location-card').forEach(x => x.classList.remove('active')); c.classList.add('active'); AppState.onboardingData.local = c.dataset.value; }));
     },
 
     prevStep() { if (AppState.onboardingStep > 1) { AppState.onboardingStep--; this.updateUI(); } },
@@ -1237,13 +973,9 @@ const Onboarding = {
             Toast.success('Perfil configurado! 🎉');
             App.loadDashboard();
         } catch (error) {
-            if (error?.message?.includes('404') || /usu[aá]rio n[ãa]o encontrado/i.test(error?.message)) {
-                Toast.warning('Seu perfil ainda não está disponível no módulo de IA. Aguarde alguns minutos e tente novamente.');
-            } else {
-                Toast.warning('Perfil salvo localmente');
-            }
             AppState.profile = AppState.onboardingData;
             this.hide();
+            Toast.warning('Perfil salvo localmente');
         } finally { showLoading(false); }
     }
 };
@@ -1258,38 +990,7 @@ const App = {
         if (this.initialized) return;
         this.initialized = true;
         console.log('[App] Inicializando...');
-
-        // Ativa avatar glow animado
-        setTimeout(() => {
-            const avatar = document.querySelector('.user-avatar');
-            if (avatar) avatar.classList.add('glow');
-        }, 400);
-
-        // Frases motivacionais rotativas
-        const frases = [
-            'A consistência vence o talento! 💪',
-            'Cada treino é um passo a mais para o seu objetivo.',
-            'Você é mais forte do que imagina!',
-            'Disciplina é a ponte entre metas e conquistas.',
-            'Treine hoje, supere-se amanhã.',
-            'O impossível é só questão de opinião.',
-            'Seu esforço de hoje é o resultado de amanhã.',
-            'Foco, força e fé!'
-        ];
-        let fraseIdx = Math.floor(Math.random() * frases.length);
-        function exibeFrase() {
-            const banner = document.getElementById('motivational-banner');
-            if (banner) {
-                banner.textContent = frases[fraseIdx];
-                banner.style.display = 'block';
-            }
-        }
-        exibeFrase();
-        setInterval(() => {
-            fraseIdx = (fraseIdx + 1) % frases.length;
-            exibeFrase();
-        }, 9000);
-
+        
         DashboardWidgets.init();
         this.setupNavigation();
         this.setupHeader();
@@ -1299,8 +1000,8 @@ const App = {
         this.loadTreinoTab();
         this.setupProfileTab();
         
-        $('#btn-logout')?.addEventListener('pointerup', () => Auth.logout());
-        $('#btn-restart-onboarding')?.addEventListener('pointerup', () => Onboarding.show());
+        $('#btn-logout')?.addEventListener('click', () => Auth.logout());
+        $('#btn-restart-onboarding')?.addEventListener('click', () => Onboarding.show());
         
         this.switchTab('home');
     },
@@ -1310,11 +1011,11 @@ const App = {
         const reminder = $('#onboarding-reminder');
         if (reminder && !reminder.dataset.listenersAdded) {
             reminder.dataset.listenersAdded = 'true';
-            $('#btn-complete-onboarding')?.addEventListener('pointerup', () => { 
+            $('#btn-complete-onboarding')?.addEventListener('click', () => { 
                 reminder.style.display = 'none'; 
                 Onboarding.show(); 
             });
-            $('#btn-dismiss-reminder')?.addEventListener('pointerup', () => { 
+            $('#btn-dismiss-reminder')?.addEventListener('click', () => { 
                 reminder.style.display = 'none'; 
                 sessionStorage.setItem('reminder_dismissed', 'true');
             });
@@ -1323,7 +1024,7 @@ const App = {
 
     setupNavigation() {
         $$('.nav-item').forEach(item => {
-            item.addEventListener('pointerup', () => {
+            item.addEventListener('click', () => {
                 const tab = item.dataset.tab;
                 this.switchTab(tab);
             });
@@ -1348,14 +1049,14 @@ const App = {
     },
 
     setupHeader() {
-        $('#btn-settings')?.addEventListener('pointerup', () => this.switchTab('perfil'));
-        $('#btn-notifications')?.addEventListener('pointerup', () => Toast.info('Sem notificações'));
-        $('#btn-customize-dashboard')?.addEventListener('pointerup', () => this.openDashboardCustomizer());
+        $('#btn-settings')?.addEventListener('click', () => this.switchTab('perfil'));
+        $('#btn-notifications')?.addEventListener('click', () => Toast.info('Sem notificações'));
+        $('#btn-customize-dashboard')?.addEventListener('click', () => this.openDashboardCustomizer());
     },
 
     setupModals() {
         $$('.modal-close, [data-close]').forEach(btn => {
-            btn.addEventListener('pointerup', (e) => { 
+            btn.addEventListener('click', (e) => { 
                 e.preventDefault(); 
                 const modal = btn.closest('.modal-overlay'); 
                 if (modal) {
@@ -1365,7 +1066,7 @@ const App = {
             });
         });
         $$('.modal-overlay').forEach(modal => {
-            modal.addEventListener('pointerup', (e) => { 
+            modal.addEventListener('click', (e) => { 
                 if (e.target === modal) {
                     modal.classList.remove('active');
                     modal.style.display = 'none'; 
@@ -1374,14 +1075,14 @@ const App = {
         });
 
         // Dashboard Customizer buttons
-        $('#btn-save-dashboard')?.addEventListener('pointerup', () => {
+        $('#btn-save-dashboard')?.addEventListener('click', () => {
             DashboardWidgets.saveConfig();
             this.loadDashboard();
             this.closeDashboardCustomizer();
             Toast.success('Dashboard atualizado!');
         });
 
-        $('#btn-reset-dashboard')?.addEventListener('pointerup', () => {
+        $('#btn-reset-dashboard')?.addEventListener('click', () => {
             DashboardWidgets.resetToDefault();
             this.renderCustomizerWidgets();
             this.setupCustomizerDragDrop();
@@ -1394,44 +1095,50 @@ const App = {
         const container = $('#home-dashboard');
         if (!container) return;
 
-        // Atualizar visibilidade do reminder de perfil incompleto
-        const reminder = $('#onboarding-reminder');
-        const dismissed = sessionStorage.getItem('reminder_dismissed') === 'true';
-        if (reminder) {
-            reminder.style.display = (!isProfileComplete() && !dismissed) ? 'flex' : 'none';
-        }
-
-        const visibleWidgets = DashboardWidgets.getVisibleWidgets();
-        let html = '<div class="dashboard-header-brand"><div class="brand-mark"><img src="assets/Designer01.png" alt="SHAIPADOS" loading="lazy" /></div><div class="badge-brand">Pronto para treinar</div></div>';
-        
-        let halfWidgets = [];
-        visibleWidgets.forEach(widget => {
-            if (widget.size === 'half') {
-                halfWidgets.push(widget);
-                if (halfWidgets.length === 2) {
-                    html += '<div class="dashboard-grid">';
-                    halfWidgets.forEach(w => { html += DashboardWidgets.renderWidget(w); });
-                    html += '</div>';
-                    halfWidgets = [];
-                }
-            } else {
-                if (halfWidgets.length > 0) {
-                    html += '<div class="dashboard-grid">';
-                    halfWidgets.forEach(w => { html += DashboardWidgets.renderWidget(w); });
-                    html += '</div>';
-                    halfWidgets = [];
-                }
-                html += DashboardWidgets.renderWidget(widget);
+        try {
+            // Atualizar visibilidade do reminder de perfil incompleto
+            const reminder = $('#onboarding-reminder');
+            const dismissed = sessionStorage.getItem('reminder_dismissed') === 'true';
+            if (reminder) {
+                reminder.style.display = (!isProfileComplete() && !dismissed) ? 'flex' : 'none';
             }
-        });
-        if (halfWidgets.length > 0) {
-            html += '<div class="dashboard-grid">';
-            halfWidgets.forEach(w => { html += DashboardWidgets.renderWidget(w); });
-            html += '</div>';
-        }
 
-        container.innerHTML = html;
-        this.setupDashboardDragDrop();
+            const visibleWidgets = DashboardWidgets.getVisibleWidgets();
+            let html = '<div class="dashboard-header-brand"><div class="brand-mark"><img src="assets/Designer01.png" alt="SHAIPADOS" loading="lazy" /></div><div class="badge-brand">Pronto para treinar</div></div>';
+            
+            let halfWidgets = [];
+            visibleWidgets.forEach(widget => {
+                if (widget.size === 'half') {
+                    halfWidgets.push(widget);
+                    if (halfWidgets.length === 2) {
+                        html += '<div class="dashboard-grid">';
+                        halfWidgets.forEach(w => { html += DashboardWidgets.renderWidget(w); });
+                        html += '</div>';
+                        halfWidgets = [];
+                    }
+                } else {
+                    if (halfWidgets.length > 0) {
+                        html += '<div class="dashboard-grid">';
+                        halfWidgets.forEach(w => { html += DashboardWidgets.renderWidget(w); });
+                        html += '</div>';
+                        halfWidgets = [];
+                    }
+                    html += DashboardWidgets.renderWidget(widget);
+                }
+            });
+            if (halfWidgets.length > 0) {
+                html += '<div class="dashboard-grid">';
+                halfWidgets.forEach(w => { html += DashboardWidgets.renderWidget(w); });
+                html += '</div>';
+            }
+
+            container.innerHTML = html;
+            this.setupDashboardDragDrop();
+        } catch (e) {
+            container.innerHTML = '<div class="dashboard-error">Erro ao carregar o dashboard. Tente novamente mais tarde.</div>';
+            Toast.error('Erro ao carregar o dashboard. Tente novamente mais tarde.');
+            console.error('Erro na renderização do dashboard:', e);
+        }
     },
 
     setupDashboardDragDrop() {
@@ -7732,10 +7439,7 @@ const WorkoutTemplates = {
 document.addEventListener('DOMContentLoaded', () => {
     console.log('[Shaipados] Iniciando v6.0...');
     Toast.init();
-    fetch(BASE_URL + '/api/health')
-        .then(r => r.json())
-        .then(() => console.log('✅ API Java OK'))
-        .catch(() => console.warn('⚠️ API Java offline'));
+    fetch('/api/health').then(r => r.json()).then(() => console.log('✅ API Java OK')).catch(() => console.warn('⚠️ API Java offline'));
     Auth.init();
     NutritionSystem.load();
     PWAInstaller.init();
