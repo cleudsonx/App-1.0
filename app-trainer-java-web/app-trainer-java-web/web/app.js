@@ -710,6 +710,10 @@ const Auth = {
         if (errorEl) errorEl.textContent = '';
         if (!nome || !email || !senha) { if (errorEl) errorEl.textContent = 'Preencha todos os campos'; return; }
         if (senha.length < 6) { if (errorEl) errorEl.textContent = 'Senha: mínimo 6 caracteres'; return; }
+        if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/.test(senha)) {
+            if (errorEl) errorEl.textContent = 'A senha deve conter pelo menos 1 símbolo especial (!@#$%^&* etc)';
+            return;
+        }
         
         try {
             showLoading(true, 'Criando conta...');
