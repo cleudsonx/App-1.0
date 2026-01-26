@@ -1,568 +1,4 @@
-﻿/* ========== MODAL CUSTOMIZAÇÃO DE DASHBOARD ========== */
-#customizer-widgets-list {
-    margin: 18px 0 12px 0;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-.customizer-widget-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: #f5f5f5;
-    border-radius: 8px;
-    padding: 10px 14px;
-    box-shadow: 0 1px 4px #0001;
-    cursor: grab;
-    user-select: none;
-}
-.customizer-widget-item.active { border-left: 4px solid #6366f1; }
-.customizer-widget-item .widget-item-icon { font-size: 1.3rem; }
-.customizer-widget-item .widget-item-info { flex: 1; }
-.customizer-widget-item .widget-item-remove, .customizer-widget-item .widget-item-add {
-    background: #eee;
-    border: none;
-    border-radius: 4px;
-    padding: 4px 8px;
-    cursor: pointer;
-    font-size: 1.1rem;
-}
-.customizer-widget-item .widget-item-remove:hover, .customizer-widget-item .widget-item-add:hover {
-    background: #e53e3e;
-    color: #fff;
-}
-.customizer-widget-item.available { opacity: 0.7; }
-.widget-required { font-size: 0.9em; color: #888; margin-left: 8px; }
-#btn-customize-floating { background: #6366f1; color: #fff; border: none; border-radius: 24px; transition: background 0.18s; }
-#btn-customize-floating:hover { background: #4f46e5; }
-.btn-danger {
-    background: #e53e3e;
-    color: #fff;
-    border: 1px solid #e53e3e;
-}
-.btn-danger:hover {
-    background: #b91c1c;
-    border-color: #b91c1c;
-}
-/* ========== MODAL EDITOR DE TREINO ========== */
-.modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(20,22,40,0.85);
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.modal-overlay.hidden { display: none !important; }
-.modal-content {
-    background: #fff;
-    color: #222;
-    border-radius: 16px;
-    box-shadow: 0 8px 40px rgba(99,102,241,0.18), 0 2px 8px rgba(0,0,0,0.18);
-    padding: 32px 24px 24px 24px;
-    max-width: 360px;
-    width: 96vw;
-    text-align: left;
-    position: relative;
-}
-.modal-content h2 { margin-top: 0; font-size: 1.4rem; }
-.modal-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 18px;
-    justify-content: flex-end;
-}
-.btn-secondary {
-    background: #eee;
-    color: #222;
-    border: 1px solid #ccc;
-}
-.btn-secondary:hover {
-    background: #ddd;
-}
-/* ================= MICROANIMAÇÕES E FEEDBACK VISUAL ================= */
-button, .btn, .auth-tab, .day-btn, .pill, .goal-card, .level-card, .location-card {
-    transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.12s;
-}
-button:active, .btn:active, .auth-tab:active, .day-btn:active, .pill:active, .goal-card:active, .level-card:active, .location-card:active {
-    transform: scale(0.97);
-    box-shadow: 0 1px 4px rgba(99,102,241,0.10);
-}
-.dashboard-widget:active {
-    transform: scale(0.99);
-    box-shadow: 0 2px 8px rgba(99,102,241,0.10);
-}
-/* ================= SKELETON SCREEN PARA DASHBOARD ================= */
-.skeleton {
-    background: linear-gradient(90deg, #ececec 25%, #f5f5f5 50%, #ececec 75%);
-    background-size: 200% 100%;
-    animation: skeleton-loading 1.2s infinite linear;
-    border-radius: 8px;
-    min-height: 80px;
-    margin-bottom: 12px;
-}
-@keyframes skeleton-loading {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
-/* ================= ACESSIBILIDADE: FOCO VISÍVEL E CONTRASTE ================= */
-button:focus, .btn:focus, [tabindex]:focus, input:focus, select:focus, textarea:focus {
-    outline: 3px solid #1976d2;
-    outline-offset: 2px;
-    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #1976d2;
-    z-index: 2;
-}
-
-/* Contraste reforçado para textos importantes */
-.error-message, .motivational-banner, .dashboard-widget h3, .dashboard-widget .feature-info {
-    color: #222 !important;
-    text-shadow: 0 1px 2px #fff8, 0 0 1px #fff4;
-}
-
-/* Ajuste para botões em fundo escuro */
-.btn-welcome-start:focus, .btn-welcome-skip:focus {
-    outline: 3px solid #FFD700;
-    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #FFD700;
-}
-/* ================= AJUSTES FINOS DE RESPONSIVIDADE ================= */
-@media (max-width: 600px) {
-    .container {
-        padding: 0 4px;
-    }
-    .dashboard-widget, .dashboard-hero, .dashboard-card {
-        margin-bottom: 12px;
-        min-width: 0;
-    }
-    .motivational-banner {
-        font-size: 0.98rem;
-        padding: 8px 6px;
-    }
-    .modal-welcome-content {
-        padding: 18px 6px 18px 6px;
-        max-width: 98vw;
-    }
-    .onboarding-container {
-        padding: 18px 6px 18px 6px;
-        max-width: 98vw;
-    }
-    .tab-content {
-        padding: 4px 0;
-    }
-    html, body {
-        overflow-x: hidden;
-    }
-}
-/* ================= MOBILE-FIRST BASE ================= */
-html {
-    font-size: 16px;
-    box-sizing: border-box;
-}
-*, *:before, *:after {
-    box-sizing: inherit;
-}
-
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Inter', Arial, sans-serif;
-    background: #f5f5f5;
-    color: #222;
-}
-
-.container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 16px;
-}
-
-/* Touch targets */
-button, .btn, .nav-item, .dashboard-widget {
-    min-height: 44px;
-    min-width: 44px;
-}
-
-/* Flex/grid para dashboard */
-.dashboard-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-}
-.dashboard-widget {
-    flex: 1 1 100%;
-    min-width: 0;
-}
-
-/* Tabs responsivas */
-.tab-content {
-    padding: 12px 0;
-}
-
-/* ================= MEDIA QUERIES ================= */
-@media (min-width: 600px) {
-    .dashboard-widget {
-        flex: 1 1 48%;
-    }
-    .tab-content {
-        padding: 24px 0;
-    }
-}
-
-@media (min-width: 900px) {
-    .dashboard-widget {
-        flex: 1 1 32%;
-    }
-    .container {
-        padding: 0 32px;
-    }
-}
-
-@media (max-width: 480px) {
-    html {
-        font-size: 15px;
-    }
-    .dashboard-widget, .tab-content {
-        padding: 8px 0;
-    }
-}
-button:disabled,
-.btn-welcome-start:disabled,
-.btn-welcome-skip:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    filter: grayscale(0.2);
-    box-shadow: none;
-}
-.dashboard-widget, .dashboard-hero, .motivational-banner, .modal-welcome-content, .onboarding-container {
-    will-change: opacity, transform;
-}
-/* ======= MELHORIAS DE PERFORMANCE: LCP & CLS ======= */
-#treino-content {
-    min-height: 180px; /* espaço reservado para evitar shift */
-    display: block;
-}
-.tab-content {
-    min-height: 220px; /* previne jumps ao trocar abas */
-    transition: opacity var(--duration-normal) var(--ease-out), transform var(--duration-normal) var(--ease-out);
-    /* nunca transicione height/width para evitar CLS */
-}
-.dashboard-grid, .home-dashboard {
-    min-height: 220px; /* previne jumps no dashboard */
-}
-/* Mensagem de erro para login/registro */
-.error-message {
-    color: #e53e3e;
-    font-size: 13px;
-    min-height: 18px;
-    margin-bottom: 4px;
-    font-weight: 500;
-    letter-spacing: 0.01em;
-}
-/* Esconder scrollbars universalmente em containers de dashboard e chat */
-.dashboard-widget-list, .chat-messages, .dashboard-grid, .home-dashboard {
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE e Edge antigos */
-}
-.dashboard-widget-list::-webkit-scrollbar,
-.chat-messages::-webkit-scrollbar,
-.dashboard-grid::-webkit-scrollbar,
-.home-dashboard::-webkit-scrollbar {
-    width: 0px;
-    height: 0px;
-    background: transparent;
-}
-/* Utilitário para esconder elementos via classe */
-.hidden {
-    display: none !important;
-}
-/* ========== ONBOARDING PREMIUM ========== */
-.onboarding {
-    position: fixed;
-    inset: 0;
-    z-index: 9998;
-    background: rgba(20,22,40,0.92);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: fadeInBg 0.7s;
-}
-.onboarding-container {
-    background: rgba(40,48,80,0.7);
-    -webkit-backdrop-filter: blur(16px) saturate(1.2);
-    -webkit-backdrop-filter: blur(16px) saturate(1.2); /* Safari/iOS */
-    backdrop-filter: blur(16px) saturate(1.2);
-    border-radius: var(--radius-xl);
-    box-shadow: 0 8px 40px rgba(99,102,241,0.18), 0 2px 8px rgba(0,0,0,0.18);
-    padding: 36px 28px 28px 28px;
-    max-width: 350px;
-    width: 92vw;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    animation: popIn 0.8s cubic-bezier(.16,1,.3,1);
-}
-.onboarding-progress-bar {
-    height: 6px;
-    width: 100%;
-    background: linear-gradient(90deg, var(--primary), var(--accent-green));
-    border-radius: var(--radius-full);
-    margin-bottom: 18px;
-    transition: width 0.3s;
-}
-.onboarding-step-indicator {
-    font-size: 1rem;
-    color: var(--accent-green);
-    font-weight: 700;
-    margin-bottom: 18px;
-}
-.onboarding-step {
-    display: none;
-    flex-direction: column;
-    gap: 16px;
-    animation: fadeInBanner 0.7s;
-}
-.onboarding-step.active {
-    display: flex;
-}
-.onboarding-step h3 {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--primary-light);
-    margin-bottom: 6px;
-}
-.onboarding-step input {
-    width: 100%;
-    padding: 10px 14px;
-    border-radius: var(--radius-md);
-    border: 1.5px solid var(--primary-50);
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    font-size: 1rem;
-    margin-bottom: 4px;
-}
-.onboarding-step .pill, .onboarding-step .goal-card, .onboarding-step .level-card, .onboarding-step .location-card, .onboarding-step .day-btn {
-    display: inline-block;
-    margin: 4px 6px;
-    padding: 10px 18px;
-    border-radius: var(--radius-lg);
-    background: linear-gradient(90deg, var(--primary), var(--primary-light));
-    color: #fff;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    border: none;
-    box-shadow: 0 2px 8px rgba(99,102,241,0.10);
-    transition: background 0.18s, transform 0.18s;
-}
-.onboarding-step .pill.active, .onboarding-step .goal-card.active, .onboarding-step .level-card.active, .onboarding-step .location-card.active, .onboarding-step .day-btn.active {
-    background: linear-gradient(90deg, var(--accent-green), var(--primary));
-    color: #fff;
-    transform: scale(1.08);
-}
-.onboarding-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 18px;
-}
-#btn-onboarding-back, #btn-onboarding-next, #btn-onboarding-skip {
-    padding: 10px 18px;
-    border-radius: var(--radius-md);
-    font-size: 1rem;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-}
-#btn-onboarding-next {
-    background: linear-gradient(90deg, var(--accent-green), var(--primary));
-    color: #fff;
-}
-#btn-onboarding-back {
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-}
-#btn-onboarding-skip {
-    background: transparent;
-    color: var(--text-secondary);
-    border: 1.5px solid var(--primary-50);
-}
-#btn-onboarding-next:hover {
-    background: linear-gradient(90deg, var(--primary), var(--accent-green));
-}
-#btn-onboarding-back:hover, #btn-onboarding-skip:hover {
-    background: var(--primary-50);
-    color: var(--primary);
-}
-/* ========== AVATAR GLOW ANIMADO ========== */
-.user-avatar.glow {
-    box-shadow: 0 0 0 0 var(--accent-cyan), 0 0 16px 4px var(--primary);
-    animation: avatarGlow 2.2s infinite cubic-bezier(.4,0,.2,1);
-}
-@keyframes avatarGlow {
-    0%, 100% { box-shadow: 0 0 0 0 var(--accent-cyan), 0 0 16px 4px var(--primary); }
-    50% { box-shadow: 0 0 0 8px rgba(16,185,129,0.18), 0 0 32px 8px var(--primary-light); }
-}
-
-/* ========== FRASE MOTIVACIONAL ========== */
-.motivational-banner {
-    width: 100%;
-    background: linear-gradient(90deg, var(--primary), var(--accent-green));
-    color: #fff;
-    border-radius: var(--radius-lg);
-    padding: 12px 18px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    text-align: center;
-    margin-bottom: var(--space-4);
-    box-shadow: 0 2px 12px rgba(99,102,241,0.10);
-    letter-spacing: 0.5px;
-    animation: fadeInBanner 1s;
-}
-@keyframes fadeInBanner {
-    from { opacity: 0; transform: translateY(-16px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* ========== GLASSMORPHISM NOS CARDS ========== */
-.dashboard-card, .dashboard-widget, .dashboard-hero {
-    background: rgba(40, 48, 80, 0.55);
-    -webkit-backdrop-filter: blur(12px) saturate(1.2);
-    backdrop-filter: blur(12px) saturate(1.2);
-    border: 1.5px solid rgba(255,255,255,0.08);
-    box-shadow: 0 4px 32px rgba(99,102,241,0.10), 0 1.5px 8px rgba(0,0,0,0.10);
-}
-
-/* ========== HERO CARD ANIMAÇÃO DE ENTRADA ========== */
-.dashboard-hero {
-    animation: heroFadeIn 1.1s cubic-bezier(.16,1,.3,1);
-}
-@keyframes heroFadeIn {
-    0% { opacity: 0; transform: scale(0.92) translateY(40px); }
-    80% { opacity: 1; transform: scale(1.04) translateY(-6px); }
-    100% { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-/* ========== BOTÃO DE AÇÃO PRINCIPAL (INICIAR) ========== */
-.hero-play-btn {
-    background: linear-gradient(90deg, var(--accent-green), var(--primary));
-    box-shadow: 0 2px 12px rgba(16,185,129,0.18);
-    animation: pulseBtn 1.8s infinite;
-}
-@keyframes pulseBtn {
-    0%, 100% { transform: scale(1); box-shadow: 0 2px 12px rgba(16,185,129,0.18); }
-    50% { transform: scale(1.08); box-shadow: 0 6px 24px rgba(16,185,129,0.28); }
-}
-
-/* ========== FEEDBACK VISUAL AO ARRASTAR WIDGETS ========== */
-.dashboard-widget.dragging {
-    opacity: 0.7;
-    transform: scale(1.04) rotate(-2deg);
-    box-shadow: 0 8px 32px rgba(99,102,241,0.18), 0 2px 8px rgba(0,0,0,0.12);
-    z-index: 10;
-}
-/* ========== MODAL DE BOAS-VINDAS PERSONALIZADO ========== */
-.modal-welcome {
-    position: fixed;
-    z-index: 9999;
-    inset: 0;
-    background: rgba(20, 22, 40, 0.85);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: fadeInBg 0.6s;
-}
-
-.modal-welcome-content {
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark) 80%);
-    color: #fff;
-    border-radius: var(--radius-xl);
-    box-shadow: 0 8px 40px rgba(99,102,241,0.25), 0 2px 8px rgba(0,0,0,0.18);
-    padding: 40px 32px 32px 32px;
-    max-width: 350px;
-    width: 90vw;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    animation: popIn 0.7s cubic-bezier(.16,1,.3,1);
-}
-
-.modal-welcome-hero {
-    margin-bottom: 18px;
-    animation: bounceIn 1.1s cubic-bezier(.16,1,.3,1);
-}
-
-.modal-welcome-content h2 {
-    font-size: 2rem;
-    font-weight: 800;
-    margin-bottom: 10px;
-    letter-spacing: -1px;
-}
-
-.welcome-message {
-    font-size: 1.1rem;
-    color: #e0e7ff;
-    margin-bottom: 22px;
-    line-height: 1.5;
-}
-
-.modal-welcome-actions {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-}
-
-.btn-welcome-start {
-    background: linear-gradient(90deg, var(--accent-green), var(--primary));
-    color: #fff;
-    font-weight: 700;
-    border-radius: var(--radius-md);
-    padding: 12px 22px;
-    font-size: 1rem;
-    border: none;
-    box-shadow: 0 2px 8px rgba(16,185,129,0.12);
-    transition: transform 0.15s, box-shadow 0.15s;
-}
-.btn-welcome-start:hover {
-    transform: scale(1.06);
-    box-shadow: 0 4px 16px rgba(16,185,129,0.18);
-}
-
-.btn-welcome-skip {
-    background: transparent;
-    color: #fff;
-    font-weight: 500;
-    border-radius: var(--radius-md);
-    padding: 12px 18px;
-    font-size: 1rem;
-    border: 1px solid #fff2;
-    transition: background 0.15s, color 0.15s;
-}
-.btn-welcome-skip:hover {
-    background: #fff2;
-    color: #fff;
-}
-
-@keyframes popIn {
-    0% { transform: scale(0.7) translateY(60px); opacity: 0; }
-    80% { transform: scale(1.05) translateY(-8px); opacity: 1; }
-    100% { transform: scale(1) translateY(0); opacity: 1; }
-}
-@keyframes bounceIn {
-    0% { transform: scale(0.5) translateY(-60px); opacity: 0; }
-    60% { transform: scale(1.15) translateY(10px); opacity: 1; }
-    100% { transform: scale(1) translateY(0); opacity: 1; }
-}
-@keyframes fadeInBg {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-}
-/* Oculta scrollbar em navegadores baseados em Webkit (Chrome, Safari) */
-::-webkit-scrollbar {
-    display: none;
-/* fim do bloco corrigido */
-/* =====================================================
+﻿/* =====================================================
    APP TRAINER v2 - DESIGN SYSTEM MODERNO
    Inspirado em: Hevy, Strong, FitBod, MyFitnessPal
    ===================================================== */
@@ -574,13 +10,13 @@ button:disabled,
     --primary-light: #818cf8;
     --primary-dark: #4f46e5;
     --primary-50: rgba(99, 102, 241, 0.1);
-
+    
     /* Accent Colors */
     --accent-green: #10b981;
     --accent-orange: #f59e0b;
     --accent-red: #ef4444;
     --accent-cyan: #06b6d4;
-
+    
     /* Neutral Palette */
     --gray-50: #f8fafc;
     --gray-100: #f1f5f9;
@@ -593,7 +29,7 @@ button:disabled,
     --gray-800: #1e293b;
     --gray-900: #0f172a;
     --gray-950: #020617;
-
+    
     /* Semantic */
     --bg-primary: var(--gray-950);
     --bg-secondary: var(--gray-900);
@@ -603,7 +39,7 @@ button:disabled,
     --text-secondary: var(--gray-400);
     --text-muted: var(--gray-500);
     --border-color: rgba(255, 255, 255, 0.08);
-
+    
     /* Spacing - Compacto */
     --space-1: 2px;
     --space-2: 4px;
@@ -614,26 +50,26 @@ button:disabled,
     --space-8: 20px;
     --space-10: 24px;
     --space-12: 32px;
-
+    
     /* Radius */
     --radius-sm: 4px;
     --radius-md: 6px;
     --radius-lg: 10px;
     --radius-xl: 14px;
     --radius-full: 9999px;
-
+    
     /* Shadows */
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
     --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
-
+    
     /* Transitions */
     --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
     --duration-fast: 150ms;
     --duration-normal: 250ms;
     --duration-slow: 400ms;
-
+    
     /* Layout - Compacto */
     --header-height: 48px;
     --nav-height: 52px;
@@ -668,6 +104,8 @@ button {
     cursor: pointer;
     border: none;
     background: none;
+    /* Correção para logo-circle inline removido */
+    .gradient-shadow {
     color: inherit;
 }
 
@@ -1078,6 +516,7 @@ input, select, textarea {
 }
 
 .stat-value {
+.logo-s {
     font-size: 16px;
     font-weight: 700;
 }
@@ -1524,12 +963,12 @@ input, select, textarea {
     align-items: center;
     gap: 6px;
     background: rgba(255,255,255,0.2);
-    -webkit-backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
-}
-/* As propriedades acima estavam fora de bloco, mova para o bloco correto se necessário */
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: var(--space-3);
 }
 
 .pulse-dot {
@@ -2054,7 +1493,7 @@ input, select, textarea {
     gap: var(--space-2);
     overflow-x: auto;
     padding-bottom: var(--space-1);
-    /* scrollbar-width: none;  Não suportado em Chrome < 121, Safari, iOS, Samsung Internet */
+    -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
 }
 
@@ -2114,6 +1553,7 @@ input, select, textarea {
     gap: var(--space-2);
     overflow-x: auto;
     padding-bottom: var(--space-2);
+    -webkit-overflow-scrolling: touch;
 }
 
 .split-preview::-webkit-scrollbar {
@@ -2209,9 +1649,6 @@ input, select, textarea {
 .chat-input {
     display: flex;
     gap: var(--space-2);
-        -webkit-user-select: none;
-        user-select: none;
-        
     padding: var(--space-3);
     background: var(--bg-secondary);
     border-top: 1px solid var(--border-color);
@@ -3131,6 +2568,7 @@ input, select, textarea {
         margin: auto;
         border-radius: var(--radius-xl);
         box-shadow: var(--shadow-lg);
+        min-height: auto;
     }
     
     .onboarding-container {
@@ -3530,7 +2968,6 @@ input, select, textarea {
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.8);
-    -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
     display: none;
     align-items: center;
@@ -4437,7 +3874,6 @@ input, select, textarea {
     padding: var(--space-3) var(--space-4);
     border-bottom: 1px solid var(--border-color);
     overflow-x: auto;
-    /* scrollbar-width: none;  Não suportado em Chrome < 121, Safari, iOS, Samsung Internet */
     scrollbar-width: none;
 }
 
@@ -5823,8 +5259,6 @@ input, select, textarea {
     font-weight: 700;
     letter-spacing: 0.5px;
 }
-/* CORREÇÃO: bloco sem seletor, adicione um seletor válido, exemplo .badge-custom: */
-.badge-custom {
     justify-content: center;
     padding: var(--space-4);
     text-align: center;
@@ -6728,7 +6162,7 @@ input, select, textarea {
     gap: 8px;
     overflow-x: auto;
     padding-bottom: 4px;
-
+    -webkit-overflow-scrolling: touch;
 }
 
 .templates-filter-bar::-webkit-scrollbar {
@@ -7273,7 +6707,6 @@ input, select, textarea {
     height: 32px;
     border-radius: 50%;
     background: rgba(0,0,0,0.3);
-    -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
     border: none;
     display: flex;
@@ -8960,8 +8393,6 @@ input, select, textarea {
 
 .card-hero .btn-card-action {
     background: rgba(255, 255, 255, 0.2);
-    -webkit-backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.3);
     color: white;
@@ -9448,8 +8879,7 @@ input, select, textarea {
     gap: var(--space-3);
     overflow-x: auto;
     padding: var(--space-2) 0;
-
-    /* scrollbar-width: none;  Não suportado em Chrome < 121, Safari, iOS, Samsung Internet */
+    -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
 }
 
@@ -10163,7 +9593,6 @@ input, select, textarea {
 
 .aw-input[type=number] {
     -moz-appearance: textfield;
-    appearance: textfield;
 }
 
 /* =====================================================
@@ -10260,7 +9689,7 @@ input, select, textarea {
     padding: 12px;
     overflow-y: auto;
     flex: 1;
-
+    -webkit-overflow-scrolling: touch;
 }
 
 @media (min-width: 500px) {
@@ -10326,7 +9755,6 @@ input, select, textarea {
     line-height: 1.2;
     display: -webkit-box;
     -webkit-line-clamp: 2;
-    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -10841,7 +10269,7 @@ input, select, textarea {
 
 /* Factors Grid */
 .factors-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
-.factor-checkbox { display: flex; align-items: center; gap: 6px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 8px; cursor: pointer; -webkit-user-select: none; user-select: none; }
+.factor-checkbox { display: flex; align-items: center; gap: 6px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 8px; cursor: pointer; user-select: none; }
 .factor-checkbox:hover { background: #f9fafb; }
 .factor-checkbox input { cursor: pointer; }
 
