@@ -14,7 +14,7 @@
 </head>
 <body>
   <!-- ====== LOGIN/REGISTRO ====== -->
-  <div class="auth-screen" id="auth-screen">
+  <div class="auth-screen" id="auth-screen" role="main" aria-label="Tela de autenticação">
     <div class="auth-background">
       <div class="auth-gradient"></div>
     </div>
@@ -79,7 +79,7 @@
     <div class="container">
       <!-- Header -->
       <header class="app-header">
-        <h1>Shaipados</h1>
+        <h1 tabindex="0">Shaipados</h1>
       </header>
 
       <!-- Motivational Banner -->
@@ -88,21 +88,21 @@
       <!-- Tabs -->
       <main class="app-main">
         <!-- DASHBOARD PRINCIPAL -->
-        <div class="home-dashboard">
-          <div class="dashboard-grid" id="dashboard-widgets">
+        <div class="home-dashboard" role="region" aria-label="Dashboard principal">
+          <div class="dashboard-grid" id="dashboard-widgets" role="list">
             <!-- Os widgets/cards do dashboard são renderizados dinamicamente pelo JS -->
           </div>
         </div>
 
         <!-- Treino Tab -->
         <section class="tab-content" id="tab-treino">
-          <button id="btn-treino" aria-label="Gerar treino" role="button">Gerar treino</button>
+          <button id="btn-treino" aria-label="Gerar treino" role="button" tabindex="0">Gerar treino</button>
           <pre id="treino-content"></pre>
         </section>
 
         <!-- Perfil Tab -->
         <section class="tab-content" id="tab-perfil">
-          <h2>Meu Perfil</h2>
+          <h2 tabindex="0">Meu Perfil</h2>
           <div id="profile-summary"></div>
         </section>
       </main>
@@ -111,7 +111,7 @@
 
   <!-- ====== MODAL DE BOAS-VINDAS PERSONALIZADO ====== -->
   <div id="modal-welcome" class="modal-welcome hidden">
-    <div class="modal-welcome-content animate-welcome">
+    <div class="modal-welcome-content animate-welcome" role="dialog" aria-modal="true" aria-label="Boas-vindas">
       <div class="modal-welcome-hero">
         <svg width="64" height="64" viewBox="0 0 64 64" fill="none" aria-hidden="true"><circle cx="32" cy="32" r="32" fill="#6366f1"/><text x="32" y="40" text-anchor="middle" font-size="32" fill="#fff" font-family="Arial" font-weight="bold">💪</text></svg>
       </div>
@@ -126,7 +126,7 @@
 
   <!-- ====== ONBOARDING ====== -->
   <div id="onboarding" class="onboarding hidden">
-    <div class="onboarding-container">
+    <div class="onboarding-container" role="dialog" aria-modal="true" aria-label="Onboarding">
       <div id="onboarding-progress-bar" class="onboarding-progress-bar"></div>
       <div id="step-indicator" class="onboarding-step-indicator"></div>
       <div class="onboarding-step onboarding-step-1">
