@@ -1,4 +1,16 @@
-﻿/* ================= SKELETON SCREEN PARA DASHBOARD ================= */
+﻿/* ================= MICROANIMAÇÕES E FEEDBACK VISUAL ================= */
+button, .btn, .auth-tab, .day-btn, .pill, .goal-card, .level-card, .location-card {
+    transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.12s;
+}
+button:active, .btn:active, .auth-tab:active, .day-btn:active, .pill:active, .goal-card:active, .level-card:active, .location-card:active {
+    transform: scale(0.97);
+    box-shadow: 0 1px 4px rgba(99,102,241,0.10);
+}
+.dashboard-widget:active {
+    transform: scale(0.99);
+    box-shadow: 0 2px 8px rgba(99,102,241,0.10);
+}
+/* ================= SKELETON SCREEN PARA DASHBOARD ================= */
 .skeleton {
     background: linear-gradient(90deg, #ececec 25%, #f5f5f5 50%, #ececec 75%);
     background-size: 200% 100%;
