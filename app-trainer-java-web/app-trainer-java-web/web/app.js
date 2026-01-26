@@ -1,3 +1,53 @@
+// ========== EDITOR DE TREINO ==========
+function openEditTreinoModal(treino = null) {
+    const modal = document.getElementById('modal-edit-treino');
+    if (!modal) return;
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    // Preenche campos se for edição
+    document.getElementById('edit-treino-nome').value = treino?.nome || '';
+    document.getElementById('edit-treino-dias').value = treino?.dias || 4;
+    document.getElementById('edit-treino-exercicios').value = treino?.exercicios?.join('\n') || '';
+}
+
+function closeEditTreinoModal() {
+    const modal = document.getElementById('modal-edit-treino');
+    if (!modal) return;
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const btnCancel = document.getElementById('btn-cancel-edit-treino');
+    if (btnCancel) btnCancel.addEventListener('click', closeEditTreinoModal);
+    const form = document.getElementById('form-edit-treino');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const nome = document.getElementById('edit-treino-nome').value.trim();
+            const dias = parseInt(document.getElementById('edit-treino-dias').value);
+            const exercicios = document.getElementById('edit-treino-exercicios').value.split('\n').map(x => x.trim()).filter(Boolean);
+            if (!nome || !dias || exercicios.length === 0) {
+                Toast.warning('Preencha todos os campos!');
+                return;
+            }
+            // Salva treino no localStorage
+            const treino = { nome, dias, exercicios };
+            localStorage.setItem('treino_atual', JSON.stringify(treino));
+            Toast.success('Treino salvo!');
+            closeEditTreinoModal();
+            // Atualiza dashboard se necessário
+            if (typeof App?.loadDashboard === 'function') App.loadDashboard();
+        });
+    }
+});
+
+// Expor função para abrir modal pelo App
+if (typeof window.App === 'object') {
+    window.App.openEditTreinoModal = openEditTreinoModal;
+}
+// Ou garantir que estará disponível
+window.openEditTreinoModal = openEditTreinoModal;
 /**
  * SHAIPADOS - Coach Virtual de Musculação
  * JavaScript Principal - v6.0 Professional
