@@ -854,9 +854,14 @@ const Auth = {
         // Esconde reminder de onboarding por padrão
         $('#onboarding-reminder') && ($('#onboarding-reminder').style.display = 'none');
         this.updateHeader();
-        App.init();
-        if (isNewUser) this.showWelcomeModal();
-        else if (!temPerfil) this.showOnboardingReminder();
+        // Se for novo usuário, inicia onboarding imediatamente
+        if (isNewUser) {
+            Onboarding.show();
+            // Não inicializa dashboard até finalizar onboarding
+        } else {
+            App.init();
+            if (!temPerfil) this.showOnboardingReminder();
+        }
     },
 
     updateHeader() {
@@ -999,11 +1004,15 @@ const Onboarding = {
             this.hide();
             $('#onboarding-reminder') && ($('#onboarding-reminder').style.display = 'none');
             Toast.success('Perfil configurado! 🎉');
+            // Inicializa App e carrega dashboard após onboarding
+            if (!App.initialized) App.init();
             App.loadDashboard();
         } catch (error) {
             AppState.profile = AppState.onboardingData;
             this.hide();
             Toast.warning('Perfil salvo localmente');
+            if (!App.initialized) App.init();
+            App.loadDashboard();
         } finally { showLoading(false); }
     }
 };
