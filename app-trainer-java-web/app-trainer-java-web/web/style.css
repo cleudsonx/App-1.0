@@ -1,11 +1,4 @@
-﻿.mt-1rem {
-    margin-top: 1rem;
-}
-.w-20 { width: 20%; }
-.d-none {
-    display: none !important;
-}
-.h-10 { height: 10%; }
+﻿.h-10 { height: 10%; }
 .h-20 { height: 20%; }
 .h-40 { height: 40%; }
 .h-60 { height: 60%; }
@@ -121,10 +114,8 @@ button {
     cursor: pointer;
     border: none;
     background: none;
-}
-
-/* Correção para logo-circle inline removido */
-.gradient-shadow {
+    /* Correção para logo-circle inline removido */
+    .gradient-shadow {
     color: inherit;
 }
 
@@ -983,7 +974,6 @@ input, select, textarea {
     align-items: center;
     gap: 6px;
     background: rgba(255,255,255,0.2);
-    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     padding: 4px 12px;
     border-radius: var(--radius-full);
@@ -1514,8 +1504,8 @@ input, select, textarea {
     gap: var(--space-2);
     overflow-x: auto;
     padding-bottom: var(--space-1);
-    /* -webkit-overflow-scrolling: touch; Removido: sem suporte moderno */
-    /* scrollbar-width: none; Limitado: não suportado em Chrome < 121, Safari, iOS, Samsung Internet */
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
 }
 
 .split-carousel::-webkit-scrollbar {
@@ -1574,7 +1564,7 @@ input, select, textarea {
     gap: var(--space-2);
     overflow-x: auto;
     padding-bottom: var(--space-2);
-    /* -webkit-overflow-scrolling: touch; Removido: sem suporte moderno */
+    -webkit-overflow-scrolling: touch;
 }
 
 .split-preview::-webkit-scrollbar {
@@ -2589,7 +2579,7 @@ input, select, textarea {
         margin: auto;
         border-radius: var(--radius-xl);
         box-shadow: var(--shadow-lg);
-        /* min-height: auto; Não suportado no Firefox 22+ */
+        min-height: auto;
     }
     
     .onboarding-container {
@@ -2989,7 +2979,6 @@ input, select, textarea {
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.8);
-    -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
     display: none;
     align-items: center;
@@ -3896,7 +3885,7 @@ input, select, textarea {
     padding: var(--space-3) var(--space-4);
     border-bottom: 1px solid var(--border-color);
     overflow-x: auto;
-    /* scrollbar-width: none; Limitado: não suportado em Chrome < 121, Safari, iOS, Samsung Internet */
+    scrollbar-width: none;
 }
 
 .workout-tabs::-webkit-scrollbar {
@@ -6184,7 +6173,7 @@ input, select, textarea {
     gap: 8px;
     overflow-x: auto;
     padding-bottom: 4px;
-    /* -webkit-overflow-scrolling: touch; Removido: sem suporte moderno */
+    -webkit-overflow-scrolling: touch;
 }
 
 .templates-filter-bar::-webkit-scrollbar {
@@ -6729,7 +6718,6 @@ input, select, textarea {
     height: 32px;
     border-radius: 50%;
     background: rgba(0,0,0,0.3);
-    -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
     border: none;
     display: flex;
@@ -8416,8 +8404,6 @@ input, select, textarea {
 
 .card-hero .btn-card-action {
     background: rgba(255, 255, 255, 0.2);
-    -webkit-backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.3);
     color: white;
@@ -9618,7 +9604,6 @@ input, select, textarea {
 
 .aw-input[type=number] {
     -moz-appearance: textfield;
-    appearance: textfield;
 }
 
 /* =====================================================
