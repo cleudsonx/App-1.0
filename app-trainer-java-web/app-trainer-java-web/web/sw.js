@@ -7,7 +7,8 @@ const ASSETS_TO_CACHE = [
     '/brand.css',
     '/app.js',
     '/manifest.webmanifest',
-    '/assets/Designer01.png'
+    '/assets/Designer01.png',
+    '/offline.html'
 ];
 
 // Instalação - Cache dos assets principais
@@ -83,7 +84,7 @@ self.addEventListener('fetch', (event) => {
                     .catch(() => {
                         // Fallback para página offline (opcional)
                         if (event.request.mode === 'navigate') {
-                            return caches.match('/index.html');
+                            return caches.match('/offline.html');
                         }
                     });
             })

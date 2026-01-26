@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offline - Shaipados</title>
+  <style>
+    body { background: #222; color: #fff; font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+    .offline-container { text-align: center; }
+    .offline-icon { font-size: 64px; margin-bottom: 16px; }
+    h1 { font-size: 2rem; margin-bottom: 8px; }
+    p { color: #ccc; }
+    .btn-reload { margin-top: 24px; padding: 10px 24px; border-radius: 8px; border: none; background: #6366f1; color: #fff; font-size: 1rem; cursor: pointer; }
+    .btn-reload:hover { background: #FFD700; color: #222; }
+  </style>
+</head>
+<body>
+  <div class="offline-container">
+    <div class="offline-icon">📴</div>
+    <h1>Você está offline</h1>
+    <p>Não foi possível carregar o conteúdo.<br>Tente novamente quando estiver conectado à internet.</p>
+    <button class="btn-reload" onclick="location.reload()">Tentar novamente</button>
+  </div>
+</body>
+</html>
