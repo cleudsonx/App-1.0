@@ -1,3 +1,22 @@
+// Configuração padrão dos widgets (id, visibilidade, ordem)
+const defaultWidgetConfig = [
+  { id: 'hero-treino', visible: true, order: 0 },
+  { id: 'ficha-atual', visible: true, order: 1 },
+  { id: 'quick-stats', visible: true, order: 2 },
+  { id: 'progresso', visible: true, order: 3 },
+  { id: 'coach-ia', visible: true, order: 4 },
+  { id: 'templates', visible: true, order: 5 },
+  { id: 'conquistas', visible: true, order: 6 },
+  { id: 'fadiga', visible: true, order: 7 },
+  { id: 'sua-divisao', visible: true, order: 8 },
+  { id: 'timer-descanso', visible: true, order: 9 },
+  { id: 'agua', visible: true, order: 10 },
+  { id: 'nutricao', visible: true, order: 11 },
+  { id: 'motivacional', visible: true, order: 12 },
+  { id: 'planejamento-semanal', visible: true, order: 13 },
+  { id: 'prs-volume', visible: true, order: 14 },
+  { id: 'sono-recuperacao', visible: true, order: 15 }
+];
 
 import React, { useState } from 'react';
 import DashboardGrid from './components/DashboardGrid';
@@ -23,6 +42,11 @@ import PersonalizationModal from './components/PersonalizationModal';
 
 function App() {
   const [showModal, setShowModal] = useState(false);
+  // Estado de configuração dos widgets
+  const [widgetConfig, setWidgetConfig] = useState(() => {
+    const saved = localStorage.getItem('dashboard_widgets_config');
+    return saved ? JSON.parse(saved) : defaultWidgetConfig;
+  });
 
   // Exemplos de dados iniciais para cada widget
   const ficha = { resumo: 'Treino ABC, 3x por semana' };
