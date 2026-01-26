@@ -781,13 +781,16 @@ const Auth = {
         if (!stored) { this.showLogin(); return; }
         try {
             const data = JSON.parse(stored);
-            if (!data.user?.id || !data.token) { this.showLogin(); return; }
+            if (!data.user?.id || !data.token || !data.refreshToken) {
+                this.showLogin();
+                return;
+            }
             AppState.user = data.user;
             AppState.token = data.token;
             AppState.refreshToken = data.refreshToken || null;
             AppState.tokenExpiry = data.tokenExpiry || null;
             AppState.profile = data.profile;
-            
+
             // Verifica se token expirou
             if (AppState.tokenExpiry && Date.now() > AppState.tokenExpiry) {
                 console.log('⏰ Token expirado, tentando refresh...');
@@ -798,7 +801,7 @@ const Auth = {
                     return;
                 }
             }
-            
+
             try {
                 let response;
                 try { response = await api(`/auth/verificar/${data.user.id}`); }
