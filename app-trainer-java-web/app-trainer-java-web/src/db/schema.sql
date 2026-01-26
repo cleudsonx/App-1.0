@@ -179,6 +179,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_atualiza_perfil ON python_app.perfil_usuario;
+
 CREATE TRIGGER trg_atualiza_perfil
 BEFORE UPDATE ON python_app.perfil_usuario
 FOR EACH ROW EXECUTE FUNCTION atualiza_data_perfil();
