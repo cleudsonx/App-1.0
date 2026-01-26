@@ -80,22 +80,47 @@ function App() {
         Personalizar Dashboard
       </button>
       <DashboardGrid>
-        <HeroTreinoCard onStartWorkout={() => alert('Iniciar treino!')} />
-        <FichaAtualCard ficha={ficha} onSwitchTab={tab => alert(`Ir para ${tab}`)} />
-        <QuickStatsCard stats={stats} />
-        <ProgressoCard progresso={progresso} />
-        <CoachIACard mensagem={"Pergunte algo ao Coach IA!"} onPerguntar={() => alert('Perguntar IA')} />
-        <TemplatesCard templates={templates} onSelecionar={tpl => alert(`Selecionar ${tpl.nome}`)} />
-        <ConquistasCard conquistas={conquistas} />
-        <FadigaCard fadiga={fadiga} />
-        <SuaDivisaoCard divisao={divisao} />
-        <TimerDescansoCard />
-        <AguaCard />
-        <NutricaoCard refeicoes={refeicoes} />
-        <MotivacionalCard mensagem={"Você é mais forte do que imagina!"} />
-        <PlanejamentoSemanalCard planejamento={planejamento} />
-        <PRsVolumeCard prsVolume={prsVolume} />
-        <SonoRecuperacaoCard sono={sono} />
+        {widgetConfig
+          .filter(w => w.visible)
+          .sort((a, b) => a.order - b.order)
+          .map(w => {
+            switch (w.id) {
+              case 'hero-treino':
+                return <HeroTreinoCard key={w.id} onStartWorkout={() => alert('Iniciar treino!')} />;
+              case 'ficha-atual':
+                return <FichaAtualCard key={w.id} ficha={ficha} onSwitchTab={tab => alert(`Ir para ${tab}`)} />;
+              case 'quick-stats':
+                return <QuickStatsCard key={w.id} stats={stats} />;
+              case 'progresso':
+                return <ProgressoCard key={w.id} progresso={progresso} />;
+              case 'coach-ia':
+                return <CoachIACard key={w.id} mensagem={"Pergunte algo ao Coach IA!"} onPerguntar={() => alert('Perguntar IA')} />;
+              case 'templates':
+                return <TemplatesCard key={w.id} templates={templates} onSelecionar={tpl => alert(`Selecionar ${tpl.nome}`)} />;
+              case 'conquistas':
+                return <ConquistasCard key={w.id} conquistas={conquistas} />;
+              case 'fadiga':
+                return <FadigaCard key={w.id} fadiga={fadiga} />;
+              case 'sua-divisao':
+                return <SuaDivisaoCard key={w.id} divisao={divisao} />;
+              case 'timer-descanso':
+                return <TimerDescansoCard key={w.id} />;
+              case 'agua':
+                return <AguaCard key={w.id} />;
+              case 'nutricao':
+                return <NutricaoCard key={w.id} refeicoes={refeicoes} />;
+              case 'motivacional':
+                return <MotivacionalCard key={w.id} mensagem={"Você é mais forte do que imagina!"} />;
+              case 'planejamento-semanal':
+                return <PlanejamentoSemanalCard key={w.id} planejamento={planejamento} />;
+              case 'prs-volume':
+                return <PRsVolumeCard key={w.id} prsVolume={prsVolume} />;
+              case 'sono-recuperacao':
+                return <SonoRecuperacaoCard key={w.id} sono={sono} />;
+              default:
+                return null;
+            }
+          })}
       </DashboardGrid>
       <PersonalizationModal isOpen={showModal} onClose={() => setShowModal(false)}>
         <p>Conteúdo do modal de personalização</p>
