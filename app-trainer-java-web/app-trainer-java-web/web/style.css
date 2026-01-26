@@ -1,4 +1,41 @@
-﻿.btn-danger {
+﻿/* ========== MODAL CUSTOMIZAÇÃO DE DASHBOARD ========== */
+#customizer-widgets-list {
+    margin: 18px 0 12px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.customizer-widget-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 10px 14px;
+    box-shadow: 0 1px 4px #0001;
+    cursor: grab;
+    user-select: none;
+}
+.customizer-widget-item.active { border-left: 4px solid #6366f1; }
+.customizer-widget-item .widget-item-icon { font-size: 1.3rem; }
+.customizer-widget-item .widget-item-info { flex: 1; }
+.customizer-widget-item .widget-item-remove, .customizer-widget-item .widget-item-add {
+    background: #eee;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 1.1rem;
+}
+.customizer-widget-item .widget-item-remove:hover, .customizer-widget-item .widget-item-add:hover {
+    background: #e53e3e;
+    color: #fff;
+}
+.customizer-widget-item.available { opacity: 0.7; }
+.widget-required { font-size: 0.9em; color: #888; margin-left: 8px; }
+#btn-customize-floating { background: #6366f1; color: #fff; border: none; border-radius: 24px; transition: background 0.18s; }
+#btn-customize-floating:hover { background: #4f46e5; }
+.btn-danger {
     background: #e53e3e;
     color: #fff;
     border: 1px solid #e53e3e;

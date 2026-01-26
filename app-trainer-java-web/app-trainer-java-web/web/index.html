@@ -1,3 +1,21 @@
+    <!-- ====== MODAL CUSTOMIZAÇÃO DE DASHBOARD ====== -->
+    <div id="modal-dashboard-customizer" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-label="Personalizar Dashboard">
+      <div class="modal-content" style="max-width:420px;">
+        <h2>Personalizar Dashboard</h2>
+        <p>Ative/desative widgets e organize a ordem do seu dashboard.</p>
+        <div id="customizer-widgets-list"></div>
+        <div class="modal-actions">
+          <button id="btn-save-dashboard" class="btn">Salvar</button>
+          <button id="btn-reset-dashboard" class="btn btn-secondary">Restaurar padrão</button>
+          <button type="button" class="btn btn-secondary" onclick="document.getElementById('modal-dashboard-customizer').classList.add('hidden');document.body.style.overflow='';">Fechar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botão flutuante para abrir customizador -->
+    <button id="btn-customize-floating" class="btn" style="position:fixed;bottom:24px;right:24px;z-index:10001;display:flex;align-items:center;gap:8px;padding:12px 18px;font-size:1rem;box-shadow:0 2px 8px #0002;">
+      <span>⚙️</span> Personalizar
+    </button>
   <!-- ====== MODAL EDITOR DE TREINO ====== -->
   <div id="modal-edit-treino" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-label="Editor de Treino">
     <div class="modal-content">

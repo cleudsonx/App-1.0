@@ -1,3 +1,93 @@
+// ========== CUSTOMIZAÇÃO DE DASHBOARD ==========
+function openDashboardCustomizer() {
+    const modal = document.getElementById('modal-dashboard-customizer');
+    if (!modal) return;
+    renderDashboardCustomizerList();
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDashboardCustomizer() {
+    const modal = document.getElementById('modal-dashboard-customizer');
+    if (!modal) return;
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
+function renderDashboardCustomizerList() {
+    const list = document.getElementById('customizer-widgets-list');
+    if (!list) return;
+    const config = DashboardWidgets.currentConfig.slice().sort((a, b) => a.order - b.order);
+    list.innerHTML = '';
+    config.forEach((w, idx) => {
+        const def = DashboardWidgets.definitions[w.id];
+        if (!def) return;
+        const item = document.createElement('div');
+        item.className = 'customizer-widget-item' + (w.visible ? ' active' : ' available');
+        item.setAttribute('data-widget-id', w.id);
+        item.setAttribute('draggable', def.required ? 'false' : 'true');
+        item.innerHTML = `
+            <span class="widget-item-icon">${def.icon}</span>
+            <div class="widget-item-info">
+                <strong>${def.name}</strong>
+                ${def.required ? '<span class="widget-required">(fixo)</span>' : ''}
+            </div>
+            ${!def.required ? `<button class="widget-item-remove" title="${w.visible ? 'Ocultar' : 'Ativar'}">${w.visible ? '❌' : '➕'}</button>` : ''}
+        `;
+        // Drag events
+        if (!def.required) {
+            item.addEventListener('dragstart', e => {
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', idx);
+                item.classList.add('dragging');
+            });
+            item.addEventListener('dragend', () => item.classList.remove('dragging'));
+            item.addEventListener('dragover', e => { e.preventDefault(); item.classList.add('drag-over'); });
+            item.addEventListener('dragleave', () => item.classList.remove('drag-over'));
+            item.addEventListener('drop', e => {
+                e.preventDefault();
+                item.classList.remove('drag-over');
+                const fromIdx = parseInt(e.dataTransfer.getData('text/plain'));
+                DashboardWidgets.reorderWidgets(fromIdx, idx);
+                renderDashboardCustomizerList();
+            });
+        }
+        // Toggle
+        const btn = item.querySelector('.widget-item-remove');
+        if (btn) {
+            btn.onclick = (ev) => {
+                DashboardWidgets.toggleWidget(w.id);
+                renderDashboardCustomizerList();
+            };
+        }
+        list.appendChild(item);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const btnFloating = document.getElementById('btn-customize-floating');
+    if (btnFloating) btnFloating.addEventListener('click', openDashboardCustomizer);
+    const btnSave = document.getElementById('btn-save-dashboard');
+    if (btnSave) btnSave.addEventListener('click', () => {
+        DashboardWidgets.saveConfig();
+        closeDashboardCustomizer();
+        if (typeof App?.loadDashboard === 'function') App.loadDashboard();
+        Toast.success('Dashboard atualizado!');
+    });
+    const btnReset = document.getElementById('btn-reset-dashboard');
+    if (btnReset) btnReset.addEventListener('click', () => {
+        DashboardWidgets.resetToDefault();
+        renderDashboardCustomizerList();
+        Toast.info('Configuração restaurada ao padrão.');
+    });
+    // Fechar modal ao clicar fora do conteúdo
+    const modal = document.getElementById('modal-dashboard-customizer');
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeDashboardCustomizer();
+        });
+    }
+});
 // Excluir treino
 function deleteTreino() {
     if (confirm('Deseja realmente excluir o treino atual?')) {
