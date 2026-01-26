@@ -11,18 +11,62 @@
 <body>
   <!-- ====== LOGIN/REGISTRO ====== -->
   <div class="auth-screen" id="auth-screen">
-    <form id="login-form">
-      <input type="email" id="login-email" placeholder="Email" required>
-      <input type="password" id="login-senha" placeholder="Senha" required>
-      <button type="submit">Entrar</button>
-    </form>
-
-    <form id="register-form">
-      <input type="text" id="register-nome" placeholder="Nome completo" required>
-      <input type="email" id="register-email" placeholder="Email" required>
-      <input type="password" id="register-senha" placeholder="Senha" required>
-      <button type="submit">Criar conta</button>
-    </form>
+    <div class="auth-background">
+      <div class="auth-gradient"></div>
+    </div>
+    <div class="auth-content">
+      <div class="auth-logo">
+        <div class="logo-circle">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#6366F1"/><text x="12" y="16" text-anchor="middle" font-size="12" fill="#fff">S</text></svg>
+        </div>
+        <h1>Shaipados</h1>
+        <p>Coach Virtual de Musculação</p>
+      </div>
+      <div class="auth-card">
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab active" id="tab-login">Entrar</button>
+          <button type="button" class="auth-tab" id="tab-register">Criar conta</button>
+        </div>
+        <form id="login-form" class="auth-form active">
+          <div class="input-group">
+            <label for="login-email">Email</label>
+            <div class="input-wrapper">
+              <input type="email" id="login-email" placeholder="Email" required>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="login-senha">Senha</label>
+            <div class="input-wrapper">
+              <input type="password" id="login-senha" placeholder="Senha" required>
+            </div>
+          </div>
+          <div id="login-error" style="color:#e53e3e;font-size:13px;"></div>
+          <button type="submit">Entrar</button>
+        </form>
+        <form id="register-form" class="auth-form">
+          <div class="input-group">
+            <label for="register-nome">Nome completo</label>
+            <div class="input-wrapper">
+              <input type="text" id="register-nome" placeholder="Nome completo" required>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="register-email">Email</label>
+            <div class="input-wrapper">
+              <input type="email" id="register-email" placeholder="Email" required>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="register-senha">Senha</label>
+            <div class="input-wrapper">
+              <input type="password" id="register-senha" placeholder="Senha" required>
+            </div>
+          </div>
+          <div id="register-error" style="color:#e53e3e;font-size:13px;"></div>
+          <button type="submit">Criar conta</button>
+        </form>
+      </div>
+    </div>
   </div>
 
   <!-- ====== APP PRINCIPAL ====== -->

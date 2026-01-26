@@ -725,7 +725,15 @@ const Auth = {
                 if (errorEl) errorEl.textContent = response.detail || 'Erro ao criar conta';
             }
         } catch (error) {
-            if (errorEl) errorEl.textContent = error.message?.includes('409') ? 'Email já cadastrado' : (error.message || 'Erro');
+            if (errorEl) {
+                if (error.message?.includes('409')) {
+                    errorEl.textContent = 'Email já cadastrado';
+                } else if (error.message?.includes('símbolo')) {
+                    errorEl.textContent = 'A senha deve conter pelo menos 1 símbolo especial (!@#$%^&* etc)';
+                } else {
+                    errorEl.textContent = error.message || 'Erro';
+                }
+            }
         } finally { showLoading(false); }
     },
 
