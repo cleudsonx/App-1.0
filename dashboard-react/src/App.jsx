@@ -23,7 +23,7 @@ const defaultWidgetConfig = [
   { id: 'sono-recuperacao', visible: true, order: 15 }
 ];
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DashboardGrid from './components/DashboardGrid';
 
 import HeroTreinoCard from './components/HeroTreinoCard';
@@ -53,30 +53,35 @@ function App() {
     return saved ? JSON.parse(saved) : defaultWidgetConfig;
   });
 
-  // Exemplos de dados iniciais para cada widget
-  const ficha = { resumo: 'Treino ABC, 3x por semana' };
-  const stats = { treinos: 42, volume: '12.000kg', prs: 5 };
-  const progresso = { volume: '12.000kg', prs: 5, ultimaEvolucao: 'Semana passada' };
-  const conquistas = [
-    { titulo: 'Primeiro Treino', descricao: 'Você completou seu primeiro treino!' },
-    { titulo: 'PR de Agachamento', descricao: 'Novo recorde de agachamento.' }
-  ];
-  const fadiga = { nivel: 'Moderado', recomendacao: 'Descanse 1 dia.' };
-  const divisao = { descricao: 'ABC - Hipertrofia', dias: ['Segunda', 'Quarta', 'Sexta'] };
-  const templates = [
-    { categoria: 'Hipertrofia', fichas: [ { nome: 'Ficha A' }, { nome: 'Ficha B' } ] },
-    { categoria: 'Resistência', fichas: [ { nome: 'Ficha X' } ] }
-  ];
-  const refeicoes = [
-    { horario: '08:00', descricao: 'Café da manhã: ovos e aveia' },
-    { horario: '12:00', descricao: 'Almoço: frango e arroz' }
-  ];
-  const planejamento = [
-    { dia: 'Segunda', atividade: 'Treino A' },
-    { dia: 'Quarta', atividade: 'Treino B' }
-  ];
-  const prsVolume = { prs: 5, volume: '12.000kg' };
-  const sono = { horas: 7, qualidade: 'Boa' };
+
+  // Estados para dados reais dos widgets
+  const [ficha, setFicha] = useState(null);
+  const [stats, setStats] = useState(null);
+  const [progresso, setProgresso] = useState(null);
+  const [conquistas, setConquistas] = useState([]);
+  const [fadiga, setFadiga] = useState(null);
+  const [divisao, setDivisao] = useState(null);
+  const [templates, setTemplates] = useState([]);
+  const [refeicoes, setRefeicoes] = useState([]);
+  const [planejamento, setPlanejamento] = useState([]);
+  const [prsVolume, setPrsVolume] = useState(null);
+  const [sono, setSono] = useState(null);
+
+  // Exemplo de busca de dados reais ao montar o componente
+  useEffect(() => {
+    // Substitua as URLs abaixo pelas rotas reais do seu backend
+    fetch('/api/ficha').then(r => r.json()).then(setFicha);
+    fetch('/api/stats').then(r => r.json()).then(setStats);
+    fetch('/api/progresso').then(r => r.json()).then(setProgresso);
+    fetch('/api/conquistas').then(r => r.json()).then(setConquistas);
+    fetch('/api/fadiga').then(r => r.json()).then(setFadiga);
+    fetch('/api/divisao').then(r => r.json()).then(setDivisao);
+    fetch('/api/templates').then(r => r.json()).then(setTemplates);
+    fetch('/api/refeicoes').then(r => r.json()).then(setRefeicoes);
+    fetch('/api/planejamento').then(r => r.json()).then(setPlanejamento);
+    fetch('/api/prs-volume').then(r => r.json()).then(setPrsVolume);
+    fetch('/api/sono').then(r => r.json()).then(setSono);
+  }, []);
 
   return (
     <div className="dashboard-root">
