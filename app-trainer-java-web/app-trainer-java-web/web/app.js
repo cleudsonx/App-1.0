@@ -1090,8 +1090,8 @@ const App = {
         this.loadTreinoTab();
         this.setupProfileTab();
         
-        $('#btn-logout')?.addEventListener('click', () => Auth.logout());
-        $('#btn-restart-onboarding')?.addEventListener('click', () => Onboarding.show());
+        $('#btn-logout')?.addEventListener('pointerup', () => Auth.logout());
+        $('#btn-restart-onboarding')?.addEventListener('pointerup', () => Onboarding.show());
         
         this.switchTab('home');
     },
@@ -1101,11 +1101,11 @@ const App = {
         const reminder = $('#onboarding-reminder');
         if (reminder && !reminder.dataset.listenersAdded) {
             reminder.dataset.listenersAdded = 'true';
-            $('#btn-complete-onboarding')?.addEventListener('click', () => { 
+            $('#btn-complete-onboarding')?.addEventListener('pointerup', () => { 
                 reminder.style.display = 'none'; 
                 Onboarding.show(); 
             });
-            $('#btn-dismiss-reminder')?.addEventListener('click', () => { 
+            $('#btn-dismiss-reminder')?.addEventListener('pointerup', () => { 
                 reminder.style.display = 'none'; 
                 sessionStorage.setItem('reminder_dismissed', 'true');
             });
@@ -1114,7 +1114,7 @@ const App = {
 
     setupNavigation() {
         $$('.nav-item').forEach(item => {
-            item.addEventListener('click', () => {
+            item.addEventListener('pointerup', () => {
                 const tab = item.dataset.tab;
                 this.switchTab(tab);
             });
@@ -1139,14 +1139,14 @@ const App = {
     },
 
     setupHeader() {
-        $('#btn-settings')?.addEventListener('click', () => this.switchTab('perfil'));
-        $('#btn-notifications')?.addEventListener('click', () => Toast.info('Sem notificações'));
-        $('#btn-customize-dashboard')?.addEventListener('click', () => this.openDashboardCustomizer());
+        $('#btn-settings')?.addEventListener('pointerup', () => this.switchTab('perfil'));
+        $('#btn-notifications')?.addEventListener('pointerup', () => Toast.info('Sem notificações'));
+        $('#btn-customize-dashboard')?.addEventListener('pointerup', () => this.openDashboardCustomizer());
     },
 
     setupModals() {
         $$('.modal-close, [data-close]').forEach(btn => {
-            btn.addEventListener('click', (e) => { 
+            btn.addEventListener('pointerup', (e) => { 
                 e.preventDefault(); 
                 const modal = btn.closest('.modal-overlay'); 
                 if (modal) {
@@ -1156,7 +1156,7 @@ const App = {
             });
         });
         $$('.modal-overlay').forEach(modal => {
-            modal.addEventListener('click', (e) => { 
+            modal.addEventListener('pointerup', (e) => { 
                 if (e.target === modal) {
                     modal.classList.remove('active');
                     modal.style.display = 'none'; 
@@ -1165,14 +1165,14 @@ const App = {
         });
 
         // Dashboard Customizer buttons
-        $('#btn-save-dashboard')?.addEventListener('click', () => {
+        $('#btn-save-dashboard')?.addEventListener('pointerup', () => {
             DashboardWidgets.saveConfig();
             this.loadDashboard();
             this.closeDashboardCustomizer();
             Toast.success('Dashboard atualizado!');
         });
 
-        $('#btn-reset-dashboard')?.addEventListener('click', () => {
+        $('#btn-reset-dashboard')?.addEventListener('pointerup', () => {
             DashboardWidgets.resetToDefault();
             this.renderCustomizerWidgets();
             this.setupCustomizerDragDrop();
