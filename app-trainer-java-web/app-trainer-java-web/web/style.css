@@ -1,4 +1,12 @@
-﻿.dashboard-widget, .dashboard-hero, .motivational-banner, .modal-welcome-content, .onboarding-container {
+﻿button:disabled,
+.btn-welcome-start:disabled,
+.btn-welcome-skip:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: grayscale(0.2);
+    box-shadow: none;
+}
+.dashboard-widget, .dashboard-hero, .motivational-banner, .modal-welcome-content, .onboarding-container {
     will-change: opacity, transform;
 }
 /* ======= MELHORIAS DE PERFORMANCE: LCP & CLS ======= */
