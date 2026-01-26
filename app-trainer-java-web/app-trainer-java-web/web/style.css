@@ -1,4 +1,32 @@
-﻿/* ================= MOBILE-FIRST BASE ================= */
+﻿/* ================= AJUSTES FINOS DE RESPONSIVIDADE ================= */
+@media (max-width: 600px) {
+    .container {
+        padding: 0 4px;
+    }
+    .dashboard-widget, .dashboard-hero, .dashboard-card {
+        margin-bottom: 12px;
+        min-width: 0;
+    }
+    .motivational-banner {
+        font-size: 0.98rem;
+        padding: 8px 6px;
+    }
+    .modal-welcome-content {
+        padding: 18px 6px 18px 6px;
+        max-width: 98vw;
+    }
+    .onboarding-container {
+        padding: 18px 6px 18px 6px;
+        max-width: 98vw;
+    }
+    .tab-content {
+        padding: 4px 0;
+    }
+    html, body {
+        overflow-x: hidden;
+    }
+}
+/* ================= MOBILE-FIRST BASE ================= */
 html {
     font-size: 16px;
     box-sizing: border-box;
