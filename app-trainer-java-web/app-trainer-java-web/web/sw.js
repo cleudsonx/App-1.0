@@ -1,3 +1,46 @@
+// ================= PUSH NOTIFICATIONS =================
+self.addEventListener('push', function(event) {
+    let data = {};
+    if (event.data) {
+        data = event.data.json();
+    }
+    const title = data.title || 'Shaipados';
+    const options = {
+        body: data.body || 'Você recebeu uma nova notificação!',
+        icon: '/assets/Designer01.png',
+        badge: '/assets/Designer01.png',
+        data: data.url || '/'
+    };
+    event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', function(event) {
+    event.notification.close();
+    event.waitUntil(
+        clients.matchAll({ type: 'window' }).then(function(clientList) {
+            for (var i = 0; i < clientList.length; i++) {
+                var client = clientList[i];
+                if (client.url === event.notification.data && 'focus' in client)
+                    return client.focus();
+            }
+            if (clients.openWindow) {
+                return clients.openWindow(event.notification.data);
+            }
+        })
+    );
+});
+
+// ================= BACKGROUND SYNC =================
+self.addEventListener('sync', function(event) {
+    if (event.tag === 'sync-treinos') {
+        // Aqui você pode implementar lógica para sincronizar treinos salvos offline
+        // Exemplo: buscar dados no IndexedDB/localStorage e enviar para o backend
+        event.waitUntil(
+            // Exemplo fictício:
+            fetch('/api/sync-treinos', { method: 'POST', body: JSON.stringify({ /* dados */ }) })
+        );
+    }
+});
 // Service Worker - Shaipados PWA
 const CACHE_NAME = 'shaipados-v1.0.0';
 const ASSETS_TO_CACHE = [
