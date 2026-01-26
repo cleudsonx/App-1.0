@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="Coach Virtual de Musculação com IA, dashboard interativo, onboarding personalizado e acompanhamento de treinos.">
+  <meta name="theme-color" content="#6366f1">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/favicon.ico">
   <title>Shaipados - Coach Virtual</title>
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/brand.css">
@@ -24,8 +28,8 @@
       </div>
       <div class="auth-card">
         <div class="auth-tabs">
-          <button type="button" class="auth-tab active" id="tab-login">Entrar</button>
-          <button type="button" class="auth-tab" id="tab-register">Criar conta</button>
+          <button type="button" class="auth-tab active" id="tab-login" aria-label="Entrar" role="tab">Entrar</button>
+          <button type="button" class="auth-tab" id="tab-register" aria-label="Criar conta" role="tab">Criar conta</button>
         </div>
         <form id="login-form" class="auth-form active">
           <div class="input-group">
@@ -41,7 +45,7 @@
             </div>
           </div>
           <div id="login-error" class="error-message"></div>
-          <button type="submit">Entrar</button>
+          <button type="submit" aria-label="Entrar na conta" role="button">Entrar</button>
         </form>
         <form id="register-form" class="auth-form">
           <div class="input-group">
@@ -63,7 +67,7 @@
             </div>
           </div>
           <div id="register-error" class="error-message"></div>
-          <button type="submit">Criar conta</button>
+          <button type="submit" aria-label="Criar nova conta" role="button">Criar conta</button>
         </form>
       </div>
     </div>
@@ -93,7 +97,7 @@
 
       <!-- Treino Tab -->
       <section class="tab-content" id="tab-treino">
-        <button id="btn-treino">Gerar treino</button>
+        <button id="btn-treino" aria-label="Gerar treino" role="button">Gerar treino</button>
         <pre id="treino-content"></pre>
       </section>
 
@@ -114,8 +118,8 @@
       <h2>Bem-vindo(a), <span id="welcome-username">Campeão</span>!</h2>
       <p class="welcome-message">Você acaba de entrar para a comunidade Shaipados!<br>Prepare-se para transformar seus treinos com inteligência artificial, motivação e resultados reais.<br><b>Vamos começar sua jornada?</b></p>
       <div class="modal-welcome-actions">
-        <button id="btn-welcome-start" class="btn-welcome-start">Começar agora</button>
-        <button id="btn-welcome-skip" class="btn-welcome-skip">Pular por enquanto</button>
+        <button id="btn-welcome-start" class="btn-welcome-start" aria-label="Começar agora" role="button">Começar agora</button>
+        <button id="btn-welcome-skip" class="btn-welcome-skip" aria-label="Pular por enquanto" role="button">Pular por enquanto</button>
       </div>
     </div>
   </div>

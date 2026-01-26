@@ -1,4 +1,7 @@
-﻿/* ======= MELHORIAS DE PERFORMANCE: LCP & CLS ======= */
+﻿.dashboard-widget, .dashboard-hero, .motivational-banner, .modal-welcome-content, .onboarding-container {
+    will-change: opacity, transform;
+}
+/* ======= MELHORIAS DE PERFORMANCE: LCP & CLS ======= */
 #treino-content {
     min-height: 180px; /* espaço reservado para evitar shift */
     display: block;
