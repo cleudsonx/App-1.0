@@ -1,3 +1,8 @@
+import { useEffect } from 'react';
+  // Salva configuração no localStorage ao alterar ordem/visibilidade
+  useEffect(() => {
+    localStorage.setItem('dashboard_widgets_config', JSON.stringify(widgetConfig));
+  }, [widgetConfig]);
 // Configuração padrão dos widgets (id, visibilidade, ordem)
 const defaultWidgetConfig = [
   { id: 'hero-treino', visible: true, order: 0 },
