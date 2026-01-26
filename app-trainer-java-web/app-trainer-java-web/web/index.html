@@ -1,3 +1,27 @@
+  <!-- ====== MODAL EDITOR DE TREINO ====== -->
+  <div id="modal-edit-treino" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-label="Editor de Treino">
+    <div class="modal-content">
+      <h2>Edição de Treino</h2>
+      <form id="form-edit-treino">
+        <div class="input-group">
+          <label for="edit-treino-nome">Nome do treino</label>
+          <input type="text" id="edit-treino-nome" required />
+        </div>
+        <div class="input-group">
+          <label for="edit-treino-dias">Dias por semana</label>
+          <input type="number" id="edit-treino-dias" min="1" max="7" required />
+        </div>
+        <div class="input-group">
+          <label for="edit-treino-exercicios">Exercícios (um por linha)</label>
+          <textarea id="edit-treino-exercicios" rows="5" required></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn">Salvar</button>
+          <button type="button" class="btn btn-secondary" id="btn-cancel-edit-treino">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
