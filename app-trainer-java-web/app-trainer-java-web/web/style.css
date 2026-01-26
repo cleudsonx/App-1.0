@@ -1,4 +1,17 @@
-﻿/* Utilitário para esconder elementos via classe */
+﻿/* Esconder scrollbars universalmente em containers de dashboard e chat */
+.dashboard-widget-list, .chat-messages, .dashboard-grid, .home-dashboard {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE e Edge antigos */
+}
+.dashboard-widget-list::-webkit-scrollbar,
+.chat-messages::-webkit-scrollbar,
+.dashboard-grid::-webkit-scrollbar,
+.home-dashboard::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+    background: transparent;
+}
+/* Utilitário para esconder elementos via classe */
 .hidden {
     display: none !important;
 }
