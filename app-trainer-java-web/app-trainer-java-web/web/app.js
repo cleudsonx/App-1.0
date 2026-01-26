@@ -786,38 +786,48 @@ const Auth = {
         this.showLogin();
     },
 
+    _refreshAttempts: 0,
     async refreshAccessToken() {
+        const MAX_REFRESH_ATTEMPTS = 5;
         if (!AppState.refreshToken) {
             console.log('❌ Sem refresh token disponível');
             return false;
         }
+        if (this._refreshAttempts >= MAX_REFRESH_ATTEMPTS) {
+            console.error('❌ Limite de tentativas de refresh atingido. Faça login novamente.');
+            this._refreshAttempts = 0;
+            this.showLogin();
+            return false;
+        }
+        this._refreshAttempts++;
         try {
             console.log('🔄 Tentando refresh do access token...');
-            const response = await api('/auth/refresh', {
+            const response = await fetch(BASE_URL + '/auth/refresh', {
                 method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ refresh_token: AppState.refreshToken })
             });
-            // Atualiza access e refresh token se vierem na resposta
-            if (response.access_token && response.refresh_token) {
+            const data = await response.json();
+            if (data.access_token && data.refresh_token) {
                 console.log('✅ Token refreshed com sucesso (access + refresh)');
-                AppState.token = response.access_token;
-                AppState.refreshToken = response.refresh_token;
-                AppState.tokenExpiry = Date.now() + (response.expires_in * 1000);
-                // Atualiza localStorage
+                AppState.token = data.access_token;
+                AppState.refreshToken = data.refresh_token;
+                AppState.tokenExpiry = Date.now() + (data.expires_in * 1000);
                 const stored = JSON.parse(localStorage.getItem('shaipados_auth') || '{}');
                 stored.token = AppState.token;
                 stored.refreshToken = AppState.refreshToken;
                 stored.tokenExpiry = AppState.tokenExpiry;
                 localStorage.setItem('shaipados_auth', JSON.stringify(stored));
+                this._refreshAttempts = 0;
                 return true;
-            } else if (response.access_token) {
-                // Suporte legado: só access token
-                AppState.token = response.access_token;
-                AppState.tokenExpiry = Date.now() + (response.expires_in * 1000);
+            } else if (data.access_token) {
+                AppState.token = data.access_token;
+                AppState.tokenExpiry = Date.now() + (data.expires_in * 1000);
                 const stored = JSON.parse(localStorage.getItem('shaipados_auth') || '{}');
                 stored.token = AppState.token;
                 stored.tokenExpiry = AppState.tokenExpiry;
                 localStorage.setItem('shaipados_auth', JSON.stringify(stored));
+                this._refreshAttempts = 0;
                 return true;
             }
             return false;
