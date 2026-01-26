@@ -11,8 +11,22 @@ public class DataStorageSQL implements Storage {
     }
 
     // Métodos obrigatórios da interface Storage (stubs para não implementados)
-    public Aluno getAlunoById(int id) throws Exception {
-        throw new UnsupportedOperationException("getAlunoById não implementado em DataStorageSQL");
+    public Aluno getAlunoById(int id) throws SQLException {
+        String sql = "SELECT id, nome, email, senha_hash FROM java_app.usuarios WHERE id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int userId = rs.getInt("id");
+                    String nome = rs.getString("nome");
+                    String email = rs.getString("email");
+                    String senhaHash = rs.getString("senha_hash");
+                    // Adapte conforme o construtor de Aluno
+                    return new Aluno(userId, nome, 0, "", "", 0, 0, "", "", null, email, senhaHash, "{}" );
+                }
+            }
+        }
+        return null;
     }
     public java.util.List<Aluno> listAlunos(String objetivo, String nivel) throws Exception {
         throw new UnsupportedOperationException("listAlunos não implementado em DataStorageSQL");
