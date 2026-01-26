@@ -1,35 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+
+import React, { useState } from 'react';
+import DashboardGrid from './components/DashboardGrid';
+import DashboardCard from './components/DashboardCard';
+import FallbackCard from './components/FallbackCard';
+import PersonalizationModal from './components/PersonalizationModal';
+
+const mockCards = [
+  { id: 1, title: 'Card 1', content: 'Conteúdo do Card 1' },
+  { id: 2, title: 'Card 2', content: 'Conteúdo do Card 2' },
+  { id: 3, title: 'Card 3', content: 'Conteúdo do Card 3' },
+];
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [showModal, setShowModal] = useState(false);
+  const [cards, setCards] = useState(mockCards);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="dashboard-root">
+      <h2>Dashboard React</h2>
+      <button onClick={() => setShowModal(true)}>
+        Personalizar Dashboard
+      </button>
+      <DashboardGrid>
+        {cards.length > 0 ? (
+          cards.map(card => (
+            <DashboardCard key={card.id} title={card.title}>
+              {card.content}
+            </DashboardCard>
+          ))
+        ) : (
+          <FallbackCard message="Nenhum card disponível." />
+        )}
+      </DashboardGrid>
+      <PersonalizationModal isOpen={showModal} onClose={() => setShowModal(false)}>
+        <p>Conteúdo do modal de personalização</p>
+      </PersonalizationModal>
+    </div>
+  );
 }
 
-export default App
+export default App;
