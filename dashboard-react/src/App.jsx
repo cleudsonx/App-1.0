@@ -128,7 +128,35 @@ function App() {
           })}
       </DashboardGrid>
       <PersonalizationModal isOpen={showModal} onClose={() => setShowModal(false)}>
-        <p>Conteúdo do modal de personalização</p>
+        <h3>Personalizar Dashboard</h3>
+        <ul>
+          {widgetConfig
+            .sort((a, b) => a.order - b.order)
+            .map((w, idx) => (
+              <li key={w.id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span>{w.id}</span>
+                <button onClick={() => setWidgetConfig(cfg => cfg.map(item => item.id === w.id ? { ...item, visible: !item.visible } : item))}>
+                  {w.visible ? 'Ocultar' : 'Mostrar'}
+                </button>
+                <button disabled={idx === 0} onClick={() => setWidgetConfig(cfg => {
+                  const newCfg = [...cfg];
+                  const i = newCfg.findIndex(item => item.id === w.id);
+                  if (i > 0) {
+                    [newCfg[i - 1].order, newCfg[i].order] = [newCfg[i].order, newCfg[i - 1].order];
+                  }
+                  return newCfg;
+                })}>↑</button>
+                <button disabled={idx === widgetConfig.length - 1} onClick={() => setWidgetConfig(cfg => {
+                  const newCfg = [...cfg];
+                  const i = newCfg.findIndex(item => item.id === w.id);
+                  if (i < newCfg.length - 1) {
+                    [newCfg[i + 1].order, newCfg[i].order] = [newCfg[i].order, newCfg[i + 1].order];
+                  }
+                  return newCfg;
+                })}>↓</button>
+              </li>
+            ))}
+        </ul>
       </PersonalizationModal>
     </div>
   );
