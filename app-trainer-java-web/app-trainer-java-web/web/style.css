@@ -1,4 +1,77 @@
-﻿button:disabled,
+﻿/* ================= MOBILE-FIRST BASE ================= */
+html {
+    font-size: 16px;
+    box-sizing: border-box;
+}
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', Arial, sans-serif;
+    background: #f5f5f5;
+    color: #222;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+/* Touch targets */
+button, .btn, .nav-item, .dashboard-widget {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* Flex/grid para dashboard */
+.dashboard-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+.dashboard-widget {
+    flex: 1 1 100%;
+    min-width: 0;
+}
+
+/* Tabs responsivas */
+.tab-content {
+    padding: 12px 0;
+}
+
+/* ================= MEDIA QUERIES ================= */
+@media (min-width: 600px) {
+    .dashboard-widget {
+        flex: 1 1 48%;
+    }
+    .tab-content {
+        padding: 24px 0;
+    }
+}
+
+@media (min-width: 900px) {
+    .dashboard-widget {
+        flex: 1 1 32%;
+    }
+    .container {
+        padding: 0 32px;
+    }
+}
+
+@media (max-width: 480px) {
+    html {
+        font-size: 15px;
+    }
+    .dashboard-widget, .tab-content {
+        padding: 8px 0;
+    }
+}
+button:disabled,
 .btn-welcome-start:disabled,
 .btn-welcome-skip:disabled {
     opacity: 0.6;
