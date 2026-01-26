@@ -838,17 +838,17 @@ const Auth = {
     },
 
     showLogin() {
-        $('#auth-screen') && ($('#auth-screen').style.display = 'flex');
-        $('#app') && ($('#app').style.display = 'none');
-        $('#onboarding') && ($('#onboarding').style.display = 'none');
-        $('#modal-welcome') && ($('#modal-welcome').style.display = 'none');
+        if ($('#auth-screen')) $('#auth-screen').classList.remove('hidden');
+        if ($('#app')) $('#app').classList.add('hidden');
+        if ($('#onboarding')) $('#onboarding').classList.add('hidden');
+        if ($('#modal-welcome')) $('#modal-welcome').classList.add('hidden');
         localStorage.removeItem('shaipados_auth');
         AppState.user = null; AppState.token = null; AppState.refreshToken = null; AppState.tokenExpiry = null; AppState.profile = null;
     },
 
     enterApp(temPerfil, isNewUser) {
-        $('#auth-screen') && ($('#auth-screen').style.display = 'none');
-        $('#app') && ($('#app').style.display = 'flex');
+        if ($('#auth-screen')) $('#auth-screen').classList.add('hidden');
+        if ($('#app')) $('#app').classList.remove('hidden');
         this.updateHeader();
         App.init();
         if (isNewUser) this.showWelcomeModal();
