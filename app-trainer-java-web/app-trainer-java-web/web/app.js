@@ -897,11 +897,11 @@ const Auth = {
             const btnSkip = $('#btn-welcome-skip');
             if (btnStart) {
                 btnStart.replaceWith(btnStart.cloneNode(true));
-                modal.querySelector('#btn-welcome-start').addEventListener('click', () => { modal.style.display = 'none'; Onboarding.show(); });
+                modal.querySelector('#btn-welcome-start').addEventListener('pointerup', () => { modal.style.display = 'none'; Onboarding.show(); });
             }
             if (btnSkip) {
                 btnSkip.replaceWith(btnSkip.cloneNode(true));
-                modal.querySelector('#btn-welcome-skip').addEventListener('click', () => { modal.style.display = 'none'; this.showOnboardingReminder(); Toast.info('Configure seu perfil quando quiser'); });
+                modal.querySelector('#btn-welcome-skip').addEventListener('pointerup', () => { modal.style.display = 'none'; this.showOnboardingReminder(); Toast.info('Configure seu perfil quando quiser'); });
             }
         } else Onboarding.show();
     },
@@ -972,16 +972,16 @@ const Onboarding = {
     },
 
     setupListeners() {
-        $('#btn-onboarding-back')?.addEventListener('click', () => this.prevStep());
-        $('#btn-onboarding-next')?.addEventListener('click', () => this.nextStep());
-        $('#btn-onboarding-skip')?.addEventListener('click', () => this.skip());
+        $('#btn-onboarding-back')?.addEventListener('pointerup', () => this.prevStep());
+        $('#btn-onboarding-next')?.addEventListener('pointerup', () => this.nextStep());
+        $('#btn-onboarding-skip')?.addEventListener('pointerup', () => this.skip());
         
-        $$('#step-1 .pill').forEach(p => p.addEventListener('click', () => { $$('#step-1 .pill').forEach(x => x.classList.remove('active')); p.classList.add('active'); AppState.onboardingData.sexo = p.dataset.value; }));
-        $$('.goal-card').forEach(c => c.addEventListener('click', () => { $$('.goal-card').forEach(x => x.classList.remove('active')); c.classList.add('active'); AppState.onboardingData.objetivo = c.dataset.value; }));
-        $$('.level-card').forEach(c => c.addEventListener('click', () => { $$('.level-card').forEach(x => x.classList.remove('active')); c.classList.add('active'); AppState.onboardingData.nivel = c.dataset.value; }));
-        $$('.day-btn').forEach(b => b.addEventListener('click', () => { $$('.day-btn').forEach(x => x.classList.remove('active')); b.classList.add('active'); AppState.onboardingData.dias = parseInt(b.dataset.value); }));
-        $$('#step-4 .pill').forEach(p => p.addEventListener('click', () => { $$('#step-4 .pill').forEach(x => x.classList.remove('active')); p.classList.add('active'); AppState.onboardingData.duracao = parseInt(p.dataset.value); }));
-        $$('.location-card').forEach(c => c.addEventListener('click', () => { $$('.location-card').forEach(x => x.classList.remove('active')); c.classList.add('active'); AppState.onboardingData.local = c.dataset.value; }));
+        $$('#step-1 .pill').forEach(p => p.addEventListener('pointerup', () => { $$('#step-1 .pill').forEach(x => x.classList.remove('active')); p.classList.add('active'); AppState.onboardingData.sexo = p.dataset.value; }));
+        $$('.goal-card').forEach(c => c.addEventListener('pointerup', () => { $$('.goal-card').forEach(x => x.classList.remove('active')); c.classList.add('active'); AppState.onboardingData.objetivo = c.dataset.value; }));
+        $$('.level-card').forEach(c => c.addEventListener('pointerup', () => { $$('.level-card').forEach(x => x.classList.remove('active')); c.classList.add('active'); AppState.onboardingData.nivel = c.dataset.value; }));
+        $$('.day-btn').forEach(b => b.addEventListener('pointerup', () => { $$('.day-btn').forEach(x => x.classList.remove('active')); b.classList.add('active'); AppState.onboardingData.dias = parseInt(b.dataset.value); }));
+        $$('#step-4 .pill').forEach(p => p.addEventListener('pointerup', () => { $$('#step-4 .pill').forEach(x => x.classList.remove('active')); p.classList.add('active'); AppState.onboardingData.duracao = parseInt(p.dataset.value); }));
+        $$('.location-card').forEach(c => c.addEventListener('pointerup', () => { $$('.location-card').forEach(x => x.classList.remove('active')); c.classList.add('active'); AppState.onboardingData.local = c.dataset.value; }));
     },
 
     prevStep() { if (AppState.onboardingStep > 1) { AppState.onboardingStep--; this.updateUI(); } },
