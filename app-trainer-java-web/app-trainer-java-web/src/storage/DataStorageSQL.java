@@ -39,6 +39,7 @@ public class DataStorageSQL implements Storage {
         throw new UnsupportedOperationException("deleteProfessor não implementado em DataStorageSQL");
     }
 
+    
     // === Métodos de usuário (aluno) ===
     public Aluno getAlunoByEmail(String email) throws SQLException {
         String sql = "SELECT id, nome, email, senha_hash FROM java_app.usuarios WHERE email = ?";
