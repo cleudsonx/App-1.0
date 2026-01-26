@@ -836,17 +836,23 @@ const Auth = {
     },
 
     showLogin() {
+        // Mostra tela de autenticação, esconde app principal e reminders
         $('#auth-screen') && ($('#auth-screen').style.display = 'flex');
         $('#app') && ($('#app').style.display = 'none');
-        $('#onboarding') && ($('#onboarding').style.display = 'none');
+        $('#app-main') && ($('#app-main').style.display = 'none');
+        $('#onboarding-reminder') && ($('#onboarding-reminder').style.display = 'none');
         $('#modal-welcome') && ($('#modal-welcome').style.display = 'none');
         localStorage.removeItem('shaipados_auth');
         AppState.user = null; AppState.token = null; AppState.refreshToken = null; AppState.tokenExpiry = null; AppState.profile = null;
     },
 
     enterApp(temPerfil, isNewUser) {
+        // Esconde tela de autenticação, mostra app principal
         $('#auth-screen') && ($('#auth-screen').style.display = 'none');
         $('#app') && ($('#app').style.display = 'flex');
+        $('#app-main') && ($('#app-main').style.display = 'block');
+        // Esconde reminder de onboarding por padrão
+        $('#onboarding-reminder') && ($('#onboarding-reminder').style.display = 'none');
         this.updateHeader();
         App.init();
         if (isNewUser) this.showWelcomeModal();
