@@ -275,13 +275,15 @@ class PerfilRequest(BaseModel):
 @app.post("/perfil/{user_id}")
 async def salvar_perfil(user_id: str, request: PerfilRequest):
     users = load_users()
-    
+    # Se o usuário não existir, cria um novo registro mínimo
     if user_id not in users:
-        raise HTTPException(status_code=404, detail="Usuário não encontrado")
-    
+        users[user_id] = {
+            "nome": f"Usuário {user_id}",
+            "email": f"user{user_id}@example.com",
+            "perfil": {}
+        }
     users[user_id]["perfil"] = request.dict(exclude_none=True)
     save_users(users)
-    
     return {"success": True, "perfil": users[user_id]["perfil"]}
 
 @app.get("/perfil/{user_id}")
