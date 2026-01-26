@@ -865,10 +865,13 @@ const Auth = {
         // Se for novo usuário, inicia onboarding imediatamente
         if (isNewUser) {
             Onboarding.show();
-            // Não inicializa dashboard até finalizar onboarding
+            // Dashboard só será carregado após onboarding finalizar
+        } else if (!temPerfil) {
+            App.init();
+            this.showOnboardingReminder();
         } else {
             App.init();
-            if (!temPerfil) this.showOnboardingReminder();
+            App.loadDashboard();
         }
     },
 
