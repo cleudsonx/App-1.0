@@ -575,10 +575,12 @@ const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
 
 async function api(endpoint, options = {}) {
-    // Verifica se token está próximo de expirar (1 minuto de margem)
-    if (AppState.tokenExpiry && (AppState.tokenExpiry - Date.now()) < 60000) {
-        console.log('⚠️ Token próximo de expirar, fazendo refresh preventivo...');
-        await Auth.refreshAccessToken();
+    // Evita refresh recursivo durante chamada de /auth/refresh
+    if (!options.skipRefreshCheck && AppState.tokenExpiry && (AppState.tokenExpiry - Date.now()) < 60000) {
+        if (!endpoint.includes('/auth/refresh')) {
+            console.log('⚠️ Token próximo de expirar, fazendo refresh preventivo...');
+            await Auth.refreshAccessToken();
+        }
     }
     
     try {
@@ -791,7 +793,8 @@ const Auth = {
             console.log('🔄 Tentando refresh do access token...');
             const response = await api('/auth/refresh', {
                 method: 'POST',
-                body: JSON.stringify({ refresh_token: AppState.refreshToken })
+                body: JSON.stringify({ refresh_token: AppState.refreshToken }),
+                skipRefreshCheck: true // Evita recursão infinita
             });
             
             if (response.access_token) {
