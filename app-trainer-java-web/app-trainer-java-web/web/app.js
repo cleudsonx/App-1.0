@@ -146,12 +146,65 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Expor função para abrir modal pelo App
-if (typeof window.App === 'object') {
-    window.App.openEditTreinoModal = openEditTreinoModal;
-}
-// Ou garantir que estará disponível
-window.openEditTreinoModal = openEditTreinoModal;
+
+// Inicialização global do App
+document.addEventListener('DOMContentLoaded', () => {
+    // Expor funções globais
+    window.openEditTreinoModal = openEditTreinoModal;
+    // Inicializar App principal
+    if (typeof window.App === 'undefined') {
+        // App pode estar definido mais abaixo, aguardar carregamento
+        setTimeout(() => { if (window.App && typeof window.App.init === 'function') window.App.init(); }, 100);
+    } else if (typeof window.App.init === 'function') {
+        window.App.init();
+    }
+
+    // Login/Cadastro: alternar abas
+    const tabLogin = document.getElementById('tab-login');
+    const tabRegister = document.getElementById('tab-register');
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    if (tabLogin && tabRegister && loginForm && registerForm) {
+        tabLogin.addEventListener('click', () => {
+            tabLogin.classList.add('active');
+            tabRegister.classList.remove('active');
+            loginForm.classList.add('active');
+            registerForm.classList.remove('active');
+        });
+        tabRegister.addEventListener('click', () => {
+            tabRegister.classList.add('active');
+            tabLogin.classList.remove('active');
+            registerForm.classList.add('active');
+            loginForm.classList.remove('active');
+        });
+    }
+
+    // Botão flutuante personalizar dashboard
+    const btnCustomize = document.getElementById('btn-customize-floating');
+    if (btnCustomize) {
+        btnCustomize.addEventListener('click', () => {
+            if (window.App && typeof window.App.openDashboardCustomizer === 'function') {
+                window.App.openDashboardCustomizer();
+            } else if (typeof openDashboardCustomizer === 'function') {
+                openDashboardCustomizer();
+            }
+        });
+    }
+
+    // Botão gerar treino
+    const btnTreino = document.getElementById('btn-treino');
+    if (btnTreino) {
+        btnTreino.addEventListener('click', () => {
+            if (window.App && typeof window.App.createDefaultTreino === 'function') {
+                const treino = window.App.createDefaultTreino();
+                const pre = document.getElementById('treino-content');
+                if (pre) pre.textContent = JSON.stringify(treino, null, 2);
+                Toast.success('Treino gerado!');
+                if (typeof window.App.loadDashboard === 'function') window.App.loadDashboard();
+            }
+        });
+    }
+});
 /**
  * SHAIPADOS - Coach Virtual de Musculação
  * JavaScript Principal - v6.0 Professional
