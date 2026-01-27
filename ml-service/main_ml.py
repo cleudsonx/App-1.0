@@ -334,7 +334,7 @@ async def registrar_usuario(request: RegistroRequest):
             "success": True,
             "user_id": perfil.id,
             "nome": perfil.nome,
-            "token": token,
+            "access_token": token,
             "tem_perfil_completo": False,
             "message": f"Conta criada com sucesso! Bem-vindo, {perfil.nome}!"
         }
@@ -391,7 +391,7 @@ async def fazer_login(request: LoginRequest):
             "success": True,
             "user_id": usuario_encontrado.id,
             "nome": usuario_encontrado.nome,
-            "token": token,
+            "access_token": token,
             "tem_perfil_completo": tem_perfil_completo,
             "message": f"Login realizado com sucesso! Bem-vindo de volta, {usuario_encontrado.nome}!"
         }
@@ -770,12 +770,10 @@ async def get_refeicoes():
 @app.get("/api/sono")
 async def get_sono():
     # Endpoint mock para integração frontend
-    return {
-        "sono": [
-            {"id": 1, "aluno_id": 101, "data": "2024-01-01", "horas": 8, "qualidade": "Boa"},
-            {"id": 2, "aluno_id": 101, "data": "2024-01-02", "horas": 7, "qualidade": "Regular"}
-        ]
-    }
+    return [
+        {"id": 1, "aluno_id": 101, "data": "2024-01-01", "horas": 8, "qualidade": "Boa"},
+        {"id": 2, "aluno_id": 101, "data": "2024-01-02", "horas": 7, "qualidade": "Regular"}
+    ]
 async def completar_avaliacao(user_id: str, request: CriarPerfilRequest):
     """
     📋 Completa a avaliação de um usuário existente
