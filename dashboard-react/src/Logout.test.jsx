@@ -48,6 +48,15 @@ describe('Logout flow', () => {
     fireEvent.change(screen.getByPlaceholderText('E-mail'), { target: { value: 'user@exemplo.com' } });
     fireEvent.change(screen.getByPlaceholderText('Senha'), { target: { value: '123456' } });
     fireEvent.click(screen.getByText('Entrar'));
+    // Preencher onboarding
+    await waitFor(() => expect(screen.getByText(/Personalize seu perfil/)).toBeInTheDocument());
+    fireEvent.change(screen.getByLabelText(/Idade/), { target: { value: '25' } });
+    fireEvent.change(screen.getByLabelText(/Sexo/), { target: { value: 'M' } });
+    fireEvent.click(screen.getByText('Próximo'));
+    fireEvent.click(screen.getByText('Próximo'));
+    fireEvent.change(screen.getByLabelText(/Dias por semana/), { target: { value: '4' } });
+    fireEvent.change(screen.getByLabelText(/Duração média/), { target: { value: '60' } });
+    fireEvent.click(screen.getByText('Finalizar'));
     await waitFor(() => expect(screen.getByText('Feed de Atividades')).toBeInTheDocument());
     // Logout
     fireEvent.click(screen.getByText('Sair'));

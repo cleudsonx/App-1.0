@@ -97,7 +97,11 @@ export default function LoginRegister({ onAuth }) {
         <OnboardingProfile onFinish={perfil => {
           // Salva perfil no localStorage e autentica usuário
           localStorage.setItem('dashboard_perfil', JSON.stringify(perfil));
-          if (userData) onAuth(userData);
+          localStorage.setItem('dashboard_onboarding', 'ok');
+          if (userData) {
+            localStorage.setItem('dashboard_user', JSON.stringify(userData));
+            onAuth(userData);
+          }
         }} />
       )}
     </div>

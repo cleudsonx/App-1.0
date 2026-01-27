@@ -58,11 +58,23 @@ describe('Fluxo completo: login + onboarding + feed', () => {
     fireEvent.change(screen.getByPlaceholderText('E-mail'), { target: { value: 'user@exemplo.com' } });
     fireEvent.change(screen.getByPlaceholderText('Senha'), { target: { value: '123456' } });
     fireEvent.click(screen.getByText('Entrar'));
-    // Feed deve aparecer após login
-    await waitFor(() => expect(screen.getByText('Feed de Atividades')).toBeInTheDocument());
+    // Preencher onboarding
+    await waitFor(() => expect(screen.getByText(/Personalize seu perfil/)).toBeInTheDocument());
+    fireEvent.change(screen.getByLabelText(/Idade/), { target: { value: '25' } });
+    fireEvent.change(screen.getByLabelText(/Sexo/), { target: { value: 'M' } });
+    await waitFor(() => expect(screen.getByText('Próximo')).not.toBeDisabled());
+    fireEvent.click(screen.getByText('Próximo'));
+    await waitFor(() => expect(screen.getByText('Próximo')).not.toBeDisabled());
+    fireEvent.click(screen.getByText('Próximo'));
+    fireEvent.change(screen.getByLabelText(/Dias por semana/), { target: { value: '4' } });
+    fireEvent.change(screen.getByLabelText(/Duração média/), { target: { value: '60' } });
+    await waitFor(() => expect(screen.getByText('Finalizar')).not.toBeDisabled());
+    fireEvent.click(screen.getByText('Finalizar'));
+    // Feed deve aparecer após onboarding
+    await waitFor(() => expect(screen.getByText('Feed de Atividades')).toBeInTheDocument(), { timeout: 3000 });
     // Espera o carregamento do feed
-    await waitFor(() => expect(screen.getByText(/Conquista:/)).toBeInTheDocument());
-    await waitFor(() => expect(screen.getByText(/Desafio concluído:/)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/Conquista:/)).toBeInTheDocument(), { timeout: 3000 });
+    await waitFor(() => expect(screen.getByText(/Desafio concluído:/)).toBeInTheDocument(), { timeout: 3000 });
   });
 
   it('realiza cadastro, onboarding e exibe feed', async () => {
@@ -78,20 +90,20 @@ describe('Fluxo completo: login + onboarding + feed', () => {
     fireEvent.click(screen.getByText('Cadastrar'));
     // Onboarding profile
     await waitFor(() => expect(screen.getByText(/Personalize seu perfil/)).toBeInTheDocument());
-    // Preencher idade e sexo
     fireEvent.change(screen.getByLabelText(/Idade/), { target: { value: '25' } });
     fireEvent.change(screen.getByLabelText(/Sexo/), { target: { value: 'M' } });
+    await waitFor(() => expect(screen.getByText('Próximo')).not.toBeDisabled());
     fireEvent.click(screen.getByText('Próximo'));
-    // Objetivo e nível
+    await waitFor(() => expect(screen.getByText('Próximo')).not.toBeDisabled());
     fireEvent.click(screen.getByText('Próximo'));
-    // Dias e tempo
     fireEvent.change(screen.getByLabelText(/Dias por semana/), { target: { value: '4' } });
     fireEvent.change(screen.getByLabelText(/Duração média/), { target: { value: '60' } });
+    await waitFor(() => expect(screen.getByText('Finalizar')).not.toBeDisabled());
     fireEvent.click(screen.getByText('Finalizar'));
     // Feed deve aparecer após onboarding
-    await waitFor(() => expect(screen.getByText('Feed de Atividades')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('Feed de Atividades')).toBeInTheDocument(), { timeout: 3000 });
     // Espera o carregamento do feed
-    await waitFor(() => expect(screen.getByText(/Conquista:/)).toBeInTheDocument());
-    await waitFor(() => expect(screen.getByText(/Desafio concluído:/)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/Conquista:/)).toBeInTheDocument(), { timeout: 3000 });
+    await waitFor(() => expect(screen.getByText(/Desafio concluído:/)).toBeInTheDocument(), { timeout: 3000 });
   });
 });

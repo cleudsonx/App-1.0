@@ -1,3 +1,4 @@
+
 import LoginRegister from './components/LoginRegister';
 import Toast from './components/Toast';
 import React, { useState, useRef } from 'react';
@@ -13,6 +14,14 @@ import FeedAtividades from './components/FeedAtividades';
 import Badge from './components/Badge';
 import Ranking from './components/Ranking';
 import { GamificationProvider, useGamification } from './context/GamificationContext';
+
+function AppWithProvider() {
+  return (
+    <GamificationProvider>
+      <App />
+    </GamificationProvider>
+  );
+}
 
 function App() {
   const [user, setUser] = useState(() => {
@@ -160,43 +169,24 @@ function App() {
 
   // Renderização condicional do fluxo
   if (!user) {
-    function App() {
-      const [user, setUser] = useState(() => {
-        try {
-          return JSON.parse(localStorage.getItem('dashboard_user')) || null;
-        } catch {
-          return null;
-        }
-      });
-      const [onboardingDone, setOnboardingDone] = useState(() => {
-        try {
-          return localStorage.getItem('dashboard_onboarding') === 'ok';
-        } catch {
-          return false;
-        }
-      });
-      // ...existing code...
-      const { badges, ranking } = useGamification();
-      return (
-        <div className="dashboard-root">
-          <button onClick={handleLogout} style={{position:'absolute',top:10,right:10,zIndex:10}}>Sair</button>
-          <FeedAtividades userId={user?.id || user?.email} />
-          <div style={{marginTop:24}}>
-            <h3>Badges</h3>
-            {badges.map(b => <Badge key={b.nome} {...b} />)}
-          </div>
-          <Ranking usuarios={ranking} />
-          <style>{`
-            color: #ffb3b3;
+    return (
+      <div className="dashboard-root">
+        <LoginRegister onAuth={u => {
+          setUser(u);
+          localStorage.setItem('dashboard_user', JSON.stringify(u));
+          // Se onboarding já estiver ok, atualiza estado
+          if (localStorage.getItem('dashboard_onboarding') === 'ok') {
+            setOnboardingDone(true);
           }
-        `}</style>
+        }} />
+        <Toast message={toast.message} visible={toast.visible} />
       </div>
     );
   }
   if (!onboardingDone) {
     return (
       <div className="dashboard-root">
-        <OnboardingProfile user={user} onAuth={u => {
+        <OnboardingProfile user={user} onFinish={u => {
           setOnboardingDone(true);
           localStorage.setItem('dashboard_onboarding', 'ok');
         }} />
@@ -290,15 +280,9 @@ function App() {
         .dashboard-root.dark .error {
           color: #ffb3b3;
         }
+
       `}</style>
     </div>
   );
 }
-
-export default function AppWithProvider() {
-  return (
-    <GamificationProvider>
-      <App />
-    </GamificationProvider>
-  );
-}
+export default AppWithProvider;
