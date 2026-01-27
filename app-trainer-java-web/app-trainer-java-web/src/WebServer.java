@@ -1,3 +1,5 @@
+                    // Progresso
+                    server.createContext("/api/progresso", new CORSHandler(new api.ProgressoHandler()));
                 // Ficha
                 server.createContext("/api/ficha", new CORSHandler(new api.FichaHandler()));
             // Divisao
