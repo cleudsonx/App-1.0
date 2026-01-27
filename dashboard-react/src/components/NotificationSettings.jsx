@@ -12,14 +12,49 @@ const defaultSettings = {
 };
 
 export default function NotificationSettings() {
-  const [settings, setSettings] = useState(() => {
-    const saved = localStorage.getItem('dashboard_notify_settings');
-    return saved ? JSON.parse(saved) : defaultSettings;
-  });
 
+  const [settings, setSettings] = useState(defaultSettings);
+  const [loading, setLoading] = useState(true);
+  // Busca user_id do localStorage
+  const user = JSON.parse(localStorage.getItem('dashboard_user') || '{}');
+  const userId = user.id || user.email || 'anon';
+
+  // Buscar preferências do backend ao montar
   useEffect(() => {
-    localStorage.setItem('dashboard_notify_settings', JSON.stringify(settings));
-  }, [settings]);
+    async function fetchSettings() {
+      try {
+        const res = await fetch(`https://app-1-0-python.onrender.com/api/notify-settings?user_id=${encodeURIComponent(userId)}`);
+        if (res.ok) {
+          const backendSettings = await res.json();
+          setSettings(backendSettings);
+          localStorage.setItem('dashboard_notify_settings', JSON.stringify(backendSettings));
+        } else {
+          // fallback local
+          const saved = localStorage.getItem('dashboard_notify_settings');
+          setSettings(saved ? JSON.parse(saved) : defaultSettings);
+        }
+      } catch {
+        const saved = localStorage.getItem('dashboard_notify_settings');
+        setSettings(saved ? JSON.parse(saved) : defaultSettings);
+      }
+      setLoading(false);
+    }
+    fetchSettings();
+    // eslint-disable-next-line
+  }, [userId]);
+
+
+  // Salvar preferências no backend e localStorage ao alterar
+  useEffect(() => {
+    if (!loading) {
+      localStorage.setItem('dashboard_notify_settings', JSON.stringify(settings));
+      fetch('https://app-1-0-python.onrender.com/api/notify-settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, settings })
+      }).catch(() => {});
+    }
+  }, [settings, userId, loading]);
 
   function handleTipoChange(tipo) {
     setSettings(s => ({ ...s, tipos: { ...s.tipos, [tipo]: !s.tipos[tipo] } }));
@@ -33,6 +68,12 @@ export default function NotificationSettings() {
     setSettings(s => ({ ...s, push: e.target.checked }));
   }
 
+  if (loading) {
+    return <div className="dashboard-widget widget-card card-notify-settings" style={{maxWidth:400,margin:'24px auto',textAlign:'center'}}>
+      <span role="img" aria-label="Notificações">🔔</span>
+      <p>Carregando preferências...</p>
+    </div>;
+  }
   return (
     <div className="dashboard-widget widget-card card-notify-settings" style={{maxWidth:400,margin:'24px auto'}}>
       <span role="img" aria-label="Notificações">🔔</span>
