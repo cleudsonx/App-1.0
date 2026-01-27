@@ -1,3 +1,5 @@
+                            // Fadiga
+                            server.createContext("/api/fadiga", new CORSHandler(new api.FadigaHandler()));
                         // Planejamento
                         server.createContext("/api/planejamento", new CORSHandler(new api.PlanejamentoHandler()));
                     // Progresso
