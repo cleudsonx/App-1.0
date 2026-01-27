@@ -156,10 +156,26 @@ public class AppLogger {
     private void enqueueLog(Level level, String message, Throwable exception, String context) {
         if (!running) return;
         
-        LogEntry entry = new LogEntry(LocalDateTime.now(), level, message, exception, context);
+            LogEntry entry = new LogEntry(LocalDateTime.now(), level, sanitizeLog(message), exception, context);
         if (!logQueue.offer(entry)) {
             System.err.println("[WARN] Log queue full, dropping: " + message);
+            }
+        
         }
+
+        /**
+         * Remove dados sensíveis de logs (tokens, senhas)
+         */
+        private String sanitizeLog(String msg) {
+            if (msg == null) return null;
+            // Remove JWT tokens
+            msg = msg.replaceAll("eyJ[a-zA-Z0-9-_]+\\.[a-zA-Z0-9-_]+\\.[a-zA-Z0-9-_]+", "[TOKEN_REMOVIDO]");
+            // Remove campos de senha
+            msg = msg.replaceAll("(?i)senha=([^&\\s]+)", "senha=[REMOVIDA]");
+            msg = msg.replaceAll("(?i)password=([^&\\s]+)", "password=[REMOVIDA]");
+            // Remove refresh_token
+            msg = msg.replaceAll("(?i)refresh_token=([^&\\s]+)", "refresh_token=[REMOVIDO]");
+            return msg;
     }
     
     /**
