@@ -349,6 +349,50 @@ async def completar_perfil(user_id: str, request: PerfilRequest):
     return {"success": True, "perfil": users[user_id]["perfil"]}
 
 # ============ BASE DE CONHECIMENTO ============
+import json
+from pathlib import Path
+
+# ============ ENDPOINTS DE FEED DE ATIVIDADES ============
+FEED_FILE = Path("data/feed.json")
+
+def load_feed():
+    if FEED_FILE.exists():
+        try:
+            return json.loads(FEED_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            return []
+    return []
+
+def save_feed(feed):
+    FEED_FILE.write_text(json.dumps(feed, ensure_ascii=False, indent=2), encoding="utf-8")
+
+@app.get("/api/feed")
+async def get_feed(user_id: str):
+    """Retorna feed de atividades do usuário (conquistas, desafios, etc)"""
+    feed = load_feed()
+    user_feed = [e for e in feed if e.get("user_id") == user_id]
+    # Ordena por data decrescente
+    user_feed.sort(key=lambda x: x.get("data", ""), reverse=True)
+    return user_feed
+
+@app.post("/api/feed")
+async def add_feed_event(event: dict):
+    """Adiciona evento ao feed do usuário, evitando duplicidade"""
+    feed = load_feed()
+    # Evita duplicidade: mesmo user_id, tipo, descricao e data (até 1s de diferença)
+    def is_duplicate(ev):
+        return (
+            ev.get("user_id") == event.get("user_id") and
+            ev.get("tipo") == event.get("tipo") and
+            ev.get("descricao") == event.get("descricao") and
+            abs((int(ev.get("data", "0")[:19].replace('-', '').replace(':', '').replace('T', '')) - int(event.get("data", "0")[:19].replace('-', '').replace(':', '').replace('T', ''))) if ev.get("data") and event.get("data") else 0) <= 1
+        )
+    if not any(is_duplicate(ev) for ev in feed):
+        event["id"] = str(uuid.uuid4())
+        feed.append(event)
+        save_feed(feed)
+        return {"success": True, "event": event}
+    return {"success": False, "error": "Evento duplicado"}
 
 CONHECIMENTO = {
     "hipertrofia": {
