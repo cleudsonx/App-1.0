@@ -48,4 +48,26 @@ describe('FeedAtividades', () => {
     expect(desafiosLocal.length).toBeGreaterThan(0);
     global.fetch.mockRestore && global.fetch.mockRestore();
   });
+
+  it('sincroniza feed offline ao voltar online', async () => {
+    // Simula evento offline salvo
+    const offlineFeed = [
+      { user_id: 'test-user', tipo: 'conquista', descricao: 'Conquista Offline', data: new Date().toISOString(), extras: {} }
+    ];
+    window.localStorage.setItem('dashboard_offline_feed', JSON.stringify(offlineFeed));
+    // Mock fetch para backend
+    let postCalled = false;
+    global.fetch = jest.fn().mockImplementation((url, opts) => {
+      if (url.includes('/api/feed') && opts.method === 'POST') {
+        postCalled = true;
+        return Promise.resolve({ ok: true, json: async () => ({ success: true }) });
+      }
+      return Promise.resolve({ ok: true, json: async () => [] });
+    });
+    // Dispara evento online e aguarda feedSyncComplete
+    window.dispatchEvent(new Event('online'));
+    await waitFor(() => postCalled);
+    await waitFor(() => expect(window.localStorage.getItem('dashboard_offline_feed')).toBeNull());
+    global.fetch.mockRestore && global.fetch.mockRestore();
+  });
 });

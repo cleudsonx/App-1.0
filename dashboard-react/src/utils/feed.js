@@ -16,6 +16,41 @@ export async function addFeedEvent({ user_id, tipo, descricao, extras = {} }) {
       body: JSON.stringify(event)
     });
   } catch (e) {
-    // fallback: pode salvar local ou ignorar
+    // fallback: salva localmente para sincronizar depois
+    const offlineFeed = JSON.parse(localStorage.getItem('dashboard_offline_feed') || '[]');
+    offlineFeed.push(event);
+    localStorage.setItem('dashboard_offline_feed', JSON.stringify(offlineFeed));
   }
 }
+
+// Sincroniza eventos locais do feed com o backend quando online
+export async function syncOfflineFeed() {
+  const API_PYTHON = 'https://app-1-0-python.onrender.com';
+  let offlineFeed = JSON.parse(localStorage.getItem('dashboard_offline_feed') || '[]');
+  if (!offlineFeed.length) return;
+  const failedEvents = [];
+  for (const event of offlineFeed) {
+    try {
+      await fetch(`${API_PYTHON}/api/feed`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(event)
+      });
+    } catch (e) {
+      failedEvents.push(event);
+    }
+  }
+  if (failedEvents.length) {
+    localStorage.setItem('dashboard_offline_feed', JSON.stringify(failedEvents));
+  } else {
+    localStorage.removeItem('dashboard_offline_feed');
+  }
+}
+
+// Detecta reconexão e sincroniza feed offline
+window.addEventListener('online', () => {
+  syncOfflineFeed().then(() => {
+    // Para testes, pode disparar evento customizado
+    window.dispatchEvent(new Event('feedSyncComplete'));
+  });
+});
