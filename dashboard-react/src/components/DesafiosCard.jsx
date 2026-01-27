@@ -9,6 +9,37 @@ function shareDesafio(desafio) {
   }
 }
 import React, { useState, useRef, useEffect } from 'react';
+
+// Função utilitária para exportar evento .ics
+function exportarICS(desafio) {
+  const dtStart = new Date();
+  dtStart.setHours(9, 0, 0, 0); // 9h da manhã
+  const dtEnd = new Date(dtStart.getTime() + 60*60*1000); // 1h depois
+  const pad = n => n.toString().padStart(2, '0');
+  const formatDate = d => `${d.getUTCFullYear()}${pad(d.getUTCMonth()+1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}00Z`;
+  const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'BEGIN:VEVENT',
+    `SUMMARY:${desafio.titulo}`,
+    `DESCRIPTION:Desafio fitness - Meta: ${desafio.meta} | Recompensa: ${desafio.recompensa}`,
+    `DTSTART:${formatDate(dtStart)}`,
+    `DTEND:${formatDate(dtEnd)}`,
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\r\n');
+  const blob = new Blob([ics], { type: 'text/calendar' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `desafio-${desafio.id || desafio.titulo}.ics`;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 500);
+}
 // Toast simples
 function Toast({ msg, onClose }) {
   React.useEffect(() => {
@@ -183,7 +214,10 @@ export default function DesafiosCard({ desafios }) {
               )}
             </span>
             {userDesafios.some(ud => ud.id === d.id) && d.progresso < d.meta && (
-              <button style={{position:'absolute',right:8,top:8,transition:'transform .2s',transform:animProgresso[d.id]?'scale(1.2)':'none'}} onClick={() => handleProgresso(d.id)} title="Adicionar progresso">+1</button>
+              <>
+                <button style={{position:'absolute',right:8,top:8,transition:'transform .2s',transform:animProgresso[d.id]?'scale(1.2)':'none'}} onClick={() => handleProgresso(d.id)} title="Adicionar progresso">+1</button>
+                <button style={{position:'absolute',right:44,top:8,fontSize:15}} onClick={() => exportarICS(d)} title="Adicionar ao calendário">📅</button>
+              </>
             )}
           </li>
         ))}
