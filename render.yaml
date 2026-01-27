@@ -19,7 +19,7 @@ services:
       - key: DB_USER
         fromDatabase:
           name: app-trainer-db
-          property: user
+  
 
       # URL pública do ML Service para proxy
       - key: ML_SERVICE_URL
@@ -50,6 +50,14 @@ services:
         value: 8001
       - key: JWT_SECRET_KEY
         sync: false
+
+  
+  - type: static
+    name: dashboard-react
+    env: node
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    rootDir: dashboard-react
 
 databases:
   - name: app-trainer-db

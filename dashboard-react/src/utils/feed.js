@@ -1,6 +1,6 @@
 // Função para registrar evento no feed de atividades do backend
 export async function addFeedEvent({ user_id, tipo, descricao, extras = {} }) {
-  const API_PYTHON = 'https://app-1-0-python.onrender.com';
+  const API_PYTHON = import.meta.env.VITE_API_PYTHON_URL;
   const event = {
     id: '', // será preenchido pelo backend
     user_id,
@@ -25,7 +25,7 @@ export async function addFeedEvent({ user_id, tipo, descricao, extras = {} }) {
 
 // Sincroniza eventos locais do feed com o backend quando online
 export async function syncOfflineFeed() {
-  const API_PYTHON = 'https://app-1-0-python.onrender.com';
+  const API_PYTHON = import.meta.env.VITE_API_PYTHON_URL;
   let offlineFeed = JSON.parse(localStorage.getItem('dashboard_offline_feed') || '[]');
   if (!offlineFeed.length) return;
   const failedEvents = [];
