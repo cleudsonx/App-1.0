@@ -1,3 +1,178 @@
+package validation;
+
+import java.util.regex.Pattern;
+
+/**
+ * Validador de entrada - Previne SQL Injection, XSS, input inválido
+ */
+public class InputValidator {
+    // Padrões de validação
+    private static final Pattern EMAIL_PATTERN = Pattern.compile(
+        "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$"
+    );
+    private static final Pattern SAFE_STRING_PATTERN = Pattern.compile(
+        "^[a-zA-Z0-9_\\-. \\pL]*$"
+    );
+    private static final Pattern SQL_INJECTION_PATTERN = Pattern.compile(
+        ".*['\";\\\\].*|.*(--|;|/\\*|\\*/).*|.*(DROP|DELETE|INSERT|UPDATE|SELECT|CREATE).*",
+        Pattern.CASE_INSENSITIVE
+    );
+
+    /**
+     * Valida força de senha (8+ chars, 1 maiúscula, 1 número, 1 símbolo)
+     */
+    public static boolean isStrongPassword(String password) {
+        ValidationResult result = validatePassword(password);
+        return result.valid;
+    }
+
+    /**
+     * Verifica se string é "segura" (sem padrões de SQL injection, apenas caracteres permitidos)
+     */
+    public static boolean isSafeString(String input) {
+        if (input == null || input.trim().isEmpty()) {
+            return false;
+        }
+        if (SQL_INJECTION_PATTERN.matcher(input).matches()) {
+            return false;
+        }
+        return SAFE_STRING_PATTERN.matcher(input).matches();
+    }
+
+    public static boolean isValidEmail(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+        if (email.length() > 254) {
+            return false;
+        }
+        return EMAIL_PATTERN.matcher(email).matches();
+    }
+
+    public static ValidationResult validatePassword(String password) {
+        if (password == null) {
+            return new ValidationResult(false, "Senha não pode ser nula");
+        }
+        if (password.length() < 8) {
+            return new ValidationResult(false, "Senha deve ter no mínimo 8 caracteres");
+        }
+        if (!password.matches(".*[A-Z].*")) {
+            return new ValidationResult(false, "Senha deve conter pelo menos 1 letra maiúscula");
+        }
+        if (!password.matches(".*[a-z].*")) {
+            return new ValidationResult(false, "Senha deve conter pelo menos 1 letra minúscula");
+        }
+        if (!password.matches(".*[0-9].*")) {
+            return new ValidationResult(false, "Senha deve conter pelo menos 1 número");
+        }
+        if (!password.matches(".*[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>?/].*")) {
+            return new ValidationResult(false, "Senha deve conter pelo menos 1 símbolo (!@#$%^&* etc)");
+        }
+        return new ValidationResult(true, "Senha válida");
+    }
+
+    public static String sanitizeString(String input) {
+        if (input == null) {
+            return "";
+        }
+        if (SQL_INJECTION_PATTERN.matcher(input).matches()) {
+            throw new IllegalArgumentException("Input contém padrão suspeito de SQL Injection");
+        }
+        return input.replaceAll("[\\x00-\\x1f\\x7f]", "");
+    }
+
+    public static String sanitizeHtml(String input) {
+        if (input == null) {
+            return "";
+        }
+        return input
+            .replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace("\"", "&quot;")
+            .replace("'", "&#x27;")
+            .replace("/", "&#x2F;");
+    }
+
+    public static boolean isValidName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return false;
+        }
+        if (name.length() > 255) {
+            return false;
+        }
+        return SAFE_STRING_PATTERN.matcher(name).matches();
+    }
+
+    public static boolean isValidObjetivo(String objetivo) {
+        if (objetivo == null) {
+            return false;
+        }
+        return objetivo.equals("hipertrofia") || 
+               objetivo.equals("perda_peso") || 
+               objetivo.equals("resistencia");
+    }
+
+    public static boolean isValidNivel(String nivel) {
+        if (nivel == null) {
+            return false;
+        }
+        return nivel.equals("iniciante") || 
+               nivel.equals("intermediario") || 
+               nivel.equals("avancado");
+    }
+
+    public static boolean isValidEspecialidade(String especialidade) {
+        if (especialidade == null) {
+            return false;
+        }
+        return especialidade.equals("musculacao") || 
+               especialidade.equals("cardio") || 
+               especialidade.equals("funcional") || 
+               especialidade.equals("alongamento");
+    }
+
+    public static boolean isValidInt(String value) {
+        if (value == null || value.isEmpty()) {
+            return false;
+        }
+        try {
+            int num = Integer.parseInt(value);
+            return num >= 0;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static boolean isValidDouble(String value) {
+        if (value == null || value.isEmpty()) {
+            return false;
+        }
+        try {
+            double num = Double.parseDouble(value);
+            return num >= 0;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static boolean isValidRequestSize(long size, long maxBytes) {
+        return size > 0 && size <= maxBytes;
+    }
+
+    public static class ValidationResult {
+        public final boolean valid;
+        public final String message;
+        public ValidationResult(boolean valid, String message) {
+            this.valid = valid;
+            this.message = message;
+        }
+        @Override
+        public String toString() {
+            return message;
+        }
+    }
+}
 
 package validation;
 
