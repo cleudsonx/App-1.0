@@ -15,7 +15,15 @@ import java.util.Base64;
  */
 public class JWTManager {
     
-    private static final String SECRET_KEY = "shaipados-secret-key-very-secure-please-change-in-production";
+    private static final String SECRET_KEY = getSecretKey();
+
+    private static String getSecretKey() {
+        String key = System.getenv("JWT_SECRET_KEY");
+        if (key == null || key.isEmpty()) {
+            throw new RuntimeException("JWT_SECRET_KEY não definida. Configure a variável de ambiente JWT_SECRET_KEY antes de iniciar o servidor.");
+        }
+        return key;
+    }
     private static final int ACCESS_TOKEN_EXPIRY_MINUTES = 15;
     private static final int REFRESH_TOKEN_EXPIRY_DAYS = 7;
     
