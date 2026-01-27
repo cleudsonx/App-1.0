@@ -12,6 +12,7 @@ import OnboardingProfile from './components/OnboardingProfile';
 import FeedAtividades from './components/FeedAtividades';
 import Badge from './components/Badge';
 import Ranking from './components/Ranking';
+import { GamificationProvider, useGamification } from './context/GamificationContext';
 
 function App() {
   const [user, setUser] = useState(() => {
@@ -159,42 +160,33 @@ function App() {
 
   // Renderização condicional do fluxo
   if (!user) {
-    return (
-      <div className="dashboard-root">
-        <LoginRegister onAuth={u => {
-          setUser(u);
-          localStorage.setItem('dashboard_user', JSON.stringify(u));
-          localStorage.setItem('dashboard_onboarding', 'ok');
-          setOnboardingDone(true);
-        }} />
-        <style>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-          body[data-theme='dark'], .dashboard-root.dark {
-            background: #181a1b;
-            color: #f1f1f1;
-          }
-          .dashboard-root.dark .card, .dashboard-root.dark .dashboard-grid, .dashboard-root.dark .login-register-root {
-            background: #23272b;
-            color: #f1f1f1;
-          }
-          .dashboard-root.dark input, .dashboard-root.dark select, .dashboard-root.dark textarea {
-            background: #23272b;
-            color: #f1f1f1;
-            border: 1px solid #444;
-          }
-          .dashboard-root.dark button {
-            background: #222;
-            color: #f1f1f1;
-            border: 1px solid #444;
-          }
-          .dashboard-root.dark .spinner {
-            border-color: #444;
-            border-top-color: #00bfff;
-          }
-          .dashboard-root.dark .error {
+    function App() {
+      const [user, setUser] = useState(() => {
+        try {
+          return JSON.parse(localStorage.getItem('dashboard_user')) || null;
+        } catch {
+          return null;
+        }
+      });
+      const [onboardingDone, setOnboardingDone] = useState(() => {
+        try {
+          return localStorage.getItem('dashboard_onboarding') === 'ok';
+        } catch {
+          return false;
+        }
+      });
+      // ...existing code...
+      const { badges, ranking } = useGamification();
+      return (
+        <div className="dashboard-root">
+          <button onClick={handleLogout} style={{position:'absolute',top:10,right:10,zIndex:10}}>Sair</button>
+          <FeedAtividades userId={user?.id || user?.email} />
+          <div style={{marginTop:24}}>
+            <h3>Badges</h3>
+            {badges.map(b => <Badge key={b.nome} {...b} />)}
+          </div>
+          <Ranking usuarios={ranking} />
+          <style>{`
             color: #ffb3b3;
           }
         `}</style>
@@ -303,4 +295,10 @@ function App() {
   );
 }
 
-export default App;
+export default function AppWithProvider() {
+  return (
+    <GamificationProvider>
+      <App />
+    </GamificationProvider>
+  );
+}
