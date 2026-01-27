@@ -1,3 +1,4 @@
+import LoginRegister from './components/LoginRegister';
 // Endpoints públicos dos backends
 const API_ENDPOINTS = {
   java: 'https://app-1-0-java.onrender.com',
@@ -50,6 +51,10 @@ import PersonalizationModal from './components/PersonalizationModal';
 
 function App() {
   const [showModal, setShowModal] = useState(false);
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('dashboard_user');
+    return saved ? JSON.parse(saved) : null;
+  });
   // Estado de configuração dos widgets
   const [widgetConfig, setWidgetConfig] = useState(() => {
     const saved = localStorage.getItem('dashboard_widgets_config');
@@ -85,6 +90,13 @@ function App() {
     fetch(`${API_ENDPOINTS.java}/api/prs-volume`).then(r => r.json()).then(setPrsVolume);
     fetch(`${API_ENDPOINTS.python}/api/sono`).then(r => r.json()).then(setSono);
   }, []);
+
+  if (!user) {
+    return <LoginRegister onAuth={u => {
+      setUser(u);
+      localStorage.setItem('dashboard_user', JSON.stringify(u));
+    }} />;
+  }
 
   return (
     <div className="dashboard-root">
