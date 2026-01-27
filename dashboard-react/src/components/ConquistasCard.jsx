@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import { addFeedEvent } from '../utils/feed';
 
 // Widget: Conquistas
 
@@ -29,7 +30,27 @@ function shareConquista(conquista) {
   window.open(wa, '_blank');
 }
 
+
 const ConquistasCard = ({ conquistas }) => {
+  const prevConquistas = useRef([]);
+
+  useEffect(() => {
+    // Detecta novas conquistas e registra no feed
+    if (conquistas && prevConquistas.current.length > 0) {
+      const novas = conquistas.filter(c => !prevConquistas.current.some(pc => pc.titulo === c.titulo && pc.descricao === c.descricao));
+      const user = JSON.parse(localStorage.getItem('dashboard_user') || '{}');
+      novas.forEach(c => {
+        addFeedEvent({
+          user_id: user.id || user.email || 'anon',
+          tipo: 'conquista',
+          descricao: `Conquista: ${c.titulo || c.nome}`,
+          extras: { ...c }
+        });
+      });
+    }
+    prevConquistas.current = conquistas || [];
+  }, [conquistas]);
+
   return (
     <div className="dashboard-widget widget-card card-conquistas">
       <span role="img" aria-label="Ícone">🏆</span>

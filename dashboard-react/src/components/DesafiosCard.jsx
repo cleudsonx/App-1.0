@@ -20,6 +20,7 @@ function shareDesafio(desafio) {
   window.open(wa, '_blank');
 }
 import React, { useState, useRef, useEffect } from 'react';
+import { addFeedEvent } from '../utils/feed';
 
 // Função utilitária para exportar evento .ics
 function exportarICS(desafio) {
@@ -136,6 +137,14 @@ export default function DesafiosCard({ desafios }) {
           setAnimConcluido(a => ({ ...a, [id]: true }));
           setToast('Desafio concluído! Parabéns!');
           setTimeout(() => setAnimConcluido(a => ({ ...a, [id]: false })), 1200);
+          // Registrar evento no feed
+          const user = JSON.parse(localStorage.getItem('dashboard_user') || '{}');
+          addFeedEvent({
+            user_id: user.id || user.email || 'anon',
+            tipo: 'desafio',
+            descricao: `Desafio concluído: ${d.titulo}`,
+            extras: { id: d.id, meta: d.meta, recompensa: d.recompensa }
+          });
         } else {
           setAnimProgresso(a => ({ ...a, [id]: true }));
           setTimeout(() => setAnimProgresso(a => ({ ...a, [id]: false })), 600);
