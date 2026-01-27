@@ -21,6 +21,7 @@ function shareDesafio(desafio) {
 }
 import React, { useState, useRef, useEffect } from 'react';
 import { addFeedEvent } from '../utils/feed';
+import { notificar } from '../utils/notify';
 
 // Função utilitária para exportar evento .ics
 function exportarICS(desafio) {
@@ -137,7 +138,7 @@ export default function DesafiosCard({ desafios }) {
           setAnimConcluido(a => ({ ...a, [id]: true }));
           setToast('Desafio concluído! Parabéns!');
           setTimeout(() => setAnimConcluido(a => ({ ...a, [id]: false })), 1200);
-          // Registrar evento no feed
+          // Registrar evento no feed e notificar
           const user = JSON.parse(localStorage.getItem('dashboard_user') || '{}');
           addFeedEvent({
             user_id: user.id || user.email || 'anon',
@@ -145,6 +146,7 @@ export default function DesafiosCard({ desafios }) {
             descricao: `Desafio concluído: ${d.titulo}`,
             extras: { id: d.id, meta: d.meta, recompensa: d.recompensa }
           });
+          notificar(`Desafio concluído: ${d.titulo}`, { title: 'Desafio Fitness' });
         } else {
           setAnimProgresso(a => ({ ...a, [id]: true }));
           setTimeout(() => setAnimProgresso(a => ({ ...a, [id]: false })), 600);

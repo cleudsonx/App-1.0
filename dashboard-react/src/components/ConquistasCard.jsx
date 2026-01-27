@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { notificar } from '../utils/notify';
 import { addFeedEvent } from '../utils/feed';
 
 // Widget: Conquistas
@@ -46,6 +47,7 @@ const ConquistasCard = ({ conquistas }) => {
           descricao: `Conquista: ${c.titulo || c.nome}`,
           extras: { ...c }
         });
+        notificar(`Conquista: ${c.titulo || c.nome}`, { title: 'Nova conquista!' });
       });
     }
     prevConquistas.current = conquistas || [];
