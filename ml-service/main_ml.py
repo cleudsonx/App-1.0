@@ -1,3 +1,106 @@
+from pathlib import Path
+import json
+
+
+
+
+# ============ ENDPOINTS DE DESAFIOS PERSONALIZADOS ============
+
+# Definir endpoints após a criação do app
+
+from pydantic import BaseModel
+
+class DesafioRequest(BaseModel):
+    user_id: str
+    titulo: str
+    meta: int = 1
+    recompensa: str = "🏅 Badge"
+    progresso: int = 0
+
+# Após a linha 'app = FastAPI(...)':
+
+app = FastAPI(
+    title="APP Trainer ML Service",
+    version="3.1.0",
+    description="""
+    🏋️ Sistema de IA para Coach Virtual de Musculação
+    
+    Features:
+    - 🧠 NLP Semântico com Sentence-BERT
+    - 🤖 Rede Neural PyTorch para recomendações
+    - 👤 Perfil de usuário com aprendizado contínuo
+    - 🎯 Personalização por objetivo, limitações e feedback
+    - 🔐 Sistema de autenticação
+    """
+)
+
+# Endpoints de desafios personalizados
+@app.post("/api/desafios")
+async def criar_desafio(request: DesafioRequest):
+    DESAFIOS_FILE = Path("data/desafios.json")
+    desafio = request.dict()
+    if DESAFIOS_FILE.exists():
+        desafios = json.loads(DESAFIOS_FILE.read_text(encoding="utf-8"))
+    else:
+        desafios = []
+    desafios.append(desafio)
+    DESAFIOS_FILE.write_text(json.dumps(desafios, ensure_ascii=False, indent=2), encoding="utf-8")
+    return {"success": True, "desafio": desafio}
+
+@app.get("/api/desafios")
+async def listar_desafios(user_id: str):
+    DESAFIOS_FILE = Path("data/desafios.json")
+    if DESAFIOS_FILE.exists():
+        desafios = json.loads(DESAFIOS_FILE.read_text(encoding="utf-8"))
+    else:
+        desafios = []
+    return [d for d in desafios if d.get("user_id") == user_id]
+
+@app.post("/api/desafios/progresso")
+async def atualizar_progresso_desafio(user_id: str = Body(...), desafio_id: int = Body(...), progresso: int = Body(...)):
+    DESAFIOS_FILE = Path("data/desafios.json")
+    if DESAFIOS_FILE.exists():
+        desafios = json.loads(DESAFIOS_FILE.read_text(encoding="utf-8"))
+    else:
+        desafios = []
+    atualizado = False
+    for d in desafios:
+        if d.get("user_id") == user_id and d.get("id") == desafio_id:
+            d["progresso"] = progresso
+            atualizado = True
+    DESAFIOS_FILE.write_text(json.dumps(desafios, ensure_ascii=False, indent=2), encoding="utf-8")
+    return {"success": atualizado}
+
+@app.get("/api/desafios/sugerir")
+async def sugerir_desafios(user_id: str):
+    if not gerenciador_perfil:
+        raise HTTPException(status_code=503, detail="Gerenciador de perfil não disponível")
+    perfil = gerenciador_perfil.obter_perfil(user_id)
+    if not perfil:
+        raise HTTPException(status_code=404, detail="Perfil não encontrado")
+    desafios = []
+    if perfil.objetivo_principal == "hipertrofia":
+        desafios.append({
+            "titulo": "Completar 10 treinos de força",
+            "meta": 10,
+            "recompensa": "💪 Badge Força",
+            "progresso": 0
+        })
+    if perfil.nivel == "iniciante":
+        desafios.append({
+            "titulo": "7 dias seguidos de treino",
+            "meta": 7,
+            "recompensa": "🔥 Badge Foco",
+            "progresso": 0
+        })
+    if perfil.dias_disponiveis >= 5:
+        desafios.append({
+            "titulo": "Treinar 5x na semana",
+            "meta": 5,
+            "recompensa": "🏅 Badge Consistência",
+            "progresso": 0
+        })
+    return desafios
 """
 APP Trainer ML Service - API Principal
 Sistema de IA com Machine Learning Real para Coach Virtual de Musculação
@@ -53,6 +156,7 @@ from models.user_profile import (
     PerfilCompleto, Interacao, TreinoRealizado
 )
 
+
 app = FastAPI(
     title="APP Trainer ML Service",
     version="3.1.0",
@@ -67,6 +171,9 @@ app = FastAPI(
     - 🔐 Sistema de autenticação
     """
 )
+
+# Registrar endpoints de desafios personalizados após a definição do app
+
 
 # CORS
 app.add_middleware(
