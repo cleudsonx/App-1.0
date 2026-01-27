@@ -18,6 +18,7 @@ from datetime import datetime
 import traceback
 import hashlib
 import secrets
+from fastapi.responses import JSONResponse
 
 # Tentar importar módulos de ML (com fallback se não disponível)
 ML_AVAILABLE = False
