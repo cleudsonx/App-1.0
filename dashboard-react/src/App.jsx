@@ -1,4 +1,6 @@
 import LoginRegister from './components/LoginRegister';
+import Toast from './components/Toast';
+import React, { useState, useRef } from 'react';
 // Endpoints públicos dos backends
 const API_ENDPOINTS = {
   java: 'https://app-1-0-java.onrender.com',
@@ -6,6 +8,15 @@ const API_ENDPOINTS = {
 };
 import './style.css';
 import './brand.css';
+
+    // Estado e função para Toast visual
+    const [toast, setToast] = useState({ message: '', visible: false });
+    const toastTimeout = useRef(null);
+    function showToast(message) {
+      setToast({ message, visible: true });
+      if (toastTimeout.current) clearTimeout(toastTimeout.current);
+      toastTimeout.current = setTimeout(() => setToast(t => ({ ...t, visible: false })), 3500);
+    }
 
     // Buscar preferências do backend antes de agendar notificações
     async function agendarNotificacoes() {
@@ -33,8 +44,10 @@ import './brand.css';
             } catch {}
             if (desafiosPend > 0) {
               notificar(`Você tem ${desafiosPend} desafio${desafiosPend>1?'s':''} fitness pendente${desafiosPend>1?'s':''} hoje!`);
+              showToast(`Você tem ${desafiosPend} desafio${desafiosPend>1?'s':''} fitness pendente${desafiosPend>1?'s':''} hoje!`);
             } else {
               notificar('Parabéns! Você está em dia com seus desafios!');
+              showToast('Parabéns! Você está em dia com seus desafios!');
             }
           }
           if (notifySettings.tipos.missoes) {
@@ -45,6 +58,7 @@ import './brand.css';
             } catch {}
             if (missoesPend > 0) {
               notificar(`Você tem ${missoesPend} missão${missoesPend>1?'s':''} diária pendente${missoesPend>1?'s':''}!`);
+              showToast(`Você tem ${missoesPend} missão${missoesPend>1?'s':''} diária pendente${missoesPend>1?'s':''}!`);
             }
           }
           if (notifySettings.tipos.conquistas) {
@@ -55,6 +69,7 @@ import './brand.css';
             } catch {}
             if (novasConquistas > 0) {
               notificar(`Você conquistou ${novasConquistas} nova${novasConquistas>1?'s':''} conquista${novasConquistas>1?'s':''}! Veja seu progresso!`);
+              showToast(`Você conquistou ${novasConquistas} nova${novasConquistas>1?'s':''} conquista${novasConquistas>1?'s':''}! Veja seu progresso!`);
             }
           }
           if (notifySettings.tipos.streaks) {
@@ -64,6 +79,7 @@ import './brand.css';
             } catch {}
             if (streakAtual > 0) {
               notificar(`Você está em uma sequência de ${streakAtual>1?'s':''} dia${streakAtual>1?'s':''} de atividades! Continue assim!`);
+              showToast(`Você está em uma sequência de ${streakAtual>1?'s':''} dia${streakAtual>1?'s':''} de atividades! Continue assim!`);
             }
           }
         }, 2000);
@@ -83,8 +99,10 @@ import './brand.css';
             } catch {}
             if (desafiosPend > 0) {
               notificar(`Lembrete: você tem ${desafiosPend} desafio${desafiosPend>1?'s':''} fitness para completar!`);
+              showToast(`Lembrete: você tem ${desafiosPend} desafio${desafiosPend>1?'s':''} fitness para completar!`);
             } else {
               notificar('Continue assim! Todos os desafios do dia estão completos!');
+              showToast('Continue assim! Todos os desafios do dia estão completos!');
             }
           }
           if (notifySettings.tipos.missoes) {
@@ -95,8 +113,10 @@ import './brand.css';
             } catch {}
             if (missoesPend > 0) {
               notificar(`Lembrete: você tem ${missoesPend} missão${missoesPend>1?'s':''} diária para completar!`);
+              showToast(`Lembrete: você tem ${missoesPend} missão${missoesPend>1?'s':''} diária para completar!`);
             } else {
               notificar('Todas as missões do dia estão completas!');
+              showToast('Todas as missões do dia estão completas!');
             }
           }
           if (notifySettings.tipos.conquistas) {
@@ -107,6 +127,7 @@ import './brand.css';
             } catch {}
             if (novasConquistas > 0) {
               notificar(`Você conquistou ${novasConquistas} nova${novasConquistas>1?'s':''} conquista${novasConquistas>1?'s':''}! Veja seu progresso!`);
+              showToast(`Você conquistou ${novasConquistas} nova${novasConquistas>1?'s':''} conquista${novasConquistas>1?'s':''}! Veja seu progresso!`);
             }
           }
           if (notifySettings.tipos.streaks) {
@@ -234,6 +255,7 @@ import './brand.css';
             } catch {}
             if (streakAtual > 0) {
               notificar(`Você está em uma sequência de ${streakAtual} dia${streakAtual>1?'s':''} de atividades! Continue assim!`);
+              showToast(`Você está em uma sequência de ${streakAtual} dia${streakAtual>1?'s':''} de atividades! Continue assim!`);
             }
           }
         }, 24*60*60*1000);
@@ -256,6 +278,7 @@ import './brand.css';
 
   return (
     <div className={`dashboard-root ${theme}`}> 
+      <Toast message={toast.message} visible={toast.visible} onClose={() => setToast(t => ({ ...t, visible: false }))} />
       <h2>Dashboard React</h2>
       <button style={{position:'absolute',top:16,right:16}} onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}>
         {theme === 'light' ? '🌙 Modo Escuro' : '☀️ Modo Claro'}
