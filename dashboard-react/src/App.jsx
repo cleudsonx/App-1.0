@@ -145,21 +145,6 @@ import './brand.css';
     }
     agendarNotificacoes();
   }, []);
-            novasConquistas = conquistas.filter(c => c.nova).length;
-          } catch {}
-          if (novasConquistas > 0) {
-            notificar(`Você conquistou ${novasConquistas} nova${novasConquistas>1?'s':''} conquista${novasConquistas>1?'s':''}! Veja seu progresso!`);
-          }
-        }
-        if (notifySettings.tipos.streaks) {
-          let streakAtual = 0;
-          try {
-            streakAtual = parseInt(localStorage.getItem('dashboard_user_streak') || '0', 10);
-          } catch {}
-          if (streakAtual > 0) {
-            notificar(`Você está em uma sequência de ${streakAtual} dia${streakAtual>1?'s':''} de atividades! Continue assim!`);
-          }
-        }
       }, 2000);
       // Agendar notificação diária no horário escolhido
       const [h, m] = notifySettings.horario.split(':').map(Number);
