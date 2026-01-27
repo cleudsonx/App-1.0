@@ -1,3 +1,5 @@
+        // Templates
+        server.createContext("/api/templates", new CORSHandler(new api.TemplatesHandler()));
     // Stats
     server.createContext("/api/stats", new CORSHandler(new api.StatsHandler()));
 import com.sun.net.httpserver.HttpServer;
