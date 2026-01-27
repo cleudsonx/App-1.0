@@ -1,5 +1,6 @@
 import '../login-register.css';
 import React, { useState } from 'react';
+import OnboardingProfile from './OnboardingProfile';
 
 const API = {
   login: 'https://app-1-0-python.onrender.com/auth/login',
@@ -7,7 +8,8 @@ const API = {
 };
 
 export default function LoginRegister({ onAuth }) {
-  const [step, setStep] = useState('welcome'); // welcome | login | register | onboarding
+  const [step, setStep] = useState('welcome'); // welcome | login | register | onboarding | onboarding-profile
+  const [userData, setUserData] = useState(null);
   const [form, setForm] = useState({ nome: '', email: '', senha: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -50,8 +52,8 @@ export default function LoginRegister({ onAuth }) {
       });
       const data = await res.json();
       if (res.ok && data.access_token) {
-        setStep('onboarding');
-        onAuth(data);
+        setUserData(data);
+        setStep('onboarding-profile');
       } else {
         setError(data.detail || 'Cadastro inválido');
       }
@@ -91,12 +93,12 @@ export default function LoginRegister({ onAuth }) {
           {error && <div className="error">{error}</div>}
         </form>
       )}
-      {step === 'onboarding' && (
-        <div className="onboarding">
-          <h3>Cadastro realizado!</h3>
-          <p>Agora personalize seu perfil e aproveite o APP Trainer.</p>
-          <button onClick={() => setStep('welcome')}>Ir para Dashboard</button>
-        </div>
+      {step === 'onboarding-profile' && (
+        <OnboardingProfile onFinish={perfil => {
+          // Salva perfil no localStorage e autentica usuário
+          localStorage.setItem('dashboard_perfil', JSON.stringify(perfil));
+          if (userData) onAuth(userData);
+        }} />
       )}
     </div>
   );
