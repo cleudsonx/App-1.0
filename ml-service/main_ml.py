@@ -1,3 +1,61 @@
+from datetime import date
+
+# ============ ENDPOINTS DE MISSÕES DIÁRIAS E STREAKS ============
+
+class MissaoRequest(BaseModel):
+    user_id: str
+    data: str  # formato YYYY-MM-DD
+    missoes: list
+
+# Os endpoints devem ser definidos após o app = FastAPI(...)
+
+@app.get("/api/missoes-diarias")
+async def get_missoes_diarias(user_id: str):
+    hoje = date.today().isoformat()
+    MISSOES_FILE = Path("data/missoes_diarias.json")
+    if MISSOES_FILE.exists():
+        all_missoes = json.loads(MISSOES_FILE.read_text(encoding="utf-8"))
+    else:
+        all_missoes = {}
+    user_missoes = all_missoes.get(user_id, {})
+    return user_missoes.get(hoje) or [
+        {"id": 1, "titulo": "Complete 1 treino hoje", "tipo": "treino", "meta": 1, "recompensa": "🔥 +5 pontos", "icone": "🔥", "progresso": 0, "concluida": False},
+        {"id": 2, "titulo": "Beba 2L de água", "tipo": "agua", "meta": 2000, "recompensa": "💧 +3 pontos", "icone": "💧", "progresso": 0, "concluida": False},
+        {"id": 3, "titulo": "Registre uma refeição", "tipo": "refeicao", "meta": 1, "recompensa": "🍽️ +2 pontos", "icone": "🍽️", "progresso": 0, "concluida": False}
+    ]
+
+@app.post("/api/missoes-diarias")
+async def salvar_missoes_diarias(req: MissaoRequest):
+    MISSOES_FILE = Path("data/missoes_diarias.json")
+    if MISSOES_FILE.exists():
+        all_missoes = json.loads(MISSOES_FILE.read_text(encoding="utf-8"))
+    else:
+        all_missoes = {}
+    if req.user_id not in all_missoes:
+        all_missoes[req.user_id] = {}
+    all_missoes[req.user_id][req.data] = req.missoes
+    MISSOES_FILE.write_text(json.dumps(all_missoes, ensure_ascii=False, indent=2), encoding="utf-8")
+    return {"success": True}
+
+@app.get("/api/streak")
+async def get_streak(user_id: str):
+    STREAK_FILE = Path("data/streaks.json")
+    if STREAK_FILE.exists():
+        streaks = json.loads(STREAK_FILE.read_text(encoding="utf-8"))
+    else:
+        streaks = {}
+    return {"streak": streaks.get(user_id, 0)}
+
+@app.post("/api/streak")
+async def salvar_streak(user_id: str = Body(...), streak: int = Body(...)):
+    STREAK_FILE = Path("data/streaks.json")
+    if STREAK_FILE.exists():
+        streaks = json.loads(STREAK_FILE.read_text(encoding="utf-8"))
+    else:
+        streaks = {}
+    streaks[user_id] = streak
+    STREAK_FILE.write_text(json.dumps(streaks, ensure_ascii=False, indent=2), encoding="utf-8")
+    return {"success": True}
 from pathlib import Path
 import json
 
