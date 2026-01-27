@@ -1,3 +1,4 @@
+import '../login-register.css';
 import React, { useState } from 'react';
 
 const API = {
