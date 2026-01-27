@@ -53,6 +53,9 @@ import Tooltip from './components/Tooltip';
 
 
 function App() {
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('dashboard_theme') || 'light';
+  });
   const [showModal, setShowModal] = useState(false);
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('dashboard_user');
@@ -117,9 +120,17 @@ function App() {
     }} />;
   }
 
+  useEffect(() => {
+    document.body.setAttribute('data-theme', theme);
+    localStorage.setItem('dashboard_theme', theme);
+  }, [theme]);
+
   return (
-    <div className="dashboard-root">
+    <div className={`dashboard-root ${theme}`}> 
       <h2>Dashboard React</h2>
+      <button style={{position:'absolute',top:16,right:16}} onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}>
+        {theme === 'light' ? '🌙 Modo Escuro' : '☀️ Modo Claro'}
+      </button>
       {loading && (
         <div className="loading" style={{margin: '24px 0', textAlign: 'center'}}>
           <span className="spinner" style={{display: 'inline-block', width: 32, height: 32, border: '4px solid #ccc', borderTop: '4px solid #007bff', borderRadius: '50%', animation: 'spin 1s linear infinite', marginRight: 8}}></span>
@@ -275,6 +286,31 @@ function App() {
         @keyframes spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
+        }
+        body[data-theme='dark'], .dashboard-root.dark {
+          background: #181a1b;
+          color: #f1f1f1;
+        }
+        .dashboard-root.dark .card, .dashboard-root.dark .dashboard-grid, .dashboard-root.dark .login-register-root {
+          background: #23272b;
+          color: #f1f1f1;
+        }
+        .dashboard-root.dark input, .dashboard-root.dark select, .dashboard-root.dark textarea {
+          background: #23272b;
+          color: #f1f1f1;
+          border: 1px solid #444;
+        }
+        .dashboard-root.dark button {
+          background: #222;
+          color: #f1f1f1;
+          border: 1px solid #444;
+        }
+        .dashboard-root.dark .spinner {
+          border-color: #444;
+          border-top-color: #00bfff;
+        }
+        .dashboard-root.dark .error {
+          color: #ffb3b3;
         }
       `}</style>
     </div>
