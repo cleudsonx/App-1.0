@@ -50,24 +50,28 @@ import './brand.css';
               showToast('Parabéns! Você está em dia com seus desafios!');
             }
           }
-          if (notifySettings.tipos.missoes) {
-            let missoesPend = 0;
+
+          if (notifySettings.tipos.streaks) {
+            let streakAtual = 0;
             try {
-              const missoes = JSON.parse(localStorage.getItem('dashboard_user_missoes') || '[]');
-              missoesPend = missoes.filter(m => !m.completa).length;
+              streakAtual = parseInt(localStorage.getItem('dashboard_user_streak') || '0', 10);
             } catch {}
-            if (missoesPend > 0) {
-              notificar(`Você tem ${missoesPend} missão${missoesPend>1?'s':''} diária pendente${missoesPend>1?'s':''}!`);
-              showToast(`Você tem ${missoesPend} missão${missoesPend>1?'s':''} diária pendente${missoesPend>1?'s':''}!`);
+            if (streakAtual > 0) {
+              notificar(`Você está em uma sequência de ${streakAtual>1?'s':''} dia${streakAtual>1?'s':''} de atividades! Continue assim!`);
+              showToast(`Você está em uma sequência de ${streakAtual>1?'s':''} dia${streakAtual>1?'s':''} de atividades! Continue assim!`);
             }
           }
-          if (notifySettings.tipos.conquistas) {
-            let novasConquistas = 0;
-            try {
-              const conquistas = JSON.parse(localStorage.getItem('dashboard_user_conquistas') || '[]');
-              novasConquistas = conquistas.filter(c => c.nova).length;
-            } catch {}
-            if (novasConquistas > 0) {
+        }
+      }
+    }
+    }, 24*60*60*1000);
+  }, msToNext);
+}
+
+// Hook para agendar notificações ao montar o componente
+React.useEffect(() => {
+  agendarNotificacoes();
+}, []);
               notificar(`Você conquistou ${novasConquistas} nova${novasConquistas>1?'s':''} conquista${novasConquistas>1?'s':''}! Veja seu progresso!`);
               showToast(`Você conquistou ${novasConquistas} nova${novasConquistas>1?'s':''} conquista${novasConquistas>1?'s':''}! Veja seu progresso!`);
             }
@@ -142,6 +146,15 @@ import './brand.css';
         }
       }
     }
+  }
+  // Hook para agendar notificações ao montar o componente
+  React.useEffect(() => {
+    agendarNotificacoes();
+  }, []);
+  // Hook para agendar notificações ao montar o componente
+  React.useEffect(() => {
+    agendarNotificacoes();
+  }, []);
     React.useEffect(() => {
       agendarNotificacoes();
     }, []);
