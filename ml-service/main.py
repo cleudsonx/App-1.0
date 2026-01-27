@@ -1,3 +1,29 @@
+from fastapi.responses import JSONResponse
+# ============ ENDPOINTS DE INTEGRAÇÃO DASHBOARD ============
+
+# Mock de refeições
+@app.get("/api/refeicoes")
+async def get_refeicoes():
+    refeicoes = [
+        {"id": 1, "nome": "Café da manhã", "horario": "07:00", "itens": ["Ovos", "Pão integral", "Frutas"]},
+        {"id": 2, "nome": "Almoço", "horario": "12:30", "itens": ["Arroz", "Feijão", "Frango grelhado", "Salada"]},
+        {"id": 3, "nome": "Jantar", "horario": "19:30", "itens": ["Peixe", "Batata doce", "Legumes"]}
+    ]
+    return JSONResponse(content=refeicoes)
+
+# Mock de sono
+@app.get("/api/sono")
+async def get_sono():
+    sono = {
+        "media_horas": 7.2,
+        "qualidade": "Boa",
+        "dias": [
+            {"data": "2026-01-24", "horas": 7.5},
+            {"data": "2026-01-25", "horas": 6.8},
+            {"data": "2026-01-26", "horas": 7.3}
+        ]
+    }
+    return JSONResponse(content=sono)
 import os
 
 # Porta e chave JWT vindas do Render
