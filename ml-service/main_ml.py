@@ -1,13 +1,48 @@
+
 from datetime import date
+from pathlib import Path
+import json
+
+
+
+
+# ============ ENDPOINTS DE DESAFIOS PERSONALIZADOS ============
+
+# Definir endpoints após a criação do app
+
+from pydantic import BaseModel
+
+class DesafioRequest(BaseModel):
+    user_id: str
+    titulo: str
+    meta: int = 1
+    recompensa: str = "🏅 Badge"
+    progresso: int = 0
+
+
+app = FastAPI(
+    title="APP Trainer ML Service",
+    version="3.1.0",
+    description="""
+    🏋️ Sistema de IA para Coach Virtual de Musculação
+    
+    Features:
+    - 🧠 NLP Semântico com Sentence-BERT
+    - 🤖 Rede Neural PyTorch para recomendações
+    - 👤 Perfil de usuário com aprendizado contínuo
+    - 🎯 Personalização por objetivo, limitações e feedback
+    - 🔐 Sistema de autenticação
+    """
+)
 
 # ============ ENDPOINTS DE MISSÕES DIÁRIAS E STREAKS ============
+from pydantic import BaseModel
+from fastapi import Body
 
 class MissaoRequest(BaseModel):
     user_id: str
     data: str  # formato YYYY-MM-DD
     missoes: list
-
-# Os endpoints devem ser definidos após o app = FastAPI(...)
 
 @app.get("/api/missoes-diarias")
 async def get_missoes_diarias(user_id: str):
@@ -56,41 +91,6 @@ async def salvar_streak(user_id: str = Body(...), streak: int = Body(...)):
     streaks[user_id] = streak
     STREAK_FILE.write_text(json.dumps(streaks, ensure_ascii=False, indent=2), encoding="utf-8")
     return {"success": True}
-from pathlib import Path
-import json
-
-
-
-
-# ============ ENDPOINTS DE DESAFIOS PERSONALIZADOS ============
-
-# Definir endpoints após a criação do app
-
-from pydantic import BaseModel
-
-class DesafioRequest(BaseModel):
-    user_id: str
-    titulo: str
-    meta: int = 1
-    recompensa: str = "🏅 Badge"
-    progresso: int = 0
-
-# Após a linha 'app = FastAPI(...)':
-
-app = FastAPI(
-    title="APP Trainer ML Service",
-    version="3.1.0",
-    description="""
-    🏋️ Sistema de IA para Coach Virtual de Musculação
-    
-    Features:
-    - 🧠 NLP Semântico com Sentence-BERT
-    - 🤖 Rede Neural PyTorch para recomendações
-    - 👤 Perfil de usuário com aprendizado contínuo
-    - 🎯 Personalização por objetivo, limitações e feedback
-    - 🔐 Sistema de autenticação
-    """
-)
 
 # Endpoints de desafios personalizados
 @app.post("/api/desafios")
