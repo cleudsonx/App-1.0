@@ -776,6 +776,32 @@ async def get_sono():
     ]
 async def completar_avaliacao(user_id: str, request: CriarPerfilRequest):
     """
+
+@app.get("/api/ranking-desafios")
+async def ranking_desafios():
+    import json
+    from pathlib import Path
+    DESAFIOS_FILE = Path("data/desafios.json")
+    def load_desafios():
+        if DESAFIOS_FILE.exists():
+            return json.loads(DESAFIOS_FILE.read_text(encoding="utf-8"))
+        return []
+    desafios = load_desafios()
+    user_map = {}
+    for d in desafios:
+        if d.get("progresso", 0) >= d.get("meta", 1):
+            uid = d.get("user_id", "anon")
+            user_map[uid] = user_map.get(uid, 0) + 1
+    ranking = sorted(
+        [
+            {"nome": uid, "desafios": total, "pos": i+1}
+            for i, (uid, total) in enumerate(sorted(user_map.items(), key=lambda x: -x[1]))
+        ],
+        key=lambda x: x["pos"]
+    )[:10]
+    return ranking
+
+
     📋 Completa a avaliação de um usuário existente
     
     Usado quando o usuário já tem conta (registrado) mas ainda não 
