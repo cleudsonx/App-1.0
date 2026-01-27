@@ -10,6 +10,8 @@ import './style.css';
 import './brand.css';
 import OnboardingProfile from './components/OnboardingProfile';
 import FeedAtividades from './components/FeedAtividades';
+import Badge from './components/Badge';
+import Ranking from './components/Ranking';
 
 function App() {
   const [user, setUser] = useState(() => {
@@ -247,10 +249,25 @@ function App() {
     localStorage.removeItem('dashboard_onboarding');
     // Limpar outros dados se necessário
   }
+  // Mock badges e ranking para demonstração
+  const badges = [
+    { nome: 'Primeiro treino', descricao: 'Complete seu primeiro treino', icone: '🏆' },
+    { nome: 'Desafio 7 dias', descricao: 'Complete 7 dias seguidos', icone: '🔥' }
+  ];
+  const ranking = [
+    { id: 'test-user', nome: user?.nome || 'Você', pontos: 120 },
+    { id: 'user2', nome: 'Maria', pontos: 110 },
+    { id: 'user3', nome: 'João', pontos: 90 }
+  ];
   return (
     <div className="dashboard-root">
       <button onClick={handleLogout} style={{position:'absolute',top:10,right:10,zIndex:10}}>Sair</button>
       <FeedAtividades userId={user?.id || user?.email} />
+      <div style={{marginTop:24}}>
+        <h3>Badges</h3>
+        {badges.map(b => <Badge key={b.nome} {...b} />)}
+      </div>
+      <Ranking usuarios={ranking} />
       <style>{`
         @keyframes spin {
           0% { transform: rotate(0deg); }
