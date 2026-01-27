@@ -353,6 +353,41 @@ import json
 from pathlib import Path
 
 # ============ ENDPOINTS DE FEED DE ATIVIDADES ============
+# ============ ENDPOINTS DE RANKING E BADGES ============
+import json
+from pathlib import Path
+
+# Ranking geral por pontos
+@app.get("/api/ranking")
+async def get_ranking():
+    RANKING_FILE = Path("data/ranking.json")
+    if RANKING_FILE.exists():
+        ranking = json.loads(RANKING_FILE.read_text(encoding="utf-8"))
+    else:
+        ranking = []
+    # Ordena por pontos decrescente
+    ranking.sort(key=lambda x: x.get("pontos", 0), reverse=True)
+    return ranking
+
+# Badges/conquistas do usuário
+@app.get("/api/badges")
+async def get_badges(user_id: str):
+    FEED_FILE = Path("data/feed.json")
+    if FEED_FILE.exists():
+        feed = json.loads(FEED_FILE.read_text(encoding="utf-8"))
+    else:
+        feed = []
+    # Filtra conquistas do usuário
+    badges = [e for e in feed if e.get("user_id") == user_id and e.get("tipo") == "conquista"]
+    # Remove duplicadas por titulo
+    seen = set()
+    unique_badges = []
+    for b in badges:
+        titulo = b.get("extras", {}).get("titulo") or b.get("descricao")
+        if titulo and titulo not in seen:
+            seen.add(titulo)
+            unique_badges.append(b)
+    return unique_badges
 FEED_FILE = Path("data/feed.json")
 
 def load_feed():
