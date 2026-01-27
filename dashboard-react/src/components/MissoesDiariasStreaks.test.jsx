@@ -4,6 +4,6 @@ import MissoesDiariasStreaks from './MissoesDiariasStreaks';
 describe('MissoesDiariasStreaks', () => {
   it('renderiza sem crashar', () => {
     render(<MissoesDiariasStreaks userId="test-user" />);
-    expect(screen.getByText(/miss/i)).toBeInTheDocument();
+    expect(screen.getByText('Missões Diárias & Streak')).toBeInTheDocument();
   });
 });

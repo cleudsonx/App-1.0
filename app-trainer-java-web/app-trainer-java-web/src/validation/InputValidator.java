@@ -1,3 +1,23 @@
+    /**
+     * Valida força de senha (8+ chars, 1 maiúscula, 1 número, 1 símbolo)
+     */
+    public static boolean isStrongPassword(String password) {
+        ValidationResult result = validatePassword(password);
+        return result.valid;
+    }
+
+    /**
+     * Verifica se string é "segura" (sem padrões de SQL injection, apenas caracteres permitidos)
+     */
+    public static boolean isSafeString(String input) {
+        if (input == null || input.trim().isEmpty()) {
+            return false;
+        }
+        if (SQL_INJECTION_PATTERN.matcher(input).matches()) {
+            return false;
+        }
+        return SAFE_STRING_PATTERN.matcher(input).matches();
+    }
 package validation;
 
 import java.util.regex.Pattern;
