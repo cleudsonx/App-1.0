@@ -1,5 +1,19 @@
-import React, { useState } from 'react';
-import { useRef } from 'react';
+import React, { useState, useRef } from 'react';
+// Toast simples
+function Toast({ msg, onClose }) {
+  React.useEffect(() => {
+    if (!msg) return;
+    const t = setTimeout(onClose, 2200);
+    return () => clearTimeout(t);
+  }, [msg]);
+  if (!msg) return null;
+  return (
+    <div style={{position:'fixed',bottom:32,right:32,zIndex:9999,background:'#222',color:'#fff',padding:'14px 28px',borderRadius:8,boxShadow:'0 2px 16px #0006',fontSize:16,animation:'fadein .4s'}}>
+      {msg}
+      <style>{`@keyframes fadein{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}`}</style>
+    </div>
+  );
+}
 
 const desafiosMock = [
   { id: 1, titulo: '7 dias de treino seguido', meta: 7, progresso: 4, recompensa: '🔥 Badge Foco Total' },
@@ -19,6 +33,7 @@ export default function DesafiosCard({ desafios }) {
   const [animProgresso, setAnimProgresso] = useState({});
   const allDesafios = desafios || desafiosMock;
   const addRef = useRef();
+  const [toast, setToast] = useState("");
 
   function handleChange(e) {
     setForm(f => ({ ...f, [e.target.name]: e.target.value }));
@@ -38,6 +53,7 @@ export default function DesafiosCard({ desafios }) {
     localStorage.setItem('dashboard_user_desafios', JSON.stringify(novos));
     setForm({ titulo: '', meta: 1, recompensa: '' });
     setAnimAdd(true);
+    setToast('Desafio criado!');
     setTimeout(() => setAnimAdd(false), 800);
     if (addRef.current) {
       addRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -49,6 +65,7 @@ export default function DesafiosCard({ desafios }) {
         const novoProg = Math.min(d.meta, d.progresso + 1);
         if (novoProg === d.meta) {
           setAnimConcluido(a => ({ ...a, [id]: true }));
+          setToast('Desafio concluído! Parabéns!');
           setTimeout(() => setAnimConcluido(a => ({ ...a, [id]: false })), 1200);
         } else {
           setAnimProgresso(a => ({ ...a, [id]: true }));
@@ -64,6 +81,7 @@ export default function DesafiosCard({ desafios }) {
 
   return (
     <div className="dashboard-widget widget-card card-desafios">
+      <Toast msg={toast} onClose={() => setToast("")} />
       <span role="img" aria-label="Desafios">🔥</span>
       <h3>Desafios Fitness</h3>
       <form onSubmit={handleAdd} style={{marginBottom:16, background:'#f3f3f3', borderRadius:8, padding:8, transition:'box-shadow .3s', boxShadow:animAdd?'0 0 12px #00c851':'none'}}>
