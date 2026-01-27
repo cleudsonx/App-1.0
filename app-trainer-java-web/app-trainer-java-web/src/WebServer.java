@@ -1,19 +1,3 @@
-                                // PRS Volume
-                                server.createContext("/api/prs-volume", new CORSHandler(new api.PRSVolumeHandler()));
-                            // Fadiga
-                            server.createContext("/api/fadiga", new CORSHandler(new api.FadigaHandler()));
-                        // Planejamento
-                        server.createContext("/api/planejamento", new CORSHandler(new api.PlanejamentoHandler()));
-                    // Progresso
-                    server.createContext("/api/progresso", new CORSHandler(new api.ProgressoHandler()));
-                // Ficha
-                server.createContext("/api/ficha", new CORSHandler(new api.FichaHandler()));
-            // Divisao
-            server.createContext("/api/divisao", new CORSHandler(new api.DivisaoHandler()));
-        // Templates
-        server.createContext("/api/templates", new CORSHandler(new api.TemplatesHandler()));
-    // Stats
-    server.createContext("/api/stats", new CORSHandler(new api.StatsHandler()));
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -134,8 +118,25 @@ public class WebServer {
             sendJson(ex, 200, json);
         }));
 
-            // Conquistas
-            server.createContext("/api/conquistas", new CORSHandler(new api.ConquistasHandler()));
+
+        // Conquistas
+        server.createContext("/api/conquistas", new CORSHandler(new api.ConquistasHandler()));
+        // Stats
+        server.createContext("/api/stats", new CORSHandler(new api.StatsHandler()));
+        // Templates
+        server.createContext("/api/templates", new CORSHandler(new api.TemplatesHandler()));
+        // Divisao
+        server.createContext("/api/divisao", new CORSHandler(new api.DivisaoHandler()));
+        // Ficha
+        server.createContext("/api/ficha", new CORSHandler(new api.FichaHandler()));
+        // Progresso
+        server.createContext("/api/progresso", new CORSHandler(new api.ProgressoHandler()));
+        // Planejamento
+        server.createContext("/api/planejamento", new CORSHandler(new api.PlanejamentoHandler()));
+        // Fadiga
+        server.createContext("/api/fadiga", new CORSHandler(new api.FadigaHandler()));
+        // PRS Volume
+        server.createContext("/api/prs-volume", new CORSHandler(new api.PRSVolumeHandler()));
         
         // Proxy para serviço ML Python (opcional)
             // Proxy para serviço ML Python usando variável de ambiente
