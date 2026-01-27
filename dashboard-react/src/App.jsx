@@ -56,7 +56,8 @@ import MotivacionalCard from './components/MotivacionalCard';
 import PlanejamentoSemanalCard from './components/PlanejamentoSemanalCard';
 import PRsVolumeCard from './components/PRsVolumeCard';
 import SonoRecuperacaoCard from './components/SonoRecuperacaoCard';
-import PersonalizationModal from './components/PersonalizationModal';
+
+import NotificationSettings from './components/NotificationSettings';
 
 import FeedAtividades from './components/FeedAtividades';
 import MissoesDiariasStreaks from './components/MissoesDiariasStreaks';
@@ -203,6 +204,7 @@ function App() {
       <button onClick={() => setShowModal(true)}>
         Personalizar Dashboard
       </button>
+      <NotificationSettings />
       <FeedAtividades userId={user?.id || user?.email || 'anon'} />
       <MissoesDiariasStreaks userId={user?.id || user?.email || 'anon'} />
       <DashboardGrid>
