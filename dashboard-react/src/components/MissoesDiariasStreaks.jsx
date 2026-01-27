@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { addFeedEvent } from '../utils/feed';
 
 // Endpoint backend Python
 const API_PYTHON = 'https://app-1-0-python.onrender.com';
@@ -64,6 +65,13 @@ export default function MissoesDiariasStreaks({ userId }) {
         novas[idx].progresso += valor;
         if (novas[idx].progresso >= novas[idx].meta) {
           novas[idx].concluida = true;
+          // Registrar evento no feed
+          addFeedEvent({
+            user_id: userId,
+            tipo: 'missao',
+            descricao: `Missão concluída: ${novas[idx].titulo}`,
+            extras: { id: novas[idx].id, meta: novas[idx].meta }
+          });
         }
         // Salva localmente
         localStorage.setItem(`missoes_${userId}_${hoje}`, JSON.stringify(novas));
@@ -103,6 +111,13 @@ export default function MissoesDiariasStreaks({ userId }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: userId, streak: novoStreak })
       }).catch(() => setMsg("Falha ao salvar streak (offline)"));
+      // Registrar evento de streak no feed
+      addFeedEvent({
+        user_id: userId,
+        tipo: 'streak',
+        descricao: `Streak aumentado para ${novoStreak} dias!`,
+        extras: { streak: novoStreak }
+      });
     }
   }, [missoes, userId]);
 
