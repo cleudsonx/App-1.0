@@ -73,7 +73,8 @@ import PlanejamentoSemanalCard from './components/PlanejamentoSemanalCard';
 import PRsVolumeCard from './components/PRsVolumeCard';
 import SonoRecuperacaoCard from './components/SonoRecuperacaoCard';
 import PersonalizationModal from './components/PersonalizationModal';
-import Tooltip from './components/Tooltip';
+
+import FeedAtividades from './components/FeedAtividades';
 
 
 
@@ -217,6 +218,7 @@ function App() {
       <button onClick={() => setShowModal(true)}>
         Personalizar Dashboard
       </button>
+      <FeedAtividades userId={user?.id || user?.email || 'anon'} />
       <DashboardGrid>
         {widgetConfig
           .filter(w => w.visible)
