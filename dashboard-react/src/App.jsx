@@ -125,11 +125,23 @@ function App() {
       fetchWithError(`${API_ENDPOINTS.java}/api/prs-volume`, setPrsVolume),
       fetchWithError(`${API_ENDPOINTS.python}/api/sono`, setSono)
     ]).finally(() => setLoading(false));
-    // Exemplo: notificar ao abrir o app se permitido
+    // Notificação ao abrir o app
     if ('Notification' in window && Notification.permission === 'granted') {
       setTimeout(() => {
         notificar('Você tem desafios fitness para completar hoje!');
       }, 2000);
+      // Agendar notificação diária às 9h (simulação com 24h em ms)
+      const now = new Date();
+      const next9h = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 0, 0, 0);
+      if (now > next9h) next9h.setDate(next9h.getDate() + 1);
+      const msTo9h = next9h - now;
+      const daily = setTimeout(() => {
+        notificar('Lembrete: desafie-se hoje e complete seus desafios fitness!');
+        setInterval(() => {
+          notificar('Lembrete: desafie-se hoje e complete seus desafios fitness!');
+        }, 24*60*60*1000);
+      }, msTo9h);
+      return () => clearTimeout(daily);
     }
   }, []);
 
