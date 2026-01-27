@@ -240,8 +240,16 @@ function App() {
       </div>
     );
   }
+  function handleLogout() {
+    setUser(null);
+    setOnboardingDone(false);
+    localStorage.removeItem('dashboard_user');
+    localStorage.removeItem('dashboard_onboarding');
+    // Limpar outros dados se necessário
+  }
   return (
     <div className="dashboard-root">
+      <button onClick={handleLogout} style={{position:'absolute',top:10,right:10,zIndex:10}}>Sair</button>
       <FeedAtividades userId={user?.id || user?.email} />
       <style>{`
         @keyframes spin {
