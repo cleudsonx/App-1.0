@@ -1,3 +1,5 @@
+import './style.css';
+import './brand.css';
 
 // Configuração padrão dos widgets (id, visibilidade, ordem)
 const defaultWidgetConfig = [

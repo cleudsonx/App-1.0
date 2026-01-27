@@ -1,0 +1,316 @@
+/* ========== RESPONSIVIDADE DE MARCA ========== */
+@media (max-width: 600px) {
+    .brand-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: var(--space-2);
+        gap: var(--space-2);
+    }
+    .brand-logo {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+        margin-bottom: 4px;
+    }
+    .brand-title h2 {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 400px) {
+    .brand-header {
+        padding: var(--space-1);
+    }
+    .brand-title h2 {
+        font-size: 11px;
+    }
+}
+/* =====================================================
+   SHAIPADOS BRAND INTEGRATION
+   Paleta de cores e elementos visuais da marca
+   ===================================================== */
+
+
+/*
+ * ATENÇÃO: Este arquivo depende das variáveis globais definidas em style.css.
+ * Importe SEMPRE style.css antes de brand.css no HTML.
+ */
+
+:root {
+    /* Shaipados Brand Colors */
+    --brand-primary: #FF6B35;      /* Laranja dinâmico - energia */
+    --brand-secondary: #1a1a1a;    /* Preto profundo - força */
+    --brand-accent: #FFD700;       /* Ouro - premium/conquista */
+    --brand-dark-gray: #2d2d2d;    /* Cinza escuro - elegância */
+    --brand-light-gray: #f5f5f5;   /* Branco Off - contraste */
+}
+
+/* ========== BRANDING UTILITIES ========== */
+
+/* Logo & Branding Header */
+.brand-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: linear-gradient(135deg, var(--brand-secondary), rgba(255, 107, 53, 0.1));
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255, 107, 53, 0.2);
+    margin-bottom: var(--space-4);
+}
+
+.brand-logo {
+    width: 40px;
+    height: 40px;
+    background: var(--brand-primary);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: white;
+    font-size: 20px;
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+    flex-shrink: 0;
+}
+
+.brand-title {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.brand-title h2 {
+    font-size: 14px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+}
+
+.brand-title p {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* ========== BRANDED WIDGETS ========== */
+
+/* Aplicar estilo apenas baseado no contexto do dashboard, sem quebrar */
+#home-dashboard .dashboard-widget {
+    border: 1px solid rgba(255, 107, 53, 0.15);
+    box-shadow: 0 2px 8px rgba(255, 107, 53, 0.05);
+    transition: all var(--duration-normal) var(--ease-out);
+}
+
+#home-dashboard .dashboard-widget:hover {
+    border-color: rgba(255, 107, 53, 0.3);
+    box-shadow: 0 4px 16px rgba(255, 107, 53, 0.1);
+}
+
+/* Accent top bar opcional (apenas visual, não quebra) */
+#home-dashboard .dashboard-widget::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    opacity: 0.3;
+}
+
+/* ========== BRANDED BUTTONS ========== */
+
+.btn-brand {
+    background: linear-gradient(135deg, var(--brand-primary), #ff8c42);
+    color: white;
+    border: none;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all var(--duration-normal) var(--ease-out);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+
+.btn-brand:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+}
+
+.btn-brand:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+}
+
+.btn-brand-outline {
+    background: transparent;
+    border: 2px solid var(--brand-primary);
+    color: var(--brand-primary);
+    padding: calc(var(--space-3) - 2px) calc(var(--space-4) - 2px);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all var(--duration-normal) var(--ease-out);
+}
+
+.btn-brand-outline:hover {
+    background: rgba(255, 107, 53, 0.1);
+    transform: translateY(-2px);
+}
+
+/* ========== BADGE BRANDING ========== */
+
+.badge-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.2), rgba(255, 215, 0, 0.1));
+    border: 1px solid rgba(255, 107, 53, 0.3);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--brand-primary);
+}
+
+.badge-brand::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--brand-primary);
+    border-radius: 50%;
+}
+
+/* ========== PROGRESS BARS BRANDED ========== */
+
+.progress-bar-brand {
+    background: var(--bg-elevated);
+    border-radius: var(--radius-full);
+    height: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 107, 53, 0.1);
+}
+
+.progress-bar-brand > div {
+    background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
+    height: 100%;
+    border-radius: var(--radius-full);
+    transition: width var(--duration-normal) var(--ease-out);
+    box-shadow: 0 0 10px rgba(255, 107, 53, 0.4);
+}
+
+/* ========== ACCENT TEXT ========== */
+
+.text-brand {
+    color: var(--brand-primary);
+    font-weight: 600;
+}
+
+.text-brand-accent {
+    color: var(--brand-accent);
+}
+
+/* ========== DIVIDERS ========== */
+
+.divider-brand {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--brand-primary), transparent);
+    margin: var(--space-4) 0;
+}
+
+/* ========== CARD ACCENTS ========== */
+
+.card-brand-accent {
+    position: relative;
+    border-left: 4px solid var(--brand-primary);
+    padding-left: calc(var(--space-4) - 2px);
+}
+
+/* ========== DASHBOARD HEADER BRANDING ========== */
+
+.dashboard-header-brand {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid rgba(255, 107, 53, 0.1);
+}
+
+.dashboard-header-brand h1 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: 24px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--text-primary), var(--brand-primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.dashboard-header-brand-icon {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+/* ========== RESPONSIVENESS ========== */
+
+@media (max-width: 640px) {
+    .brand-header {
+        margin-bottom: var(--space-3);
+    }
+
+    .brand-title h2 {
+        font-size: 13px;
+    }
+
+    .brand-title p {
+        font-size: 10px;
+    }
+
+    .dashboard-header-brand h1 {
+        font-size: 20px;
+    }
+}
+
+/* ========== ANIMATION KEYFRAMES ========== */
+
+@keyframes brand-pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(255, 107, 53, 0);
+    }
+}
+
+.brand-pulse {
+    animation: brand-pulse 2s infinite;
+}
+
+@keyframes brand-glow {
+    0%, 100% {
+        filter: drop-shadow(0 0 2px rgba(255, 107, 53, 0.4));
+    }
+    50% {
+        filter: drop-shadow(0 0 8px rgba(255, 107, 53, 0.8));
+    }
+}
+
+.brand-glow {
+    animation: brand-glow 2s infinite;
+}
