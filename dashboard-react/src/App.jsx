@@ -28,6 +28,18 @@ const defaultWidgetConfig = [
 ];
 
 import React, { useState, useEffect } from 'react';
+// Função utilitária para notificação web
+function pedirPermissaoNotificacao() {
+  if ('Notification' in window) {
+    Notification.requestPermission();
+  }
+}
+
+function notificar(msg) {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification(msg, { icon: '/favicon.ico' });
+  }
+}
 import DashboardGrid from './components/DashboardGrid';
 
 
@@ -113,6 +125,12 @@ function App() {
       fetchWithError(`${API_ENDPOINTS.java}/api/prs-volume`, setPrsVolume),
       fetchWithError(`${API_ENDPOINTS.python}/api/sono`, setSono)
     ]).finally(() => setLoading(false));
+    // Exemplo: notificar ao abrir o app se permitido
+    if ('Notification' in window && Notification.permission === 'granted') {
+      setTimeout(() => {
+        notificar('Você tem desafios fitness para completar hoje!');
+      }, 2000);
+    }
   }, []);
 
   if (!user) {
@@ -133,6 +151,11 @@ function App() {
       <button style={{position:'absolute',top:16,right:16}} onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}>
         {theme === 'light' ? '🌙 Modo Escuro' : '☀️ Modo Claro'}
       </button>
+      {'Notification' in window && Notification.permission !== 'granted' && (
+        <button style={{position:'absolute',top:16,right:120}} onClick={pedirPermissaoNotificacao}>
+          Ativar Notificações 🔔
+        </button>
+      )}
       {loading && (
         <div className="loading" style={{margin: '24px 0', textAlign: 'center'}}>
           <span className="spinner" style={{display: 'inline-block', width: 32, height: 32, border: '4px solid #ccc', borderTop: '4px solid #007bff', borderRadius: '50%', animation: 'spin 1s linear infinite', marginRight: 8}}></span>
