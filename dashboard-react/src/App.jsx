@@ -1,4 +1,3 @@
-
 import LoginRegister from './components/LoginRegister';
 import Toast from './components/Toast';
 import React, { useState, useRef } from 'react';
@@ -167,6 +166,43 @@ function App() {
     if (user) agendarNotificacoes(user);
   }, [user]);
 
+  // Estado para badges e ranking
+  const [badges, setBadges] = useState([]);
+  const [ranking, setRanking] = useState([]);
+
+  // Buscar badges e ranking do backend
+  React.useEffect(() => {
+    async function fetchBadgesRanking() {
+      if (!user) return;
+      const userId = user.id || user.email || 'anon';
+      try {
+        const resBadges = await fetch(`${API_ENDPOINTS.python}/api/badges?user_id=${encodeURIComponent(userId)}`);
+        if (resBadges.ok) {
+          const badgesBackend = await resBadges.json();
+          setBadges(badgesBackend.map(b => ({
+            nome: b.extras?.titulo || b.descricao || 'Conquista',
+            descricao: b.extras?.descricao || '',
+            icone: b.extras?.icone || '🏆'
+          })));
+        }
+      } catch {
+        // fallback local
+        setBadges([]);
+      }
+      try {
+        const resRanking = await fetch(`${API_ENDPOINTS.python}/api/ranking`);
+        if (resRanking.ok) {
+          const rankingBackend = await resRanking.json();
+          setRanking(rankingBackend);
+        }
+      } catch {
+        // fallback local
+        setRanking([]);
+      }
+    }
+    fetchBadgesRanking();
+  }, [user]);
+
   // Renderização condicional do fluxo
   if (!user) {
     return (
@@ -247,7 +283,7 @@ function App() {
       <FeedAtividades userId={user?.id || user?.email} />
       <div style={{marginTop:24}}>
         <h3>Badges</h3>
-        {badges.map(b => <Badge key={b.nome} {...b} />)}
+        {badges.length === 0 ? <p>Nenhum badge encontrado.</p> : badges.map(b => <Badge key={b.nome} {...b} />)}
       </div>
       <Ranking usuarios={ranking} />
       <style>{`
