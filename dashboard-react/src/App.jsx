@@ -75,6 +75,7 @@ import SonoRecuperacaoCard from './components/SonoRecuperacaoCard';
 import PersonalizationModal from './components/PersonalizationModal';
 
 import FeedAtividades from './components/FeedAtividades';
+import MissoesDiariasStreaks from './components/MissoesDiariasStreaks';
 
 
 
@@ -219,6 +220,7 @@ function App() {
         Personalizar Dashboard
       </button>
       <FeedAtividades userId={user?.id || user?.email || 'anon'} />
+      <MissoesDiariasStreaks userId={user?.id || user?.email || 'anon'} />
       <DashboardGrid>
         {widgetConfig
           .filter(w => w.visible)
