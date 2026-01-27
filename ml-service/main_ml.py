@@ -754,6 +754,28 @@ async def listar_perfis():
     }
 
 @app.post("/perfil/{user_id}/completar")
+# ============ ENDPOINTS MOCK PARA INTEGRAÇÃO FRONTEND ============
+
+@app.get("/api/refeicoes")
+async def get_refeicoes():
+    # Endpoint mock para integração frontend
+    return {
+        "refeicoes": [
+            {"id": 1, "aluno_id": 101, "data": "2024-01-01", "tipo": "Café da manhã", "descricao": "Pão, ovo, suco"},
+            {"id": 2, "aluno_id": 101, "data": "2024-01-01", "tipo": "Almoço", "descricao": "Arroz, feijão, frango"},
+            {"id": 3, "aluno_id": 101, "data": "2024-01-01", "tipo": "Jantar", "descricao": "Sopa de legumes"}
+        ]
+    }
+
+@app.get("/api/sono")
+async def get_sono():
+    # Endpoint mock para integração frontend
+    return {
+        "sono": [
+            {"id": 1, "aluno_id": 101, "data": "2024-01-01", "horas": 8, "qualidade": "Boa"},
+            {"id": 2, "aluno_id": 101, "data": "2024-01-02", "horas": 7, "qualidade": "Regular"}
+        ]
+    }
 async def completar_avaliacao(user_id: str, request: CriarPerfilRequest):
     """
     📋 Completa a avaliação de um usuário existente
