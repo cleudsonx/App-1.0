@@ -16,12 +16,17 @@ function getBadgeIcon(conquista) {
 
 function shareConquista(conquista) {
   const text = `${getBadgeIcon(conquista)} Conquista: ${conquista.titulo || conquista.nome}\n${conquista.descricao}`;
+  const url = window.location.href;
   if (navigator.share) {
-    navigator.share({ text, title: 'Minha conquista no APP Trainer!' });
-  } else {
-    navigator.clipboard.writeText(text);
-    alert('Conquista copiada! Compartilhe onde quiser.');
+    navigator.share({ text, title: 'Minha conquista no APP Trainer!', url });
+    return;
   }
+  const wa = `https://wa.me/?text=${encodeURIComponent(text + '\n' + url)}`;
+  const tg = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+  const tw = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text + '\n' + url)}`;
+  navigator.clipboard.writeText(text + '\n' + url);
+  alert('Conquista copiada! Compartilhe onde quiser.');
+  window.open(wa, '_blank');
 }
 
 const ConquistasCard = ({ conquistas }) => {
@@ -36,6 +41,9 @@ const ConquistasCard = ({ conquistas }) => {
               <span style={{fontSize:22}}>{getBadgeIcon(c)}</span>
               <span><strong>{c.titulo || c.nome}</strong>: {c.descricao}</span>
               <button title="Compartilhar conquista" onClick={() => shareConquista(c)} style={{fontSize:16, cursor:'pointer'}}>🔗</button>
+              <a href={`https://wa.me/?text=${encodeURIComponent(getBadgeIcon(c)+' Conquista: '+(c.titulo||c.nome)+'\n'+c.descricao+'\n'+window.location.href)}`} target="_blank" rel="noopener noreferrer" title="WhatsApp" style={{marginLeft:4,fontSize:17}}>🟢</a>
+              <a href={`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(getBadgeIcon(c)+' Conquista: '+(c.titulo||c.nome)+'\n'+c.descricao)}`} target="_blank" rel="noopener noreferrer" title="Telegram" style={{marginLeft:2,fontSize:17}}>🔵</a>
+              <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(getBadgeIcon(c)+' Conquista: '+(c.titulo||c.nome)+'\n'+c.descricao+'\n'+window.location.href)}`} target="_blank" rel="noopener noreferrer" title="Compartilhar no X" style={{marginLeft:2,fontSize:17}}>✖️</a>
             </li>
           ))}
         </ul>

@@ -1,12 +1,23 @@
 // Função para compartilhar desafio
 function shareDesafio(desafio) {
   const text = `🔥 Desafio: ${desafio.titulo}\nProgresso: ${desafio.progresso}/${desafio.meta}\nRecompensa: ${desafio.recompensa}`;
+  const url = window.location.href;
+  // Compartilhamento nativo
   if (navigator.share) {
-    navigator.share({ text, title: 'Meu desafio fitness no APP Trainer!' });
-  } else {
-    navigator.clipboard.writeText(text);
-    alert('Desafio copiado! Compartilhe onde quiser.');
+    navigator.share({ text, title: 'Meu desafio fitness no APP Trainer!', url });
+    return;
   }
+  // WhatsApp
+  const wa = `https://wa.me/?text=${encodeURIComponent(text + '\n' + url)}`;
+  // Telegram
+  const tg = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+  // X (Twitter)
+  const tw = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text + '\n' + url)}`;
+  // Copiar para área de transferência
+  navigator.clipboard.writeText(text + '\n' + url);
+  alert('Desafio copiado! Compartilhe onde quiser.');
+  // Abrir opções
+  window.open(wa, '_blank');
 }
 import React, { useState, useRef, useEffect } from 'react';
 
@@ -210,6 +221,9 @@ export default function DesafiosCard({ desafios }) {
                 <>
                   <span style={{marginLeft:8, color:'#00c851', fontWeight:'bold', fontSize:15, animation:'pop .7s'}}>Concluído!</span>
                   <button title="Compartilhar desafio" onClick={() => shareDesafio(d)} style={{marginLeft:8, fontSize:16, cursor:'pointer'}}>🔗</button>
+                  <a href={`https://wa.me/?text=${encodeURIComponent('🔥 Desafio: '+d.titulo+'\nProgresso: '+d.progresso+'/'+d.meta+'\nRecompensa: '+d.recompensa+'\n'+window.location.href)}`} target="_blank" rel="noopener noreferrer" title="WhatsApp" style={{marginLeft:4,fontSize:17}}>🟢</a>
+                  <a href={`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent('🔥 Desafio: '+d.titulo+'\nProgresso: '+d.progresso+'/'+d.meta+'\nRecompensa: '+d.recompensa)}`} target="_blank" rel="noopener noreferrer" title="Telegram" style={{marginLeft:2,fontSize:17}}>🔵</a>
+                  <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('🔥 Desafio: '+d.titulo+'\nProgresso: '+d.progresso+'/'+d.meta+'\nRecompensa: '+d.recompensa+'\n'+window.location.href)}`} target="_blank" rel="noopener noreferrer" title="Compartilhar no X" style={{marginLeft:2,fontSize:17}}>✖️</a>
                 </>
               )}
             </span>
