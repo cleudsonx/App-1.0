@@ -5,6 +5,9 @@ import App from './App';
 
 // Mock fetch para login, cadastro e feed
 beforeEach(() => {
+  if (!global.fetch) {
+    global.fetch = jest.fn();
+  }
   jest.spyOn(global, 'fetch').mockImplementation((url, opts) => {
     if (url.includes('/auth/login')) {
       return Promise.resolve({
@@ -38,7 +41,9 @@ beforeEach(() => {
   window.localStorage.clear();
 });
 afterEach(() => {
-  global.fetch.mockRestore && global.fetch.mockRestore();
+  if (global.fetch && global.fetch.mockRestore) {
+    global.fetch.mockRestore();
+  }
   window.localStorage.clear();
 });
 
@@ -55,9 +60,9 @@ describe('Fluxo completo: login + onboarding + feed', () => {
     fireEvent.click(screen.getByText('Entrar'));
     // Feed deve aparecer após login
     await waitFor(() => expect(screen.getByText('Feed de Atividades')).toBeInTheDocument());
-    // Conquista e desafio do feed
-    expect(screen.getByText(/Conquista:/)).toBeInTheDocument();
-    expect(screen.getByText(/Desafio concluído:/)).toBeInTheDocument();
+    // Espera o carregamento do feed
+    await waitFor(() => expect(screen.getByText(/Conquista:/)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/Desafio concluído:/)).toBeInTheDocument());
   });
 
   it('realiza cadastro, onboarding e exibe feed', async () => {
@@ -85,7 +90,8 @@ describe('Fluxo completo: login + onboarding + feed', () => {
     fireEvent.click(screen.getByText('Finalizar'));
     // Feed deve aparecer após onboarding
     await waitFor(() => expect(screen.getByText('Feed de Atividades')).toBeInTheDocument());
-    expect(screen.getByText(/Conquista:/)).toBeInTheDocument();
-    expect(screen.getByText(/Desafio concluído:/)).toBeInTheDocument();
+    // Espera o carregamento do feed
+    await waitFor(() => expect(screen.getByText(/Conquista:/)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/Desafio concluído:/)).toBeInTheDocument());
   });
 });
