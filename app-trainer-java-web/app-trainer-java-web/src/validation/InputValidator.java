@@ -44,48 +44,46 @@ public class InputValidator {
     );
     
     /**
-     * Valida email
-     */
-    public static boolean isValidEmail(String email) {
-        if (email == null || email.trim().isEmpty()) {
-            return false;
-        }
-        if (email.length() > 254) {
-            return false;
-        }
-        return EMAIL_PATTERN.matcher(email).matches();
-    }
-    
+package validation;
+
+import java.util.regex.Pattern;
+
+/**
+ * Validador de entrada - Previne SQL Injection, XSS, input inválido
+ */
+public class InputValidator {
+    // Padrões de validação
+    private static final Pattern EMAIL_PATTERN = Pattern.compile(
+        "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$"
+    );
+    private static final Pattern SAFE_STRING_PATTERN = Pattern.compile(
+        "^[a-zA-Z0-9_\\-. \\pL]*$"
+    );
+    private static final Pattern SQL_INJECTION_PATTERN = Pattern.compile(
+        ".*['\";\\\\].*|.*(--|;|/\\*|\\*/).*|.*(DROP|DELETE|INSERT|UPDATE|SELECT|CREATE).*",
+        Pattern.CASE_INSENSITIVE
+    );
+
     /**
-     * Valida força de senha
-     * Requer: 8+ chars, 1 maiúscula, 1 número, 1 símbolo
+     * Valida força de senha (8+ chars, 1 maiúscula, 1 número, 1 símbolo)
      */
-    public static ValidationResult validatePassword(String password) {
-        if (password == null) {
-            return new ValidationResult(false, "Senha não pode ser nula");
+    public static boolean isStrongPassword(String password) {
+        ValidationResult result = validatePassword(password);
+        return result.valid;
+    }
+
+    /**
+     * Verifica se string é "segura" (sem padrões de SQL injection, apenas caracteres permitidos)
+     */
+    public static boolean isSafeString(String input) {
+        if (input == null || input.trim().isEmpty()) {
+            return false;
         }
-        
-        if (password.length() < 8) {
-            return new ValidationResult(false, "Senha deve ter no mínimo 8 caracteres");
+        if (SQL_INJECTION_PATTERN.matcher(input).matches()) {
+            return false;
         }
-        
-        if (!password.matches(".*[A-Z].*")) {
-            return new ValidationResult(false, "Senha deve conter pelo menos 1 letra maiúscula");
-        }
-        
-        if (!password.matches(".*[a-z].*")) {
-            return new ValidationResult(false, "Senha deve conter pelo menos 1 letra minúscula");
-        }
-        
-        if (!password.matches(".*[0-9].*")) {
-            return new ValidationResult(false, "Senha deve conter pelo menos 1 número");
-        }
-        
-        if (!password.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>?/].*")) {
-            return new ValidationResult(false, "Senha deve conter pelo menos 1 símbolo (!@#$%^&* etc)");
-        }
-        
-        return new ValidationResult(true, "Senha válida");
+        return SAFE_STRING_PATTERN.matcher(input).matches();
+    }
     }
     
     /**
