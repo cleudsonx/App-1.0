@@ -7,154 +7,123 @@ const API_ENDPOINTS = {
 import './style.css';
 import './brand.css';
 
-// Configuração padrão dos widgets (id, visibilidade, ordem)
-const defaultWidgetConfig = [
-  { id: 'hero-treino', visible: true, order: 0 },
-  { id: 'ficha-atual', visible: true, order: 1 },
-  { id: 'quick-stats', visible: true, order: 2 },
-  { id: 'progresso', visible: true, order: 3 },
-  { id: 'coach-ia', visible: true, order: 4 },
-  { id: 'templates', visible: true, order: 5 },
-  { id: 'conquistas', visible: true, order: 6 },
-  { id: 'fadiga', visible: true, order: 7 },
-  { id: 'sua-divisao', visible: true, order: 8 },
-  { id: 'timer-descanso', visible: true, order: 9 },
-  { id: 'agua', visible: true, order: 10 },
-  { id: 'nutricao', visible: true, order: 11 },
-  { id: 'motivacional', visible: true, order: 12 },
-  { id: 'planejamento-semanal', visible: true, order: 13 },
-  { id: 'prs-volume', visible: true, order: 14 },
-  { id: 'sono-recuperacao', visible: true, order: 15 }
-];
-
-import React, { useState, useEffect } from 'react';
-import { notificar } from './utils/notify';
-// Função utilitária para notificação web
-function pedirPermissaoNotificacao() {
-  if ('Notification' in window) {
-    Notification.requestPermission();
-  }
-}
-import DashboardGrid from './components/DashboardGrid';
-
-
-import HeroTreinoCard from './components/HeroTreinoCard';
-import FichaAtualCard from './components/FichaAtualCard';
-import QuickStatsCard from './components/QuickStatsCard';
-import ProgressoCard from './components/ProgressoCard';
-import CoachIACard from './components/CoachIACard';
-import TemplatesCard from './components/TemplatesCard';
-import ConquistasCard from './components/ConquistasCard';
-import RankingCard from './components/RankingCard';
-import DesafiosCard from './components/DesafiosCard';
-import FadigaCard from './components/FadigaCard';
-import SuaDivisaoCard from './components/SuaDivisaoCard';
-import TimerDescansoCard from './components/TimerDescansoCard';
-import AguaCard from './components/AguaCard';
-import NutricaoCard from './components/NutricaoCard';
-import MotivacionalCard from './components/MotivacionalCard';
-import PlanejamentoSemanalCard from './components/PlanejamentoSemanalCard';
-import PRsVolumeCard from './components/PRsVolumeCard';
-import SonoRecuperacaoCard from './components/SonoRecuperacaoCard';
-
-import NotificationSettings from './components/NotificationSettings';
-
-import FeedAtividades from './components/FeedAtividades';
-import MissoesDiariasStreaks from './components/MissoesDiariasStreaks';
-
-
-
-function App() {
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('dashboard_theme') || 'light';
-  });
-  const [showModal, setShowModal] = useState(false);
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('dashboard_user');
-    return saved ? JSON.parse(saved) : null;
-  });
-  // Estado de configuração dos widgets
-  const [widgetConfig, setWidgetConfig] = useState(() => {
-    const saved = localStorage.getItem('dashboard_widgets_config');
-    return saved ? JSON.parse(saved) : defaultWidgetConfig;
-  });
-
-  // Estados para dados reais dos widgets
-  const [ficha, setFicha] = useState(null);
-  const [stats, setStats] = useState(null);
-  const [progresso, setProgresso] = useState(null);
-  const [conquistas, setConquistas] = useState([]);
-  const [fadiga, setFadiga] = useState(null);
-  const [divisao, setDivisao] = useState(null);
-  const [templates, setTemplates] = useState([]);
-  const [refeicoes, setRefeicoes] = useState([]);
-  const [planejamento, setPlanejamento] = useState([]);
-  const [prsVolume, setPrsVolume] = useState(null);
-  const [sono, setSono] = useState(null);
-
-  const [fetchError, setFetchError] = useState("");
-  const [loading, setLoading] = useState(true);
-
-  // Função utilitária para fetch com tratamento de erro
-
-  async function fetchWithError(url, setter) {
-    try {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`Erro ao buscar ${url}: ${res.status}`);
-      const data = await res.json();
-      setter(data);
-    } catch (err) {
-      setFetchError(`Falha ao carregar dados (${url}): ${err.message}`);
+    // Buscar preferências do backend antes de agendar notificações
+    async function agendarNotificacoes() {
+      const user = JSON.parse(localStorage.getItem('dashboard_user') || '{}');
+      const userId = user.id || user.email || 'anon';
+      let notifySettings = null;
+      try {
+        const res = await fetch(`https://app-1-0-python.onrender.com/api/notify-settings?user_id=${encodeURIComponent(userId)}`);
+        if (res.ok) {
+          notifySettings = await res.json();
+          localStorage.setItem('dashboard_notify_settings', JSON.stringify(notifySettings));
+        }
+      } catch {}
+      if (!notifySettings) {
+        notifySettings = JSON.parse(localStorage.getItem('dashboard_notify_settings') || '{"horario":"09:00","tipos":{"missoes":true,"desafios":true,"conquistas":true,"streaks":true},"push":true}');
+      }
+      if ('Notification' in window && Notification.permission === 'granted' && notifySettings.push) {
+        setTimeout(() => {
+          // Notificação inicial para cada tipo ativado
+          if (notifySettings.tipos.desafios) {
+            let desafiosPend = 0;
+            try {
+              const desafios = JSON.parse(localStorage.getItem('dashboard_user_desafios') || '[]');
+              desafiosPend = desafios.filter(d => d.progresso < d.meta).length;
+            } catch {}
+            if (desafiosPend > 0) {
+              notificar(`Você tem ${desafiosPend} desafio${desafiosPend>1?'s':''} fitness pendente${desafiosPend>1?'s':''} hoje!`);
+            } else {
+              notificar('Parabéns! Você está em dia com seus desafios!');
+            }
+          }
+          if (notifySettings.tipos.missoes) {
+            let missoesPend = 0;
+            try {
+              const missoes = JSON.parse(localStorage.getItem('dashboard_user_missoes') || '[]');
+              missoesPend = missoes.filter(m => !m.completa).length;
+            } catch {}
+            if (missoesPend > 0) {
+              notificar(`Você tem ${missoesPend} missão${missoesPend>1?'s':''} diária pendente${missoesPend>1?'s':''}!`);
+            }
+          }
+          if (notifySettings.tipos.conquistas) {
+            let novasConquistas = 0;
+            try {
+              const conquistas = JSON.parse(localStorage.getItem('dashboard_user_conquistas') || '[]');
+              novasConquistas = conquistas.filter(c => c.nova).length;
+            } catch {}
+            if (novasConquistas > 0) {
+              notificar(`Você conquistou ${novasConquistas} nova${novasConquistas>1?'s':''} conquista${novasConquistas>1?'s':''}! Veja seu progresso!`);
+            }
+          }
+          if (notifySettings.tipos.streaks) {
+            let streakAtual = 0;
+            try {
+              streakAtual = parseInt(localStorage.getItem('dashboard_user_streak') || '0', 10);
+            } catch {}
+            if (streakAtual > 0) {
+              notificar(`Você está em uma sequência de ${streakAtual>1?'s':''} dia${streakAtual>1?'s':''} de atividades! Continue assim!`);
+            }
+          }
+        }, 2000);
+        // Agendar notificação diária no horário escolhido
+        const [h, m] = notifySettings.horario.split(':').map(Number);
+        const now = new Date();
+        const nextTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0, 0);
+        if (now > nextTime) nextTime.setDate(nextTime.getDate() + 1);
+        const msToNext = nextTime - now;
+        const daily = setTimeout(() => {
+          // Lembrete diário para cada tipo ativado
+          if (notifySettings.tipos.desafios) {
+            let desafiosPend = 0;
+            try {
+              const desafios = JSON.parse(localStorage.getItem('dashboard_user_desafios') || '[]');
+              desafiosPend = desafios.filter(d => d.progresso < d.meta).length;
+            } catch {}
+            if (desafiosPend > 0) {
+              notificar(`Lembrete: você tem ${desafiosPend} desafio${desafiosPend>1?'s':''} fitness para completar!`);
+            } else {
+              notificar('Continue assim! Todos os desafios do dia estão completos!');
+            }
+          }
+          if (notifySettings.tipos.missoes) {
+            let missoesPend = 0;
+            try {
+              const missoes = JSON.parse(localStorage.getItem('dashboard_user_missoes') || '[]');
+              missoesPend = missoes.filter(m => !m.completa).length;
+            } catch {}
+            if (missoesPend > 0) {
+              notificar(`Lembrete: você tem ${missoesPend} missão${missoesPend>1?'s':''} diária para completar!`);
+            } else {
+              notificar('Todas as missões do dia estão completas!');
+            }
+          }
+          if (notifySettings.tipos.conquistas) {
+            let novasConquistas = 0;
+            try {
+              const conquistas = JSON.parse(localStorage.getItem('dashboard_user_conquistas') || '[]');
+              novasConquistas = conquistas.filter(c => c.nova).length;
+            } catch {}
+            if (novasConquistas > 0) {
+              notificar(`Você conquistou ${novasConquistas} nova${novasConquistas>1?'s':''} conquista${novasConquistas>1?'s':''}! Veja seu progresso!`);
+            }
+          }
+          if (notifySettings.tipos.streaks) {
+            let streakAtual = 0;
+            try {
+              streakAtual = parseInt(localStorage.getItem('dashboard_user_streak') || '0', 10);
+            } catch {}
+            if (streakAtual > 0) {
+              notificar(`Você está em uma sequência de ${streakAtual>1?'s':''} dia${streakAtual>1?'s':''} de atividades! Continue assim!`);
+            }
+          }
+        }, 24*60*60*1000);
+        return () => clearTimeout(daily);
+      }
     }
-  }
-
-  useEffect(() => {
-    setLoading(true);
-    Promise.all([
-      fetchWithError(`${API_ENDPOINTS.java}/api/ficha`, setFicha),
-      fetchWithError(`${API_ENDPOINTS.java}/api/stats`, setStats),
-      fetchWithError(`${API_ENDPOINTS.java}/api/progresso`, setProgresso),
-      fetchWithError(`${API_ENDPOINTS.java}/api/conquistas`, setConquistas),
-      fetchWithError(`${API_ENDPOINTS.java}/api/fadiga`, setFadiga),
-      fetchWithError(`${API_ENDPOINTS.java}/api/divisao`, setDivisao),
-      fetchWithError(`${API_ENDPOINTS.java}/api/templates`, setTemplates),
-      fetchWithError(`${API_ENDPOINTS.python}/api/refeicoes`, setRefeicoes),
-      fetchWithError(`${API_ENDPOINTS.java}/api/planejamento`, setPlanejamento),
-      fetchWithError(`${API_ENDPOINTS.java}/api/prs-volume`, setPrsVolume),
-      fetchWithError(`${API_ENDPOINTS.python}/api/sono`, setSono)
-    ]).finally(() => setLoading(false));
-
-    // Personalizar notificação conforme preferências do usuário
-    const notifySettings = JSON.parse(localStorage.getItem('dashboard_notify_settings') || '{"horario":"09:00","tipos":{"missoes":true,"desafios":true,"conquistas":true,"streaks":true},"push":true}');
-    if ('Notification' in window && Notification.permission === 'granted' && notifySettings.push) {
-      setTimeout(() => {
-        // Notificação inicial para cada tipo ativado
-        if (notifySettings.tipos.desafios) {
-          let desafiosPend = 0;
-          try {
-            const desafios = JSON.parse(localStorage.getItem('dashboard_user_desafios') || '[]');
-            desafiosPend = desafios.filter(d => d.progresso < d.meta).length;
-          } catch {}
-          if (desafiosPend > 0) {
-            notificar(`Você tem ${desafiosPend} desafio${desafiosPend>1?'s':''} fitness pendente${desafiosPend>1?'s':''} hoje!`);
-          } else {
-            notificar('Parabéns! Você está em dia com seus desafios!');
-          }
-        }
-        if (notifySettings.tipos.missoes) {
-          let missoesPend = 0;
-          try {
-            const missoes = JSON.parse(localStorage.getItem('dashboard_user_missoes') || '[]');
-            missoesPend = missoes.filter(m => !m.completa).length;
-          } catch {}
-          if (missoesPend > 0) {
-            notificar(`Você tem ${missoesPend} missão${missoesPend>1?'s':''} diária pendente${missoesPend>1?'s':''}!`);
-          }
-        }
-        if (notifySettings.tipos.conquistas) {
-          let novasConquistas = 0;
-          try {
-            const conquistas = JSON.parse(localStorage.getItem('dashboard_user_conquistas') || '[]');
+    agendarNotificacoes();
+  }, []);
             novasConquistas = conquistas.filter(c => c.nova).length;
           } catch {}
           if (novasConquistas > 0) {
