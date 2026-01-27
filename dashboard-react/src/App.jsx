@@ -49,6 +49,7 @@ import SonoRecuperacaoCard from './components/SonoRecuperacaoCard';
 import PersonalizationModal from './components/PersonalizationModal';
 
 
+
 function App() {
   const [showModal, setShowModal] = useState(false);
   const [user, setUser] = useState(() => {
@@ -60,7 +61,6 @@ function App() {
     const saved = localStorage.getItem('dashboard_widgets_config');
     return saved ? JSON.parse(saved) : defaultWidgetConfig;
   });
-
 
   // Estados para dados reais dos widgets
   const [ficha, setFicha] = useState(null);
@@ -74,21 +74,32 @@ function App() {
   const [planejamento, setPlanejamento] = useState([]);
   const [prsVolume, setPrsVolume] = useState(null);
   const [sono, setSono] = useState(null);
+  const [fetchError, setFetchError] = useState("");
 
-  // Exemplo de busca de dados reais ao montar o componente
+  // Função utilitária para fetch com tratamento de erro
+  async function fetchWithError(url, setter) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Erro ao buscar ${url}: ${res.status}`);
+      const data = await res.json();
+      setter(data);
+    } catch (err) {
+      setFetchError(`Falha ao carregar dados (${url}): ${err.message}`);
+    }
+  }
+
   useEffect(() => {
-    // Exemplo: ajuste conforme cada rota pertence ao backend Java ou Python
-    fetch(`${API_ENDPOINTS.java}/api/ficha`).then(r => r.json()).then(setFicha);
-    fetch(`${API_ENDPOINTS.java}/api/stats`).then(r => r.json()).then(setStats);
-    fetch(`${API_ENDPOINTS.java}/api/progresso`).then(r => r.json()).then(setProgresso);
-    fetch(`${API_ENDPOINTS.java}/api/conquistas`).then(r => r.json()).then(setConquistas);
-    fetch(`${API_ENDPOINTS.java}/api/fadiga`).then(r => r.json()).then(setFadiga);
-    fetch(`${API_ENDPOINTS.java}/api/divisao`).then(r => r.json()).then(setDivisao);
-    fetch(`${API_ENDPOINTS.java}/api/templates`).then(r => r.json()).then(setTemplates);
-    fetch(`${API_ENDPOINTS.python}/api/refeicoes`).then(r => r.json()).then(setRefeicoes);
-    fetch(`${API_ENDPOINTS.java}/api/planejamento`).then(r => r.json()).then(setPlanejamento);
-    fetch(`${API_ENDPOINTS.java}/api/prs-volume`).then(r => r.json()).then(setPrsVolume);
-    fetch(`${API_ENDPOINTS.python}/api/sono`).then(r => r.json()).then(setSono);
+    fetchWithError(`${API_ENDPOINTS.java}/api/ficha`, setFicha);
+    fetchWithError(`${API_ENDPOINTS.java}/api/stats`, setStats);
+    fetchWithError(`${API_ENDPOINTS.java}/api/progresso`, setProgresso);
+    fetchWithError(`${API_ENDPOINTS.java}/api/conquistas`, setConquistas);
+    fetchWithError(`${API_ENDPOINTS.java}/api/fadiga`, setFadiga);
+    fetchWithError(`${API_ENDPOINTS.java}/api/divisao`, setDivisao);
+    fetchWithError(`${API_ENDPOINTS.java}/api/templates`, setTemplates);
+    fetchWithError(`${API_ENDPOINTS.python}/api/refeicoes`, setRefeicoes);
+    fetchWithError(`${API_ENDPOINTS.java}/api/planejamento`, setPlanejamento);
+    fetchWithError(`${API_ENDPOINTS.java}/api/prs-volume`, setPrsVolume);
+    fetchWithError(`${API_ENDPOINTS.python}/api/sono`, setSono);
   }, []);
 
   if (!user) {
@@ -101,6 +112,7 @@ function App() {
   return (
     <div className="dashboard-root">
       <h2>Dashboard React</h2>
+      {fetchError && <div className="error" style={{color: 'red', marginBottom: 12}}>{fetchError}</div>}
       <button onClick={() => setShowModal(true)}>
         Personalizar Dashboard
       </button>
