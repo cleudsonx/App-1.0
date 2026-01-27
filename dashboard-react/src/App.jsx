@@ -38,6 +38,7 @@ import ProgressoCard from './components/ProgressoCard';
 import CoachIACard from './components/CoachIACard';
 import TemplatesCard from './components/TemplatesCard';
 import ConquistasCard from './components/ConquistasCard';
+import RankingCard from './components/RankingCard';
 import FadigaCard from './components/FadigaCard';
 import SuaDivisaoCard from './components/SuaDivisaoCard';
 import TimerDescansoCard from './components/TimerDescansoCard';
@@ -185,9 +186,14 @@ function App() {
                 );
               case 'conquistas':
                 return (
-                  <Tooltip key={w.id} text="Veja suas conquistas e badges por desempenho.">
-                    <ConquistasCard conquistas={conquistas} />
-                  </Tooltip>
+                  <React.Fragment key={w.id}>
+                    <Tooltip text="Veja suas conquistas e badges por desempenho.">
+                      <ConquistasCard conquistas={conquistas} />
+                    </Tooltip>
+                    <Tooltip text="Veja seu desempenho no ranking semanal.">
+                      <RankingCard />
+                    </Tooltip>
+                  </React.Fragment>
                 );
               case 'fadiga':
                 return (
