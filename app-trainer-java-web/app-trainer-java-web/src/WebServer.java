@@ -1,3 +1,5 @@
+            // Divisao
+            server.createContext("/api/divisao", new CORSHandler(new api.DivisaoHandler()));
         // Templates
         server.createContext("/api/templates", new CORSHandler(new api.TemplatesHandler()));
     // Stats
