@@ -68,15 +68,29 @@ public class WebServer {
         }
 
 
-        // Storage SQL (PostgreSQL)
-        String dbUrl = System.getenv("JDBC_DATABASE_URL");
-        String dbUser = System.getenv("JDBC_DATABASE_USER");
-        String dbPass = System.getenv("JDBC_DATABASE_PASSWORD");
-        if (dbUrl == null) dbUrl = "jdbc:postgresql://localhost:5432/seubanco";
-        if (dbUser == null) dbUser = "seuusuario";
-        if (dbPass == null) dbPass = "suasenha";
-        Connection conn = DriverManager.getConnection(dbUrl, dbUser, dbPass);
-        Storage storage = new DataStorageSQL(conn);
+        // Inicializa logger
+        log.AppLogger logger = log.AppLogger.getInstance(Path.of("logs"));
+
+        // Storage SQL (PostgreSQL) com failover
+        Storage storage;
+        boolean dbFailover = false;
+        Connection conn = null;
+        try {
+            String dbUrl = System.getenv("JDBC_DATABASE_URL");
+            String dbUser = System.getenv("JDBC_DATABASE_USER");
+            String dbPass = System.getenv("JDBC_DATABASE_PASSWORD");
+            if (dbUrl == null) dbUrl = "jdbc:postgresql://localhost:5432/seubanco";
+            if (dbUser == null) dbUser = "seuusuario";
+            if (dbPass == null) dbPass = "suasenha";
+            conn = DriverManager.getConnection(dbUrl, dbUser, dbPass);
+            storage = new DataStorageSQL(conn);
+            logger.info("[DB] Conectado ao PostgreSQL", "WebServer");
+        } catch (Exception e) {
+            logger.error("[DB] Falha ao conectar PostgreSQL, failover para CSV", e, "WebServer");
+            dbFailover = true;
+            storage = new storage.DataStorage(dataDir);
+            logger.warn("[FAILOVER] Banco indisponível, usando CSV storage", "WebServer");
+        }
 
         // Usa HTTP padrão para desenvolvimento e produção
         HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0", port), 0);
