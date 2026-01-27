@@ -125,10 +125,20 @@ function App() {
       fetchWithError(`${API_ENDPOINTS.java}/api/prs-volume`, setPrsVolume),
       fetchWithError(`${API_ENDPOINTS.python}/api/sono`, setSono)
     ]).finally(() => setLoading(false));
-    // Notificação ao abrir o app
+
+    // Personalizar notificação conforme desafios pendentes
     if ('Notification' in window && Notification.permission === 'granted') {
       setTimeout(() => {
-        notificar('Você tem desafios fitness para completar hoje!');
+        let desafiosPend = 0;
+        try {
+          const desafios = JSON.parse(localStorage.getItem('dashboard_user_desafios') || '[]');
+          desafiosPend = desafios.filter(d => d.progresso < d.meta).length;
+        } catch {}
+        if (desafiosPend > 0) {
+          notificar(`Você tem ${desafiosPend} desafio${desafiosPend>1?'s':''} fitness pendente${desafiosPend>1?'s':''} hoje!`);
+        } else {
+          notificar('Parabéns! Você está em dia com seus desafios!');
+        }
       }, 2000);
       // Agendar notificação diária às 9h (simulação com 24h em ms)
       const now = new Date();
@@ -136,9 +146,27 @@ function App() {
       if (now > next9h) next9h.setDate(next9h.getDate() + 1);
       const msTo9h = next9h - now;
       const daily = setTimeout(() => {
-        notificar('Lembrete: desafie-se hoje e complete seus desafios fitness!');
+        let desafiosPend = 0;
+        try {
+          const desafios = JSON.parse(localStorage.getItem('dashboard_user_desafios') || '[]');
+          desafiosPend = desafios.filter(d => d.progresso < d.meta).length;
+        } catch {}
+        if (desafiosPend > 0) {
+          notificar(`Lembrete: você tem ${desafiosPend} desafio${desafiosPend>1?'s':''} fitness para completar!`);
+        } else {
+          notificar('Continue assim! Todos os desafios do dia estão completos!');
+        }
         setInterval(() => {
-          notificar('Lembrete: desafie-se hoje e complete seus desafios fitness!');
+          let desafiosPend = 0;
+          try {
+            const desafios = JSON.parse(localStorage.getItem('dashboard_user_desafios') || '[]');
+            desafiosPend = desafios.filter(d => d.progresso < d.meta).length;
+          } catch {}
+          if (desafiosPend > 0) {
+            notificar(`Lembrete: você tem ${desafiosPend} desafio${desafiosPend>1?'s':''} fitness para completar!`);
+          } else {
+            notificar('Continue assim! Todos os desafios do dia estão completos!');
+          }
         }, 24*60*60*1000);
       }, msTo9h);
       return () => clearTimeout(daily);
