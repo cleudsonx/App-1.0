@@ -124,37 +124,33 @@ function App() {
       fetchWithError(`${API_ENDPOINTS.python}/api/sono`, setSono)
     ]).finally(() => setLoading(false));
 
-    // Personalizar notificação conforme desafios pendentes
-    if ('Notification' in window && Notification.permission === 'granted') {
+    // Personalizar notificação conforme preferências do usuário
+    const notifySettings = JSON.parse(localStorage.getItem('dashboard_notify_settings') || '{"horario":"09:00","tipos":{"missoes":true,"desafios":true,"conquistas":true,"streaks":true},"push":true}');
+    if ('Notification' in window && Notification.permission === 'granted' && notifySettings.push) {
       setTimeout(() => {
-        let desafiosPend = 0;
-        try {
-          const desafios = JSON.parse(localStorage.getItem('dashboard_user_desafios') || '[]');
-          desafiosPend = desafios.filter(d => d.progresso < d.meta).length;
-        } catch {}
-        if (desafiosPend > 0) {
-          notificar(`Você tem ${desafiosPend} desafio${desafiosPend>1?'s':''} fitness pendente${desafiosPend>1?'s':''} hoje!`);
-        } else {
-          notificar('Parabéns! Você está em dia com seus desafios!');
+        // Notificação inicial (exemplo: desafios pendentes)
+        if (notifySettings.tipos.desafios) {
+          let desafiosPend = 0;
+          try {
+            const desafios = JSON.parse(localStorage.getItem('dashboard_user_desafios') || '[]');
+            desafiosPend = desafios.filter(d => d.progresso < d.meta).length;
+          } catch {}
+          if (desafiosPend > 0) {
+            notificar(`Você tem ${desafiosPend} desafio${desafiosPend>1?'s':''} fitness pendente${desafiosPend>1?'s':''} hoje!`);
+          } else {
+            notificar('Parabéns! Você está em dia com seus desafios!');
+          }
         }
       }, 2000);
-      // Agendar notificação diária às 9h (simulação com 24h em ms)
+      // Agendar notificação diária no horário escolhido
+      const [h, m] = notifySettings.horario.split(':').map(Number);
       const now = new Date();
-      const next9h = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 0, 0, 0);
-      if (now > next9h) next9h.setDate(next9h.getDate() + 1);
-      const msTo9h = next9h - now;
+      const nextTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0, 0);
+      if (now > nextTime) nextTime.setDate(nextTime.getDate() + 1);
+      const msToNext = nextTime - now;
       const daily = setTimeout(() => {
-        let desafiosPend = 0;
-        try {
-          const desafios = JSON.parse(localStorage.getItem('dashboard_user_desafios') || '[]');
-          desafiosPend = desafios.filter(d => d.progresso < d.meta).length;
-        } catch {}
-        if (desafiosPend > 0) {
-          notificar(`Lembrete: você tem ${desafiosPend} desafio${desafiosPend>1?'s':''} fitness para completar!`);
-        } else {
-          notificar('Continue assim! Todos os desafios do dia estão completos!');
-        }
-        setInterval(() => {
+        // Lembrete diário personalizado
+        if (notifySettings.tipos.desafios) {
           let desafiosPend = 0;
           try {
             const desafios = JSON.parse(localStorage.getItem('dashboard_user_desafios') || '[]');
@@ -165,8 +161,23 @@ function App() {
           } else {
             notificar('Continue assim! Todos os desafios do dia estão completos!');
           }
+        }
+        // Pode adicionar outros tipos (missões, conquistas, streaks) conforme notifySettings.tipos
+        setInterval(() => {
+          if (notifySettings.tipos.desafios) {
+            let desafiosPend = 0;
+            try {
+              const desafios = JSON.parse(localStorage.getItem('dashboard_user_desafios') || '[]');
+              desafiosPend = desafios.filter(d => d.progresso < d.meta).length;
+            } catch {}
+            if (desafiosPend > 0) {
+              notificar(`Lembrete: você tem ${desafiosPend} desafio${desafiosPend>1?'s':''} fitness para completar!`);
+            } else {
+              notificar('Continue assim! Todos os desafios do dia estão completos!');
+            }
+          }
         }, 24*60*60*1000);
-      }, msTo9h);
+      }, msToNext);
       return () => clearTimeout(daily);
     }
   }, []);
