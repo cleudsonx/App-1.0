@@ -1,4 +1,7 @@
+
 import React, { useEffect, useState } from 'react';
+
+const API_PYTHON = 'https://app-1-0-python.onrender.com';
 
 // Feed de atividades em tempo real
 // Exibe conquistas, desafios, treinos, badges, etc.
@@ -6,24 +9,31 @@ export default function FeedAtividades({ userId }) {
   const [feed, setFeed] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Simula fetch de feed (pode ser integrado ao backend futuramente)
+  // Busca feed do backend, com fallback local
   useEffect(() => {
-    function carregarFeed() {
-      // Busca do localStorage ou mock
-      const conquistas = JSON.parse(localStorage.getItem('dashboard_user_conquistas') || '[]');
-      const desafios = JSON.parse(localStorage.getItem('dashboard_user_desafios') || '[]');
-      const feedData = [];
-      conquistas.forEach(c => feedData.push({ tipo: 'conquista', ...c, data: c.data || new Date().toISOString() }));
-      desafios.filter(d => d.progresso >= d.meta).forEach(d => feedData.push({ tipo: 'desafio', ...d, data: d.data || new Date().toISOString() }));
-      // Pode adicionar treinos, badges, etc.
-      feedData.sort((a, b) => new Date(b.data) - new Date(a.data));
-      setFeed(feedData);
+    let cancelado = false;
+    async function carregarFeed() {
+      setLoading(true);
+      try {
+        const res = await fetch(`${API_PYTHON}/api/feed?user_id=${encodeURIComponent(userId)}`);
+        if (!res.ok) throw new Error('Backend offline');
+        const feedBackend = await res.json();
+        if (!cancelado) setFeed(feedBackend);
+      } catch {
+        // Fallback local
+        const conquistas = JSON.parse(localStorage.getItem('dashboard_user_conquistas') || '[]');
+        const desafios = JSON.parse(localStorage.getItem('dashboard_user_desafios') || '[]');
+        const feedData = [];
+        conquistas.forEach(c => feedData.push({ tipo: 'conquista', ...c, data: c.data || new Date().toISOString() }));
+        desafios.filter(d => d.progresso >= d.meta).forEach(d => feedData.push({ tipo: 'desafio', ...d, data: d.data || new Date().toISOString() }));
+        feedData.sort((a, b) => new Date(b.data) - new Date(a.data));
+        if (!cancelado) setFeed(feedData);
+      }
       setLoading(false);
     }
     carregarFeed();
-    // Atualização automática a cada 30s
     const interval = setInterval(carregarFeed, 30000);
-    return () => clearInterval(interval);
+    return () => { cancelado = true; clearInterval(interval); };
   }, [userId]);
 
   return (
