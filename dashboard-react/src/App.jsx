@@ -39,6 +39,7 @@ import CoachIACard from './components/CoachIACard';
 import TemplatesCard from './components/TemplatesCard';
 import ConquistasCard from './components/ConquistasCard';
 import RankingCard from './components/RankingCard';
+import DesafiosCard from './components/DesafiosCard';
 import FadigaCard from './components/FadigaCard';
 import SuaDivisaoCard from './components/SuaDivisaoCard';
 import TimerDescansoCard from './components/TimerDescansoCard';
@@ -192,6 +193,9 @@ function App() {
                     </Tooltip>
                     <Tooltip text="Veja seu desempenho no ranking semanal.">
                       <RankingCard />
+                    </Tooltip>
+                    <Tooltip text="Complete desafios fitness e ganhe recompensas.">
+                      <DesafiosCard />
                     </Tooltip>
                   </React.Fragment>
                 );
