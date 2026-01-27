@@ -117,6 +117,9 @@ public class WebServer {
             String json = "{\"status\":\"ok\",\"version\":\"" + VERSION + "\"}";
             sendJson(ex, 200, json);
         }));
+
+            // Conquistas
+            server.createContext("/api/conquistas", new CORSHandler(new api.ConquistasHandler()));
         
         // Proxy para serviço ML Python (opcional)
             // Proxy para serviço ML Python usando variável de ambiente
