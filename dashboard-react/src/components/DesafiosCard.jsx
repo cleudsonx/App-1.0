@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 // Toast simples
 function Toast({ msg, onClose }) {
   React.useEffect(() => {
@@ -23,11 +23,9 @@ const desafiosMock = [
 
 
 export default function DesafiosCard({ desafios }) {
-  const [userDesafios, setUserDesafios] = useState(() => {
-    const saved = localStorage.getItem('dashboard_user_desafios');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [userDesafios, setUserDesafios] = useState([]);
   const [form, setForm] = useState({ titulo: '', meta: 1, recompensa: '' });
+  const [loadingSync, setLoadingSync] = useState(false);
   const [animAdd, setAnimAdd] = useState(false);
   const [animConcluido, setAnimConcluido] = useState({});
   const [animProgresso, setAnimProgresso] = useState({});
@@ -38,7 +36,7 @@ export default function DesafiosCard({ desafios }) {
   function handleChange(e) {
     setForm(f => ({ ...f, [e.target.name]: e.target.value }));
   }
-  function handleAdd(e) {
+  async function handleAdd(e) {
     e.preventDefault();
     if (!form.titulo.trim() || !form.recompensa.trim()) return;
     const novo = {
@@ -48,18 +46,37 @@ export default function DesafiosCard({ desafios }) {
       progresso: 0,
       recompensa: form.recompensa
     };
-    const novos = [...userDesafios, novo];
-    setUserDesafios(novos);
-    localStorage.setItem('dashboard_user_desafios', JSON.stringify(novos));
-    setForm({ titulo: '', meta: 1, recompensa: '' });
     setAnimAdd(true);
     setToast('Desafio criado!');
     setTimeout(() => setAnimAdd(false), 800);
     if (addRef.current) {
       addRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+    setLoadingSync(true);
+    try {
+      // Tenta salvar no backend Python
+      const user = JSON.parse(localStorage.getItem('dashboard_user') || '{}');
+      const res = await fetch('https://app-1-0-python.onrender.com/api/desafios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(user.token ? { Authorization: `Bearer ${user.token}` } : {}) },
+        body: JSON.stringify({ ...novo, user_id: user.id || user.email || 'anon' })
+      });
+      if (!res.ok) throw new Error('Backend offline');
+      const novos = [...userDesafios, novo];
+      setUserDesafios(novos);
+      localStorage.setItem('dashboard_user_desafios', JSON.stringify(novos));
+    } catch (err) {
+      // Fallback local
+      const novos = [...userDesafios, novo];
+      setUserDesafios(novos);
+      localStorage.setItem('dashboard_user_desafios', JSON.stringify(novos));
+      setToast('Desafio salvo localmente (offline)');
+    } finally {
+      setForm({ titulo: '', meta: 1, recompensa: '' });
+      setLoadingSync(false);
+    }
   }
-  function handleProgresso(id) {
+  async function handleProgresso(id) {
     const novos = userDesafios.map(d => {
       if (d.id === id) {
         const novoProg = Math.min(d.meta, d.progresso + 1);
@@ -77,11 +94,44 @@ export default function DesafiosCard({ desafios }) {
     });
     setUserDesafios(novos);
     localStorage.setItem('dashboard_user_desafios', JSON.stringify(novos));
+    // Tenta atualizar progresso no backend
+    try {
+      const user = JSON.parse(localStorage.getItem('dashboard_user') || '{}');
+      await fetch('https://app-1-0-python.onrender.com/api/desafios/progresso', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(user.token ? { Authorization: `Bearer ${user.token}` } : {}) },
+        body: JSON.stringify({ desafio_id: id, progresso: novos.find(d => d.id === id)?.progresso, user_id: user.id || user.email || 'anon' })
+      });
+    } catch (err) {
+      // Fallback: progresso só local
+    }
   }
+  // Buscar desafios do backend ao montar
+  useEffect(() => {
+    async function fetchDesafios() {
+      setLoadingSync(true);
+      try {
+        const user = JSON.parse(localStorage.getItem('dashboard_user') || '{}');
+        const res = await fetch('https://app-1-0-python.onrender.com/api/desafios?user_id=' + encodeURIComponent(user.id || user.email || 'anon'));
+        if (!res.ok) throw new Error('Backend offline');
+        const data = await res.json();
+        setUserDesafios(data);
+        localStorage.setItem('dashboard_user_desafios', JSON.stringify(data));
+      } catch (err) {
+        // Fallback local
+        const saved = localStorage.getItem('dashboard_user_desafios');
+        setUserDesafios(saved ? JSON.parse(saved) : []);
+      } finally {
+        setLoadingSync(false);
+      }
+    }
+    fetchDesafios();
+  }, []);
 
   return (
     <div className="dashboard-widget widget-card card-desafios">
       <Toast msg={toast} onClose={() => setToast("")} />
+      {loadingSync && <div style={{position:'absolute',top:8,right:8,fontSize:13,color:'#007bff'}}>Sincronizando...</div>}
       <span role="img" aria-label="Desafios">🔥</span>
       <h3>Desafios Fitness</h3>
       <form onSubmit={handleAdd} style={{marginBottom:16, background:'#f3f3f3', borderRadius:8, padding:8, transition:'box-shadow .3s', boxShadow:animAdd?'0 0 12px #00c851':'none'}}>
