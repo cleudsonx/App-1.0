@@ -128,7 +128,7 @@ function App() {
     const notifySettings = JSON.parse(localStorage.getItem('dashboard_notify_settings') || '{"horario":"09:00","tipos":{"missoes":true,"desafios":true,"conquistas":true,"streaks":true},"push":true}');
     if ('Notification' in window && Notification.permission === 'granted' && notifySettings.push) {
       setTimeout(() => {
-        // Notificação inicial (exemplo: desafios pendentes)
+        // Notificação inicial para cada tipo ativado
         if (notifySettings.tipos.desafios) {
           let desafiosPend = 0;
           try {
@@ -141,6 +141,35 @@ function App() {
             notificar('Parabéns! Você está em dia com seus desafios!');
           }
         }
+        if (notifySettings.tipos.missoes) {
+          let missoesPend = 0;
+          try {
+            const missoes = JSON.parse(localStorage.getItem('dashboard_user_missoes') || '[]');
+            missoesPend = missoes.filter(m => !m.completa).length;
+          } catch {}
+          if (missoesPend > 0) {
+            notificar(`Você tem ${missoesPend} missão${missoesPend>1?'s':''} diária pendente${missoesPend>1?'s':''}!`);
+          }
+        }
+        if (notifySettings.tipos.conquistas) {
+          let novasConquistas = 0;
+          try {
+            const conquistas = JSON.parse(localStorage.getItem('dashboard_user_conquistas') || '[]');
+            novasConquistas = conquistas.filter(c => c.nova).length;
+          } catch {}
+          if (novasConquistas > 0) {
+            notificar(`Você conquistou ${novasConquistas} nova${novasConquistas>1?'s':''} conquista${novasConquistas>1?'s':''}! Veja seu progresso!`);
+          }
+        }
+        if (notifySettings.tipos.streaks) {
+          let streakAtual = 0;
+          try {
+            streakAtual = parseInt(localStorage.getItem('dashboard_user_streak') || '0', 10);
+          } catch {}
+          if (streakAtual > 0) {
+            notificar(`Você está em uma sequência de ${streakAtual} dia${streakAtual>1?'s':''} de atividades! Continue assim!`);
+          }
+        }
       }, 2000);
       // Agendar notificação diária no horário escolhido
       const [h, m] = notifySettings.horario.split(':').map(Number);
@@ -149,7 +178,7 @@ function App() {
       if (now > nextTime) nextTime.setDate(nextTime.getDate() + 1);
       const msToNext = nextTime - now;
       const daily = setTimeout(() => {
-        // Lembrete diário personalizado
+        // Lembrete diário para cada tipo ativado
         if (notifySettings.tipos.desafios) {
           let desafiosPend = 0;
           try {
@@ -162,8 +191,39 @@ function App() {
             notificar('Continue assim! Todos os desafios do dia estão completos!');
           }
         }
-        // Pode adicionar outros tipos (missões, conquistas, streaks) conforme notifySettings.tipos
+        if (notifySettings.tipos.missoes) {
+          let missoesPend = 0;
+          try {
+            const missoes = JSON.parse(localStorage.getItem('dashboard_user_missoes') || '[]');
+            missoesPend = missoes.filter(m => !m.completa).length;
+          } catch {}
+          if (missoesPend > 0) {
+            notificar(`Lembrete: você tem ${missoesPend} missão${missoesPend>1?'s':''} diária para completar!`);
+          } else {
+            notificar('Todas as missões do dia estão completas!');
+          }
+        }
+        if (notifySettings.tipos.conquistas) {
+          let novasConquistas = 0;
+          try {
+            const conquistas = JSON.parse(localStorage.getItem('dashboard_user_conquistas') || '[]');
+            novasConquistas = conquistas.filter(c => c.nova).length;
+          } catch {}
+          if (novasConquistas > 0) {
+            notificar(`Você conquistou ${novasConquistas} nova${novasConquistas>1?'s':''} conquista${novasConquistas>1?'s':''}! Veja seu progresso!`);
+          }
+        }
+        if (notifySettings.tipos.streaks) {
+          let streakAtual = 0;
+          try {
+            streakAtual = parseInt(localStorage.getItem('dashboard_user_streak') || '0', 10);
+          } catch {}
+          if (streakAtual > 0) {
+            notificar(`Você está em uma sequência de ${streakAtual} dia${streakAtual>1?'s':''} de atividades! Continue assim!`);
+          }
+        }
         setInterval(() => {
+          // Lembrete recorrente para cada tipo ativado
           if (notifySettings.tipos.desafios) {
             let desafiosPend = 0;
             try {
@@ -174,6 +234,37 @@ function App() {
               notificar(`Lembrete: você tem ${desafiosPend} desafio${desafiosPend>1?'s':''} fitness para completar!`);
             } else {
               notificar('Continue assim! Todos os desafios do dia estão completos!');
+            }
+          }
+          if (notifySettings.tipos.missoes) {
+            let missoesPend = 0;
+            try {
+              const missoes = JSON.parse(localStorage.getItem('dashboard_user_missoes') || '[]');
+              missoesPend = missoes.filter(m => !m.completa).length;
+            } catch {}
+            if (missoesPend > 0) {
+              notificar(`Lembrete: você tem ${missoesPend} missão${missoesPend>1?'s':''} diária para completar!`);
+            } else {
+              notificar('Todas as missões do dia estão completas!');
+            }
+          }
+          if (notifySettings.tipos.conquistas) {
+            let novasConquistas = 0;
+            try {
+              const conquistas = JSON.parse(localStorage.getItem('dashboard_user_conquistas') || '[]');
+              novasConquistas = conquistas.filter(c => c.nova).length;
+            } catch {}
+            if (novasConquistas > 0) {
+              notificar(`Você conquistou ${novasConquistas} nova${novasConquistas>1?'s':''} conquista${novasConquistas>1?'s':''}! Veja seu progresso!`);
+            }
+          }
+          if (notifySettings.tipos.streaks) {
+            let streakAtual = 0;
+            try {
+              streakAtual = parseInt(localStorage.getItem('dashboard_user_streak') || '0', 10);
+            } catch {}
+            if (streakAtual > 0) {
+              notificar(`Você está em uma sequência de ${streakAtual} dia${streakAtual>1?'s':''} de atividades! Continue assim!`);
             }
           }
         }, 24*60*60*1000);
