@@ -6,13 +6,51 @@ const desafiosMock = [
   { id: 3, titulo: '5 treinos de pernas', meta: 5, progresso: 5, recompensa: '💪 Badge Perna Forte' }
 ];
 
-export default function DesafiosCard({ desafios = desafiosMock }) {
+
+export default function DesafiosCard({ desafios }) {
+  const [userDesafios, setUserDesafios] = useState(() => {
+    const saved = localStorage.getItem('dashboard_user_desafios');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [form, setForm] = useState({ titulo: '', meta: 1, recompensa: '' });
+  const allDesafios = desafios || desafiosMock;
+
+  function handleChange(e) {
+    setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+  }
+  function handleAdd(e) {
+    e.preventDefault();
+    if (!form.titulo.trim() || !form.recompensa.trim()) return;
+    const novo = {
+      id: Date.now(),
+      titulo: form.titulo,
+      meta: Number(form.meta),
+      progresso: 0,
+      recompensa: form.recompensa
+    };
+    const novos = [...userDesafios, novo];
+    setUserDesafios(novos);
+    localStorage.setItem('dashboard_user_desafios', JSON.stringify(novos));
+    setForm({ titulo: '', meta: 1, recompensa: '' });
+  }
+  function handleProgresso(id) {
+    const novos = userDesafios.map(d => d.id === id ? { ...d, progresso: Math.min(d.meta, d.progresso + 1) } : d);
+    setUserDesafios(novos);
+    localStorage.setItem('dashboard_user_desafios', JSON.stringify(novos));
+  }
+
   return (
     <div className="dashboard-widget widget-card card-desafios">
       <span role="img" aria-label="Desafios">🔥</span>
       <h3>Desafios Fitness</h3>
+      <form onSubmit={handleAdd} style={{marginBottom:16, background:'#f3f3f3', borderRadius:8, padding:8}}>
+        <input name="titulo" placeholder="Novo desafio (ex: 10 treinos)" value={form.titulo} onChange={handleChange} required style={{marginRight:8}} />
+        <input name="meta" type="number" min="1" max="100" value={form.meta} onChange={handleChange} required style={{width:60,marginRight:8}} />
+        <input name="recompensa" placeholder="Recompensa (ex: 🏅 Badge)" value={form.recompensa} onChange={handleChange} required style={{marginRight:8}} />
+        <button type="submit">Criar</button>
+      </form>
       <ul style={{paddingLeft:0}}>
-        {desafios.map(d => (
+        {[...allDesafios, ...userDesafios].map(d => (
           <li key={d.id} style={{marginBottom:12, listStyle:'none', background:'#f7f7f7', borderRadius:8, padding:8, position:'relative'}}>
             <strong>{d.titulo}</strong> <span style={{float:'right'}}>{d.progresso}/{d.meta}</span>
             <div style={{height:8, background:'#eee', borderRadius:4, margin:'6px 0'}}>
@@ -22,6 +60,9 @@ export default function DesafiosCard({ desafios = desafiosMock }) {
               Recompensa: <span style={{fontWeight:'bold'}}>{d.recompensa}</span>
               {d.progresso>=d.meta && <span style={{marginLeft:8, color:'#00c851'}}>Concluído!</span>}
             </span>
+            {userDesafios.some(ud => ud.id === d.id) && d.progresso < d.meta && (
+              <button style={{position:'absolute',right:8,top:8}} onClick={() => handleProgresso(d.id)} title="Adicionar progresso">+1</button>
+            )}
           </li>
         ))}
       </ul>
