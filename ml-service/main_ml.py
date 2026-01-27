@@ -1,3 +1,34 @@
+# ============ ENDPOINTS DE PREFERÊNCIAS DE NOTIFICAÇÕES ============
+from fastapi import HTTPException
+from typing import Dict
+
+class NotifySettingsRequest(BaseModel):
+    user_id: str
+    settings: Dict
+
+@app.get("/api/notify-settings")
+async def get_notify_settings(user_id: str):
+    NOTIFY_FILE = Path("data/notify_settings.json")
+    if NOTIFY_FILE.exists():
+        all_settings = json.loads(NOTIFY_FILE.read_text(encoding="utf-8"))
+    else:
+        all_settings = {}
+    return all_settings.get(user_id, {
+        "horario": "09:00",
+        "tipos": {"missoes": True, "desafios": True, "conquistas": True, "streaks": True},
+        "push": True
+    })
+
+@app.post("/api/notify-settings")
+async def save_notify_settings(req: NotifySettingsRequest):
+    NOTIFY_FILE = Path("data/notify_settings.json")
+    if NOTIFY_FILE.exists():
+        all_settings = json.loads(NOTIFY_FILE.read_text(encoding="utf-8"))
+    else:
+        all_settings = {}
+    all_settings[req.user_id] = req.settings
+    NOTIFY_FILE.write_text(json.dumps(all_settings, ensure_ascii=False, indent=2), encoding="utf-8")
+    return {"success": True, "settings": req.settings}
 
 from datetime import date
 from pathlib import Path
