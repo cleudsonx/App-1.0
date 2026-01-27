@@ -31,6 +31,25 @@ beforeEach(() => {
         json: async () => ({ horario: '09:00', tipos: { missoes: true, desafios: true, conquistas: true, streaks: true }, push: false })
       });
     }
+    if (url.includes('/api/badges')) {
+      return Promise.resolve({
+        ok: true,
+        json: async () => [
+          { nome: 'Primeiro treino', descricao: 'Complete seu primeiro treino', icone: '🏆' },
+          { nome: 'Desafio 7 dias', descricao: 'Complete 7 dias seguidos', icone: '🔥' }
+        ]
+      });
+    }
+    if (url.includes('/api/ranking')) {
+      return Promise.resolve({
+        ok: true,
+        json: async () => [
+          { id: 'test-user', nome: 'Usuário Teste', pontos: 120 },
+          { id: 'user2', nome: 'Maria', pontos: 110 },
+          { id: 'user3', nome: 'João', pontos: 90 }
+        ]
+      });
+    }
     return Promise.resolve({ ok: true, json: async () => ({}) });
   });
   window.localStorage.clear();
@@ -60,8 +79,8 @@ describe('Integração Badges + Ranking', () => {
     fireEvent.click(screen.getByText('Finalizar'));
     await waitFor(() => expect(screen.getByText('Feed de Atividades')).toBeInTheDocument());
     // Badges
-    expect(screen.getByText('Primeiro treino')).toBeInTheDocument();
-    expect(screen.getByText('Desafio 7 dias')).toBeInTheDocument();
+    expect(screen.getByText('Complete seu primeiro treino')).toBeInTheDocument();
+    expect(screen.getByText('Complete 7 dias seguidos')).toBeInTheDocument();
     // Ranking
     expect(screen.getByText('Ranking')).toBeInTheDocument();
     expect(screen.getByText(/Usuário Teste/)).toBeInTheDocument();
