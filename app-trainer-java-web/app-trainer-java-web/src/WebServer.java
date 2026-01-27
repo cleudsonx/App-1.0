@@ -1,3 +1,5 @@
+    // Stats
+    server.createContext("/api/stats", new CORSHandler(new api.StatsHandler()));
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
