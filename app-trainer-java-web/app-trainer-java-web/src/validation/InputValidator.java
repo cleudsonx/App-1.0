@@ -1,6 +1,24 @@
 
 package validation;
+
+import java.util.regex.Pattern;
+
+/**
+ * Validador de entrada - Previne SQL Injection, XSS, input inválido
+ */
 public class InputValidator {
+    // Padrões de validação
+    private static final Pattern EMAIL_PATTERN = Pattern.compile(
+        "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$"
+    );
+    private static final Pattern SAFE_STRING_PATTERN = Pattern.compile(
+        "^[a-zA-Z0-9_\\-. \\pL]*$"
+    );
+    private static final Pattern SQL_INJECTION_PATTERN = Pattern.compile(
+        ".*['\";\\\\].*|.*(--|;|/\\*|\\*/).*|.*(DROP|DELETE|INSERT|UPDATE|SELECT|CREATE).*",
+        Pattern.CASE_INSENSITIVE
+    );
+
     /**
      * Valida força de senha (8+ chars, 1 maiúscula, 1 número, 1 símbolo)
      */
@@ -14,57 +32,13 @@ public class InputValidator {
      */
     public static boolean isSafeString(String input) {
         if (input == null || input.trim().isEmpty()) {
-
-        package validation;
-
-        import java.util.regex.Pattern;
-
-        /**
-         * Validador de entrada - Previne SQL Injection, XSS, input inválido
-         */
-        public class InputValidator {
-            // Padrões de validação
-            private static final Pattern EMAIL_PATTERN = Pattern.compile(
-                "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$"
-            );
-            private static final Pattern SAFE_STRING_PATTERN = Pattern.compile(
-                "^[a-zA-Z0-9_\\-. \\pL]*$"
-            );
-            private static final Pattern SQL_INJECTION_PATTERN = Pattern.compile(
-                ".*['\";\\\\].*|.*(--|;|/\\*|\\*/).*|.*(DROP|DELETE|INSERT|UPDATE|SELECT|CREATE).*",
-                Pattern.CASE_INSENSITIVE
-            );
-
-            /**
-             * Valida força de senha (8+ chars, 1 maiúscula, 1 número, 1 símbolo)
-             */
-            public static boolean isStrongPassword(String password) {
-                ValidationResult result = validatePassword(password);
-                return result.valid;
-            }
-
-            /**
-             * Verifica se string é "segura" (sem padrões de SQL injection, apenas caracteres permitidos)
-             */
-            public static boolean isSafeString(String input) {
-                if (input == null || input.trim().isEmpty()) {
-                    return false;
-                }
-                if (SQL_INJECTION_PATTERN.matcher(input).matches()) {
-                    return false;
-                }
-                return SAFE_STRING_PATTERN.matcher(input).matches();
-            }
-    private static final Pattern EMAIL_PATTERN = Pattern.compile(
-        "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$"
-    );
-    private static final Pattern SAFE_STRING_PATTERN = Pattern.compile(
-        "^[a-zA-Z0-9_\\-. \\pL]*$"
-    );
-    private static final Pattern SQL_INJECTION_PATTERN = Pattern.compile(
-        ".*['\";\\\\].*|.*(--|;|/\\*|\\*/).*|.*(DROP|DELETE|INSERT|UPDATE|SELECT|CREATE).*",
-        Pattern.CASE_INSENSITIVE
-    );
+            return false;
+        }
+        if (SQL_INJECTION_PATTERN.matcher(input).matches()) {
+            return false;
+        }
+        return SAFE_STRING_PATTERN.matcher(input).matches();
+    }
 
     /**
      * Valida força de senha (8+ chars, 1 maiúscula, 1 número, 1 símbolo)
