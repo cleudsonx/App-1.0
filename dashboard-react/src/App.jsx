@@ -1,3 +1,8 @@
+// Endpoints públicos dos backends
+const API_ENDPOINTS = {
+  java: 'https://app-1-0-java.onrender.com',
+  python: 'https://app-1-0-python.onrender.com'
+};
 import './style.css';
 import './brand.css';
 
@@ -67,18 +72,18 @@ function App() {
 
   // Exemplo de busca de dados reais ao montar o componente
   useEffect(() => {
-    // Substitua as URLs abaixo pelas rotas reais do seu backend
-    fetch('/api/ficha').then(r => r.json()).then(setFicha);
-    fetch('/api/stats').then(r => r.json()).then(setStats);
-    fetch('/api/progresso').then(r => r.json()).then(setProgresso);
-    fetch('/api/conquistas').then(r => r.json()).then(setConquistas);
-    fetch('/api/fadiga').then(r => r.json()).then(setFadiga);
-    fetch('/api/divisao').then(r => r.json()).then(setDivisao);
-    fetch('/api/templates').then(r => r.json()).then(setTemplates);
-    fetch('/api/refeicoes').then(r => r.json()).then(setRefeicoes);
-    fetch('/api/planejamento').then(r => r.json()).then(setPlanejamento);
-    fetch('/api/prs-volume').then(r => r.json()).then(setPrsVolume);
-    fetch('/api/sono').then(r => r.json()).then(setSono);
+    // Exemplo: ajuste conforme cada rota pertence ao backend Java ou Python
+    fetch(`${API_ENDPOINTS.java}/api/ficha`).then(r => r.json()).then(setFicha);
+    fetch(`${API_ENDPOINTS.java}/api/stats`).then(r => r.json()).then(setStats);
+    fetch(`${API_ENDPOINTS.java}/api/progresso`).then(r => r.json()).then(setProgresso);
+    fetch(`${API_ENDPOINTS.java}/api/conquistas`).then(r => r.json()).then(setConquistas);
+    fetch(`${API_ENDPOINTS.java}/api/fadiga`).then(r => r.json()).then(setFadiga);
+    fetch(`${API_ENDPOINTS.java}/api/divisao`).then(r => r.json()).then(setDivisao);
+    fetch(`${API_ENDPOINTS.java}/api/templates`).then(r => r.json()).then(setTemplates);
+    fetch(`${API_ENDPOINTS.python}/api/refeicoes`).then(r => r.json()).then(setRefeicoes);
+    fetch(`${API_ENDPOINTS.java}/api/planejamento`).then(r => r.json()).then(setPlanejamento);
+    fetch(`${API_ENDPOINTS.java}/api/prs-volume`).then(r => r.json()).then(setPrsVolume);
+    fetch(`${API_ENDPOINTS.python}/api/sono`).then(r => r.json()).then(setSono);
   }, []);
 
   return (
