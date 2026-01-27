@@ -8,8 +8,8 @@ param(
     [string]$EmailTo = "suporte@empresa.com"
 )
 
-# CPU
-$cpu = (Get-Counter '\Processor(_Total)\% Processor Time' -SampleInterval 1 -MaxSamples 3).CounterSamples | Measure-Object -Property CookedValue -Average | Select-Object -ExpandProperty Average
+# CPU (média dos processos)
+$cpu = (Get-WmiObject Win32_Processor | Measure-Object -Property LoadPercentage -Average).Average
 $cpu = [math]::Round($cpu, 1)
 
 # RAM
