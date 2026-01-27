@@ -30,6 +30,7 @@ const defaultWidgetConfig = [
 import React, { useState, useEffect } from 'react';
 import DashboardGrid from './components/DashboardGrid';
 
+
 import HeroTreinoCard from './components/HeroTreinoCard';
 import FichaAtualCard from './components/FichaAtualCard';
 import QuickStatsCard from './components/QuickStatsCard';
@@ -47,6 +48,7 @@ import PlanejamentoSemanalCard from './components/PlanejamentoSemanalCard';
 import PRsVolumeCard from './components/PRsVolumeCard';
 import SonoRecuperacaoCard from './components/SonoRecuperacaoCard';
 import PersonalizationModal from './components/PersonalizationModal';
+import Tooltip from './components/Tooltip';
 
 
 
@@ -135,37 +137,104 @@ function App() {
           .map(w => {
             switch (w.id) {
               case 'hero-treino':
-                return <HeroTreinoCard key={w.id} onStartWorkout={() => alert('Iniciar treino!')} />;
+                return (
+                  <Tooltip key={w.id} text="Inicie seu treino do dia com acompanhamento inteligente.">
+                    <HeroTreinoCard onStartWorkout={() => alert('Iniciar treino!')} />
+                  </Tooltip>
+                );
               case 'ficha-atual':
-                return <FichaAtualCard key={w.id} ficha={ficha} onSwitchTab={tab => alert(`Ir para ${tab}`)} />;
+                return (
+                  <Tooltip key={w.id} text="Veja sua ficha de treino atual, séries, repetições e exercícios.">
+                    <FichaAtualCard ficha={ficha} onSwitchTab={tab => alert(`Ir para ${tab}`)} />
+                  </Tooltip>
+                );
               case 'quick-stats':
-                return <QuickStatsCard key={w.id} stats={stats} />;
+                return (
+                  <Tooltip key={w.id} text="Resumo rápido dos seus treinos, calorias e metas.">
+                    <QuickStatsCard stats={stats} />
+                  </Tooltip>
+                );
               case 'progresso':
-                return <ProgressoCard key={w.id} progresso={progresso} />;
+                return (
+                  <Tooltip key={w.id} text="Acompanhe sua evolução semanal e mensal.">
+                    <ProgressoCard progresso={progresso} />
+                  </Tooltip>
+                );
               case 'coach-ia':
-                return <CoachIACard key={w.id} mensagem={"Pergunte algo ao Coach IA!"} onPerguntar={() => alert('Perguntar IA')} />;
+                return (
+                  <Tooltip key={w.id} text="Converse com a IA para tirar dúvidas e receber dicas personalizadas.">
+                    <CoachIACard mensagem={"Pergunte algo ao Coach IA!"} onPerguntar={() => alert('Perguntar IA')} />
+                  </Tooltip>
+                );
               case 'templates':
-                return <TemplatesCard key={w.id} templates={templates} onSelecionar={tpl => alert(`Selecionar ${tpl.nome}`)} />;
+                return (
+                  <Tooltip key={w.id} text="Escolha modelos de treino prontos para diferentes objetivos.">
+                    <TemplatesCard templates={templates} onSelecionar={tpl => alert(`Selecionar ${tpl.nome}`)} />
+                  </Tooltip>
+                );
               case 'conquistas':
-                return <ConquistasCard key={w.id} conquistas={conquistas} />;
+                return (
+                  <Tooltip key={w.id} text="Veja suas conquistas e badges por desempenho.">
+                    <ConquistasCard conquistas={conquistas} />
+                  </Tooltip>
+                );
               case 'fadiga':
-                return <FadigaCard key={w.id} fadiga={fadiga} />;
+                return (
+                  <Tooltip key={w.id} text="Monitore sinais de fadiga e otimize sua recuperação.">
+                    <FadigaCard fadiga={fadiga} />
+                  </Tooltip>
+                );
               case 'sua-divisao':
-                return <SuaDivisaoCard key={w.id} divisao={divisao} />;
+                return (
+                  <Tooltip key={w.id} text="Veja como está dividida sua rotina de treinos.">
+                    <SuaDivisaoCard divisao={divisao} />
+                  </Tooltip>
+                );
               case 'timer-descanso':
-                return <TimerDescansoCard key={w.id} />;
+                return (
+                  <Tooltip key={w.id} text="Cronometre seus intervalos entre séries.">
+                    <TimerDescansoCard />
+                  </Tooltip>
+                );
               case 'agua':
-                return <AguaCard key={w.id} />;
+                return (
+                  <Tooltip key={w.id} text="Controle sua hidratação diária.">
+                    <AguaCard />
+                  </Tooltip>
+                );
               case 'nutricao':
-                return <NutricaoCard key={w.id} refeicoes={refeicoes} />;
+                return (
+                  <Tooltip key={w.id} text="Registre e visualize suas refeições do dia.">
+                    <NutricaoCard refeicoes={refeicoes} />
+                  </Tooltip>
+                );
               case 'motivacional':
-                return <MotivacionalCard key={w.id} mensagem={"Você é mais forte do que imagina!"} />;
+                return (
+                  <Tooltip key={w.id} text="Receba frases motivacionais para manter o foco.">
+                    <MotivacionalCard mensagem={"Você é mais forte do que imagina!"} />
+                  </Tooltip>
+                );
               case 'planejamento-semanal':
-                return <PlanejamentoSemanalCard key={w.id} planejamento={planejamento} />;
+                return (
+                  <Tooltip key={w.id} text="Planeje sua semana de treinos.">
+                    <PlanejamentoSemanalCard planejamento={planejamento} />
+                  </Tooltip>
+                );
               case 'prs-volume':
-                return <PRsVolumeCard key={w.id} prsVolume={prsVolume} />;
+                return (
+                  <Tooltip key={w.id} text="Acompanhe seu volume de treino e recordes pessoais.">
+                    <PRsVolumeCard prsVolume={prsVolume} />
+                  </Tooltip>
+                );
               case 'sono-recuperacao':
-                return <SonoRecuperacaoCard key={w.id} sono={sono} />;
+                return (
+                  <Tooltip key={w.id} text="Monitore seu sono e recuperação.">
+                    <SonoRecuperacaoCard sono={sono} />
+                  </Tooltip>
+                );
+              default:
+                return null;
+            }
               default:
                 return null;
             }
