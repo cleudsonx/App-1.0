@@ -1,3 +1,13 @@
+// Função para compartilhar desafio
+function shareDesafio(desafio) {
+  const text = `🔥 Desafio: ${desafio.titulo}\nProgresso: ${desafio.progresso}/${desafio.meta}\nRecompensa: ${desafio.recompensa}`;
+  if (navigator.share) {
+    navigator.share({ text, title: 'Meu desafio fitness no APP Trainer!' });
+  } else {
+    navigator.clipboard.writeText(text);
+    alert('Desafio copiado! Compartilhe onde quiser.');
+  }
+}
 import React, { useState, useRef, useEffect } from 'react';
 // Toast simples
 function Toast({ msg, onClose }) {
@@ -165,7 +175,12 @@ export default function DesafiosCard({ desafios }) {
             </div>
             <span style={{fontSize:13}}>
               Recompensa: <span style={{fontWeight:'bold'}}>{d.recompensa}</span>
-              {d.progresso>=d.meta && <span style={{marginLeft:8, color:'#00c851', fontWeight:'bold', fontSize:15, animation:'pop .7s'}}>Concluído!</span>}
+              {d.progresso>=d.meta && (
+                <>
+                  <span style={{marginLeft:8, color:'#00c851', fontWeight:'bold', fontSize:15, animation:'pop .7s'}}>Concluído!</span>
+                  <button title="Compartilhar desafio" onClick={() => shareDesafio(d)} style={{marginLeft:8, fontSize:16, cursor:'pointer'}}>🔗</button>
+                </>
+              )}
             </span>
             {userDesafios.some(ud => ud.id === d.id) && d.progresso < d.meta && (
               <button style={{position:'absolute',right:8,top:8,transition:'transform .2s',transform:animProgresso[d.id]?'scale(1.2)':'none'}} onClick={() => handleProgresso(d.id)} title="Adicionar progresso">+1</button>
