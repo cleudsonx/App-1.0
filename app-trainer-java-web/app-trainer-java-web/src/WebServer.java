@@ -1,3 +1,5 @@
+                                // PRS Volume
+                                server.createContext("/api/prs-volume", new CORSHandler(new api.PRSVolumeHandler()));
                             // Fadiga
                             server.createContext("/api/fadiga", new CORSHandler(new api.FadigaHandler()));
                         // Planejamento
