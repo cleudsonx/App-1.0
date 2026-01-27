@@ -95,11 +95,25 @@ class AppLogger:
             context: Contexto/módulo
             exception: Exceção opcional
         """
-        extra = {'context': context}
-        if exception:
-            self.logger.log(level, f"{message} - {str(exception)}", extra=extra, exc_info=True)
-        else:
-            self.logger.log(level, message, extra=extra)
+            extra = {'context': context}
+            sanitized = self.sanitize_log(message)
+            if exception:
+                self.logger.log(level, f"{sanitized} - {str(exception)}", extra=extra, exc_info=True)
+            else:
+                self.logger.log(level, sanitized, extra=extra)
+
+        def sanitize_log(self, msg: str) -> str:
+            if not msg:
+                return msg
+            import re
+            # Remove JWT tokens
+            msg = re.sub(r"eyJ[a-zA-Z0-9-_]+\.[a-zA-Z0-9-_]+\.[a-zA-Z0-9-_]+", "[TOKEN_REMOVIDO]", msg)
+            # Remove campos de senha
+            msg = re.sub(r"(?i)senha=([^&\s]+)", "senha=[REMOVIDA]", msg)
+            msg = re.sub(r"(?i)password=([^&\s]+)", "password=[REMOVIDA]", msg)
+            # Remove refresh_token
+            msg = re.sub(r"(?i)refresh_token=([^&\s]+)", "refresh_token=[REMOVIDO]", msg)
+            return msg
     
     def info(self, message: str, context: str = "ML_SERVICE"):
         """
