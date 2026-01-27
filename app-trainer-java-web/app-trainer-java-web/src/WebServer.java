@@ -1,3 +1,5 @@
+                        // Planejamento
+                        server.createContext("/api/planejamento", new CORSHandler(new api.PlanejamentoHandler()));
                     // Progresso
                     server.createContext("/api/progresso", new CORSHandler(new api.ProgressoHandler()));
                 // Ficha
