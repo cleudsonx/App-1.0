@@ -1,3 +1,6 @@
+
+package validation;
+public class InputValidator {
     /**
      * Valida força de senha (8+ chars, 1 maiúscula, 1 número, 1 símbolo)
      */
@@ -18,7 +21,6 @@
         }
         return SAFE_STRING_PATTERN.matcher(input).matches();
     }
-package validation;
 
 import java.util.regex.Pattern;
 

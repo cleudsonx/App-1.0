@@ -95,12 +95,13 @@ class AppLogger:
             context: Contexto/módulo
             exception: Exceção opcional
         """
-            extra = {'context': context}
-            sanitized = self.sanitize_log(message)
-            if exception:
-                self.logger.log(level, f"{sanitized} - {str(exception)}", extra=extra, exc_info=True)
-            else:
-                self.logger.log(level, sanitized, extra=extra)
+
+        extra = {'context': context}
+        sanitized = self.sanitize_log(message)
+        if exception:
+            self.logger.log(level, f"{sanitized} - {str(exception)}", extra=extra, exc_info=True)
+        else:
+            self.logger.log(level, sanitized, extra=extra)
 
         def sanitize_log(self, msg: str) -> str:
             if not msg:
