@@ -74,9 +74,12 @@ function App() {
   const [planejamento, setPlanejamento] = useState([]);
   const [prsVolume, setPrsVolume] = useState(null);
   const [sono, setSono] = useState(null);
+
   const [fetchError, setFetchError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   // Função utilitária para fetch com tratamento de erro
+
   async function fetchWithError(url, setter) {
     try {
       const res = await fetch(url);
@@ -89,17 +92,20 @@ function App() {
   }
 
   useEffect(() => {
-    fetchWithError(`${API_ENDPOINTS.java}/api/ficha`, setFicha);
-    fetchWithError(`${API_ENDPOINTS.java}/api/stats`, setStats);
-    fetchWithError(`${API_ENDPOINTS.java}/api/progresso`, setProgresso);
-    fetchWithError(`${API_ENDPOINTS.java}/api/conquistas`, setConquistas);
-    fetchWithError(`${API_ENDPOINTS.java}/api/fadiga`, setFadiga);
-    fetchWithError(`${API_ENDPOINTS.java}/api/divisao`, setDivisao);
-    fetchWithError(`${API_ENDPOINTS.java}/api/templates`, setTemplates);
-    fetchWithError(`${API_ENDPOINTS.python}/api/refeicoes`, setRefeicoes);
-    fetchWithError(`${API_ENDPOINTS.java}/api/planejamento`, setPlanejamento);
-    fetchWithError(`${API_ENDPOINTS.java}/api/prs-volume`, setPrsVolume);
-    fetchWithError(`${API_ENDPOINTS.python}/api/sono`, setSono);
+    setLoading(true);
+    Promise.all([
+      fetchWithError(`${API_ENDPOINTS.java}/api/ficha`, setFicha),
+      fetchWithError(`${API_ENDPOINTS.java}/api/stats`, setStats),
+      fetchWithError(`${API_ENDPOINTS.java}/api/progresso`, setProgresso),
+      fetchWithError(`${API_ENDPOINTS.java}/api/conquistas`, setConquistas),
+      fetchWithError(`${API_ENDPOINTS.java}/api/fadiga`, setFadiga),
+      fetchWithError(`${API_ENDPOINTS.java}/api/divisao`, setDivisao),
+      fetchWithError(`${API_ENDPOINTS.java}/api/templates`, setTemplates),
+      fetchWithError(`${API_ENDPOINTS.python}/api/refeicoes`, setRefeicoes),
+      fetchWithError(`${API_ENDPOINTS.java}/api/planejamento`, setPlanejamento),
+      fetchWithError(`${API_ENDPOINTS.java}/api/prs-volume`, setPrsVolume),
+      fetchWithError(`${API_ENDPOINTS.python}/api/sono`, setSono)
+    ]).finally(() => setLoading(false));
   }, []);
 
   if (!user) {
@@ -112,6 +118,12 @@ function App() {
   return (
     <div className="dashboard-root">
       <h2>Dashboard React</h2>
+      {loading && (
+        <div className="loading" style={{margin: '24px 0', textAlign: 'center'}}>
+          <span className="spinner" style={{display: 'inline-block', width: 32, height: 32, border: '4px solid #ccc', borderTop: '4px solid #007bff', borderRadius: '50%', animation: 'spin 1s linear infinite', marginRight: 8}}></span>
+          Carregando dados do dashboard...
+        </div>
+      )}
       {fetchError && <div className="error" style={{color: 'red', marginBottom: 12}}>{fetchError}</div>}
       <button onClick={() => setShowModal(true)}>
         Personalizar Dashboard
@@ -190,6 +202,12 @@ function App() {
             ))}
         </ul>
       </PersonalizationModal>
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 }
