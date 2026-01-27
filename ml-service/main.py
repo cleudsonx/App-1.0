@@ -1,4 +1,8 @@
+# Correção: Definição do app FastAPI
+from fastapi import FastAPI
 from fastapi.responses import JSONResponse
+
+app = FastAPI()
 # ============ ENDPOINTS DE INTEGRAÇÃO DASHBOARD ============
 
 # Mock de refeições
