@@ -51,12 +51,6 @@ services:
         sync: false
 
   
-  - type: static_site
-    name: dashboard-react
-    env: node
-    buildCommand: npm install && npm run build
-    staticPublishPath: dist
-    rootDir: dashboard-react
 
 databases:
   - name: app-trainer-db
