@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import OnboardingProfile from './OnboardingProfile';
 
 const API = {
-  login: 'https://app-1-0-python.onrender.com/auth/login',
-  register: 'https://app-1-0-python.onrender.com/auth/registro'
+  login: 'https://ml-service.onrender.com/auth/login',
+  register: 'https://ml-service.onrender.com/auth/registro'
 };
 
 export default function LoginRegister({ onAuth }) {
