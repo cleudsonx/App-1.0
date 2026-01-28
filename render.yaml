@@ -51,7 +51,7 @@ services:
         sync: false
 
   
-  - type: static
+  - type: static site
     name: dashboard-react
     env: node
     buildCommand: npm install && npm run build
