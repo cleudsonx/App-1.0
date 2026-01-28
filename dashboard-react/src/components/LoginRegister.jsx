@@ -76,7 +76,7 @@ export default function LoginRegister({ onAuth }) {
         <form className="login-form" onSubmit={handleLogin}>
           <h3>Login</h3>
           <input name="email" type="email" placeholder="E-mail" value={form.email} onChange={handleChange} required />
-          <input name="senha" type="password" placeholder="Senha" value={form.senha} onChange={handleChange} required />
+          <input name="senha" type="password" placeholder="Senha" value={form.senha} onChange={handleChange} required autocomplete="current-password" />
           <button type="submit" disabled={loading}>Entrar</button>
           <button type="button" onClick={() => setStep('welcome')}>Voltar</button>
           {error && <div className="error">{error}</div>}
@@ -87,7 +87,7 @@ export default function LoginRegister({ onAuth }) {
           <h3>Cadastro</h3>
           <input name="nome" type="text" placeholder="Nome" value={form.nome} onChange={handleChange} required />
           <input name="email" type="email" placeholder="E-mail" value={form.email} onChange={handleChange} required />
-          <input name="senha" type="password" placeholder="Senha" value={form.senha} onChange={handleChange} required />
+          <input name="senha" type="password" placeholder="Senha" value={form.senha} onChange={handleChange} required autocomplete="new-password" />
           <button type="submit" disabled={loading}>Cadastrar</button>
           <button type="button" onClick={() => setStep('welcome')}>Voltar</button>
           {error && <div className="error">{error}</div>}
