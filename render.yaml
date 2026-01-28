@@ -19,6 +19,7 @@ services:
       - key: DB_USER
         fromDatabase:
           name: app-trainer-db
+          property: user
   
 
       # URL pública do ML Service para proxy
