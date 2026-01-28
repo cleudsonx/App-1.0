@@ -84,6 +84,7 @@ app.add_middleware(
         "https://shaipados.com",
         "https://www.shaipados.com",
         "https://dashboard-react-wyfe.onrender.com",
+        "https://ml-service.onrender.com",
         "http://localhost:5173",
         "http://localhost:5174"
     ],
