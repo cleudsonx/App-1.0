@@ -189,48 +189,42 @@ async def registro(request: RegisterRequest):
     - Returns JWT tokens
     """
     users = load_users()
-    
+
     # ✅ Validar email
     if not InputValidator.is_valid_email(request.email):
         raise HTTPException(status_code=400, detail="Email inválido")
-    
+
     # ✅ Validar nome
     if not InputValidator.is_valid_name(request.nome):
         raise HTTPException(status_code=400, detail="Nome inválido")
-    
+
     # Verificar se email já existe
     for user_data in users.values():
         if user_data["email"] == request.email:
             raise HTTPException(status_code=409, detail="Email já cadastrado")
-    
+
     # ✅ Validar força da senha (mesmas regras do Java)
     password_result = InputValidator.validate_password(request.senha)
     if not password_result.valid:
         raise HTTPException(status_code=400, detail=password_result.message)
-    
+
     user_id = uuid.uuid4().hex[:12]
-    
+
     # 🔐 Hash password with PBKDF2
     senha_hash = PasswordHasher.hash_password(request.senha)
-    
-    users[user_id] = {
-        "nome": request.nome,
-        "email": request.email,
-        "senha_hash": senha_hash,
-        "perfil": None
-    }
-    save_users(users)
-    
-    # Gerar token de confirmação
-    confirm_token = secrets.token_urlsafe(32)
+
     users[user_id] = {
         "nome": request.nome,
         "email": request.email,
         "senha_hash": senha_hash,
         "perfil": None,
-        "email_confirmed": False,
-        "confirm_token": confirm_token
+        "email_confirmed": False
     }
+    save_users(users)
+
+    # Gerar token de confirmação
+    confirm_token = secrets.token_urlsafe(32)
+    users[user_id]["confirm_token"] = confirm_token
     save_users(users)
 
     # Enviar email de confirmação
@@ -238,7 +232,18 @@ async def registro(request: RegisterRequest):
 
     logger.info(f"Novo usuário registrado: {request.email}", user_id=user_id)
 
-    return {"message": "Cadastro realizado. Confirme seu email para ativar a conta."}
+    # Gerar tokens JWT para login imediato
+    tokens = JWTManager.generate_tokens(user_id, request.email)
+
+    return AuthResponse(
+        user_id=user_id,
+        nome=request.nome,
+        email=request.email,
+        access_token=tokens.access_token,
+        refresh_token=tokens.refresh_token,
+        expires_in=tokens.expires_in,
+        perfil=None
+    )
 
 class RefreshRequest(BaseModel):
     refresh_token: str
