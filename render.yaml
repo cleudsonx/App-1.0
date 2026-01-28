@@ -60,6 +60,3 @@ services:
 
 databases:
   - name: app-trainer-db
-databases:
-
-  - name: app-trainer-db
