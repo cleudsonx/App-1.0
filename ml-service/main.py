@@ -1,12 +1,45 @@
-# Correção: Definição do app FastAPI
+"""
+ML Service para APP Trainer
+Coach Virtual com NLP e geração de treino inteligente
+
+v2.0 - Melhorias:
+- Base de conhecimento expandida
+- Geração de treino personalizada
+- Análise de contexto do aluno
+- Scoring de relevância
+"""
+
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
+from fastapi import FastAPI, Query, HTTPException
+from fastapi import Request
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import List, Optional, Dict, Any
+import re
+import random
+import uuid
+import json
+import smtplib
+import secrets
+from email.message import EmailMessage
+from pathlib import Path
+
+# Security imports
+from security.password_hasher import PasswordHasher
+from security.jwt_manager import JWTManager, TokenPair
+from security.rate_limiter import RateLimiter
+from security.input_validator import InputValidator, ValidationResult
+from security.app_logger import logger
+
+# Correção: Definição do app FastAPI
 
 app = FastAPI(
     title="APP Trainer ML Service",
     version="2.0.0",
     description="Serviço de IA para Coach Virtual de Musculação"
 )
+
 # ============ ENDPOINTS DE INTEGRAÇÃO DASHBOARD ============
 
 # Mock de refeições
@@ -43,55 +76,21 @@ def send_confirmation_email(email: str, token: str, user_id: str):
     print(f"Enviando email de confirmação para {email} com token {token} e user_id {user_id}")
 
 
-"""
-ML Service para APP Trainer
-Coach Virtual com NLP e geração de treino inteligente
-
-v2.0 - Melhorias:
-- Base de conhecimento expandida
-- Geração de treino personalizada
-- Análise de contexto do aluno
-- Scoring de relevância
-"""
-
-from fastapi import FastAPI, Query, HTTPException
-from fastapi import Request
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from typing import List, Optional, Dict, Any
-import re
-import random
-import uuid
-import json
-import smtplib
-import secrets
-from email.message import EmailMessage
-from pathlib import Path
-
-# Security imports
-from security.password_hasher import PasswordHasher
-from security.jwt_manager import JWTManager, TokenPair
-from security.rate_limiter import RateLimiter
-from security.input_validator import InputValidator, ValidationResult
-from security.app_logger import logger
-
-
 
 # CORS para acesso web (shaipados.com)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        #"https://shaipados.com",
-        #"https://www.shaipados.com",
-        #"https://dashboard-react-wyfe.onrender.com",
-        #"https://ml-service.onrender.com",
-        #"http://localhost:5173",
-        #"http://localhost:5174"
-        ["*"]
+        "https://shaipados.com",
+        "https://www.shaipados.com",
+        "https://dashboard-react-wyfe.onrender.com",
+        "https://ml-service.onrender.com",
+        "http://localhost:5173",
+        "http://localhost:5174"
     ],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"] ,
+    allow_headers=["*"] ,
 )
 
 
