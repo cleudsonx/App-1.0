@@ -1,3 +1,7 @@
+@app.get("/ml/health")
+async def ml_health_check():
+    """Healthcheck para Render"""
+    return {"status": "healthy"}
 # ============ ENDPOINTS DE PREFERÊNCIAS DE NOTIFICAÇÕES ============
 from fastapi import HTTPException
 from typing import Dict
