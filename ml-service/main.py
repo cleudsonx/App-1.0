@@ -82,6 +82,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://shaipados.com",
+        "https://www.shaipados.com",
+        "https://dashboard-react-wyfe.onrender.com",
         "https://cleudsonx.github.io",
         "http://localhost:5173",
         "http://localhost:5174"
