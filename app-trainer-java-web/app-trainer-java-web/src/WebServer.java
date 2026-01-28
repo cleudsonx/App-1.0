@@ -76,9 +76,9 @@ public class WebServer {
         boolean dbFailover = false;
         Connection conn = null;
         try {
-            String dbUrl = System.getenv("JDBC_DATABASE_URL");
-            String dbUser = System.getenv("JDBC_DATABASE_USER");
-            String dbPass = System.getenv("JDBC_DATABASE_PASSWORD");
+            String dbUrl = System.getenv("DB_URL");
+            String dbUser = System.getenv("DB_USER");
+            String dbPass = System.getenv("DB_PASSWORD");
             if (dbUrl == null) dbUrl = "jdbc:postgresql://localhost:5432/seubanco";
             if (dbUser == null) dbUser = "seuusuario";
             if (dbPass == null) dbPass = "suasenha";
