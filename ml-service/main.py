@@ -84,7 +84,6 @@ app.add_middleware(
         "https://shaipados.com",
         "https://www.shaipados.com",
         "https://dashboard-react-wyfe.onrender.com",
-        "https://cleudsonx.github.io",
         "http://localhost:5173",
         "http://localhost:5174"
     ],
@@ -92,6 +91,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # ============ AUTENTICAÇÃO ============
 
