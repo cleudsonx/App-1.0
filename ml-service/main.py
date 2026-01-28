@@ -2,7 +2,11 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
-app = FastAPI()
+app = FastAPI(
+    title="APP Trainer ML Service",
+    version="2.0.0",
+    description="Serviço de IA para Coach Virtual de Musculação"
+)
 # ============ ENDPOINTS DE INTEGRAÇÃO DASHBOARD ============
 
 # Mock de refeições
@@ -71,11 +75,7 @@ from security.rate_limiter import RateLimiter
 from security.input_validator import InputValidator, ValidationResult
 from security.app_logger import logger
 
-app = FastAPI(
-    title="APP Trainer ML Service",
-    version="2.0.0",
-    description="Serviço de IA para Coach Virtual de Musculação"
-)
+
 
 # CORS para acesso web (shaipados.com)
 app.add_middleware(

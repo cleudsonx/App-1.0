@@ -1,5 +1,15 @@
 services:
   - type: web
+    name: dashboard-react
+    env: static
+    staticPublishPath: dashboard-react/dist
+    buildCommand: npm install && npm run build
+    envVars:
+      - key: VITE_API_URL
+        value: https://ml-service.onrender.com
+    autoDeploy: true
+
+  - type: web
     name: app-trainer-java
     env: docker
     dockerfilePath: app-trainer-java-web/app-trainer-java-web/Dockerfile
@@ -8,8 +18,6 @@ services:
     envVars:
       - key: PORT
         value: 8081
-      - key: HTTPS_ENABLED
-        value: "false"
       - key: JWT_SECRET_KEY
         sync: false
       - key: DB_URL
@@ -20,29 +28,17 @@ services:
         fromDatabase:
           name: app-trainer-db
           property: user
-  
-
-      # URL pública do ML Service para proxy
-      - key: ML_SERVICE_URL
-        value: https://ml-service.onrender.com
       - key: DB_PASSWORD
         fromDatabase:
           name: app-trainer-db
           property: password
-# JWT para integração segura
-      - key: JWT_SECRET_KEY
-        value: sua_chave_secreta
-# Para definir JWT_SECRET_KEY no Render:
-# Adicione em envVars:
-#   - key: JWT_SECRET_KEY
-#     value: sua_chave_secreta
-
+      - key: ML_SERVICE_URL
+        value: https://ml-service.onrender.com
 
   - type: web
     name: ml-service
     env: docker
     dockerfilePath: ml-service/Dockerfile
-
     autoDeploy: true
     healthCheckPath: /ml/health
     envVars:
@@ -50,8 +46,6 @@ services:
         value: 8001
       - key: JWT_SECRET_KEY
         sync: false
-
-  
 
 databases:
   - name: app-trainer-db
