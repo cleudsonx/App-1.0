@@ -9,7 +9,6 @@ v2.0 - Melhorias:
 - Scoring de relevância
 """
 
-from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi import FastAPI, Query, HTTPException
 from fastapi import Request
@@ -24,6 +23,7 @@ import smtplib
 import secrets
 from email.message import EmailMessage
 from pathlib import Path
+import os
 
 # Security imports
 from security.password_hasher import PasswordHasher
@@ -65,7 +65,7 @@ async def get_sono():
         ]
     }
     return JSONResponse(content=sono)
-import os
+
 
 # Porta e chave JWT vindas do Render
 PORT = int(os.getenv("PORT", "8001"))
