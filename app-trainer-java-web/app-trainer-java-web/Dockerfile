@@ -3,8 +3,8 @@ FROM eclipse-temurin:17-jdk as build
 WORKDIR /app
 
 # Copiar código fonte e libs
-COPY app-trainer-java-web/src ./src
-COPY app-trainer-java-web/lib ./lib
+COPY app-trainer-java-web/app-trainer-java-web/src ./src
+COPY app-trainer-java-web/app-trainer-java-web/lib ./lib
 
 RUN mkdir -p bin \
  && find src -name "*.java" > sourceCD DAS  s.txt \
@@ -21,10 +21,10 @@ ENV HTTPS_ENABLED=false
 
 # Copiar binários e recursos
 COPY --from=build /app/bin ./bin
-COPY app-trainer-java-web/lib ./lib
-COPY app-trainer-java-web/data ./data
-COPY app-trainer-java-web/src/log ./src/log
-COPY app-trainer-java-web/src/WebServer.java ./src/WebServer.java
+COPY app-trainer-java-web/app-trainer-java-web/lib ./lib
+COPY app-trainer-java-web/app-trainer-java-web/data ./data
+COPY app-trainer-java-web/app-trainer-java-web/src/log ./src/log
+COPY app-trainer-java-web/app-trainer-java-web/src/WebServer.java ./src/WebServer.java
 
 # Copiar o build do React (dist) para a pasta web do Java
 COPY dashboard-react/dist/ ./web/
