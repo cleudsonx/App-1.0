@@ -17,7 +17,7 @@ from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 import re
 import random
-import uuid
+import uuid 
 import json
 import smtplib
 import secrets
@@ -38,6 +38,22 @@ app = FastAPI(
     title="APP Trainer ML Service",
     version="2.0.0",
     description="Serviço de IA para Coach Virtual de Musculação"
+)
+
+# CORS para acesso web (shaipados.com)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://shaipados.com",
+        "https://www.shaipados.com",
+        "https://dashboard-react-wyfe.onrender.com",
+        "https://ml-service.onrender.com",
+        "http://localhost:5173",
+        "http://localhost:5174"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"] ,
+    allow_headers=["*"] ,
 )
 
 # ============ ENDPOINTS DE INTEGRAÇÃO DASHBOARD ============
@@ -74,24 +90,6 @@ def send_confirmation_email(email: str, token: str, user_id: str):
     # Função de envio de email de confirmação
     # Implemente aqui o envio real de email
     print(f"Enviando email de confirmação para {email} com token {token} e user_id {user_id}")
-
-
-
-# CORS para acesso web (shaipados.com)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "https://shaipados.com",
-        "https://www.shaipados.com",
-        "https://dashboard-react-wyfe.onrender.com",
-        "https://ml-service.onrender.com",
-        "http://localhost:5173",
-        "http://localhost:5174"
-    ],
-    allow_credentials=True,
-    allow_methods=["*"] ,
-    allow_headers=["*"] ,
-)
 
 
 # ============ AUTENTICAÇÃO ============
