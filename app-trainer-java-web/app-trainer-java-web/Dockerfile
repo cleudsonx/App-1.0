@@ -14,7 +14,7 @@ COPY app-trainer-java-web/app-trainer-java-web/src ./src
 COPY app-trainer-java-web/app-trainer-java-web/lib ./lib
 
 RUN mkdir -p bin \
- && find src -name "*.java" > sourceCD DAS  s.txt \
+ && find src -name "*.java" > sources.txt \
  && javac -encoding UTF-8 --release 17 -d bin -cp "lib/postgresql.jar:lib/json-20210307.jar:lib/junit-platform-console-standalone-1.9.3.jar" @sources.txt
 
 # Stage 2: runtime
