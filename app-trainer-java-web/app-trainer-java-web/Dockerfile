@@ -18,13 +18,16 @@ WORKDIR /app
 ENV PORT=8081
 ENV HTTPS_ENABLED=false
 
+
 # Copiar binários e recursos
 COPY --from=build /app/bin ./bin
 COPY lib ./lib
-COPY web ./web
 COPY data ./data
 COPY src/log ./src/log
 COPY src/WebServer.java ./src/WebServer.java
+
+# Copiar o build do React (dist) para a pasta web do Java
+COPY ../../dashboard-react/dist/ ./web/
 
 # Criar diretório de logs
 RUN mkdir -p logs
