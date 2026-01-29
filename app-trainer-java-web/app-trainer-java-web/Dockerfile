@@ -27,7 +27,7 @@ COPY src/log ./src/log
 COPY src/WebServer.java ./src/WebServer.java
 
 # Copiar o build do React (dist) para a pasta web do Java
-COPY ../../dashboard-react/dist/ ./web/
+COPY dashboard-react/dist/ ./web/
 
 # Criar diretório de logs
 RUN mkdir -p logs
