@@ -3,11 +3,11 @@ FROM eclipse-temurin:17-jdk as build
 WORKDIR /app
 
 # Copiar código fonte e libs
-COPY src ./src
-COPY lib ./lib
+COPY app-trainer-java-web/src ./src
+COPY app-trainer-java-web/lib ./lib
 
 RUN mkdir -p bin \
- && find src -name "*.java" > sources.txt \
+ && find src -name "*.java" > sourceCD DAS  s.txt \
  && javac -encoding UTF-8 --release 17 -d bin -cp "lib/postgresql.jar:lib/json-20210307.jar:lib/junit-platform-console-standalone-1.9.3.jar" @sources.txt
 
 # Stage 2: runtime
@@ -21,10 +21,10 @@ ENV HTTPS_ENABLED=false
 
 # Copiar binários e recursos
 COPY --from=build /app/bin ./bin
-COPY lib ./lib
-COPY data ./data
-COPY src/log ./src/log
-COPY src/WebServer.java ./src/WebServer.java
+COPY app-trainer-java-web/lib ./lib
+COPY app-trainer-java-web/data ./data
+COPY app-trainer-java-web/src/log ./src/log
+COPY app-trainer-java-web/src/WebServer.java ./src/WebServer.java
 
 # Copiar o build do React (dist) para a pasta web do Java
 COPY dashboard-react/dist/ ./web/
