@@ -1,3 +1,10 @@
+# Stage 0: build do React
+FROM node:20-alpine as react-build
+WORKDIR /dashboard-react
+COPY ../../dashboard-react/package.json ../../dashboard-react/package-lock.json ./
+RUN npm install
+COPY ../../dashboard-react ./
+RUN npm run build
 # Stage 1: build
 FROM eclipse-temurin:17-jdk as build
 WORKDIR /app
@@ -27,7 +34,7 @@ COPY app-trainer-java-web/app-trainer-java-web/src/log ./src/log
 COPY app-trainer-java-web/app-trainer-java-web/src/WebServer.java ./src/WebServer.java
 
 # Copiar o build do React (dist) para a pasta web do Java
-COPY dashboard-react/dist/ ./web/
+COPY --from=react-build /dashboard-react/dist ./web/
 
 # Criar diretório de logs
 RUN mkdir -p logs
