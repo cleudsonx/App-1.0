@@ -17,5 +17,5 @@ COPY models/ ./models/
 COPY security/ ./security/
 COPY data/ ./data/
 
-EXPOSE $PORT
+EXPOSE 8001
 CMD ["sh", "-c", "python -m uvicorn main:app --host 0.0.0.0 --port $PORT"]
