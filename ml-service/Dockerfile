@@ -3,8 +3,8 @@ FROM python:3.12-slim
 WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PORT=8001
+    PYTHONUNBUFFERED=1
+#    PORT=8001   <-- remova ou comente esta linha
 
 # Instala dependências
 COPY requirements.txt ./
@@ -17,5 +17,5 @@ COPY models/ ./models/
 COPY security/ ./security/
 COPY data/ ./data/
 
-EXPOSE 8001
+EXPOSE $PORT
 CMD ["sh", "-c", "python -m uvicorn main:app --host 0.0.0.0 --port $PORT"]
