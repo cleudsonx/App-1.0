@@ -1,0 +1,7 @@
+2026-01-29 22:16:07.989 [INFO] [WebServer] APP Trainer iniciado - Version 2.0.0
+2026-01-29 22:16:07.989 [INFO] [WebServer] Web Directory: C:\Users\cleud\Documents\PROJETOS 2026\APP-1.0\app-trainer-java-web\app-trainer-java-web\web
+2026-01-29 22:16:08.113 [WARN] [WebServer] PostgreSQL não disponível - usando CSV storage: Connection to localhost:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+2026-01-29 22:16:08.295 [INFO] [WebServer] HTTP habilitado na porta 8081
+2026-01-29 22:16:08.557 [INFO] [WebServer] Server started on port 8081 (HTTP)
+2026-01-29 22:17:47.813 [WARN] [WebServer] Shutting down server...
+2026-01-29 22:17:52.912 [INFO] [WebServer] Server stopped
